@@ -1,0 +1,62 @@
+Meeting 1 May 9 2014 Design Planning
+
+Term Goals
+	- Term one: Interview application
+	- Term two: Build extensible framework underneath
+
+Components
+	1. Network
+	2. Interview app
+	3. Application (Framework for building collab apps)
+
+Main Features:
+	1. Video Chat -> Open Source library preferable
+	2. Collaborative Coding Editor -> Matrix Library, CollabEdit
+	3. Note Taking
+
+BackBurner Features
+	- IM / Chat (priority after main features, poor pivot for video)
+	- rating
+	- video annotation
+	- persistence based tech (saved information between sessions)
+	- pre baked questions
+	- email notes, data, etc
+	- agenda (scoped to interview)
+	- scheduler for interviews
+	- candidate tracking
+	- interviewer - interviewee matching system
+
+Other Notes:
+	- User Centric Design, Start with 2 in Components
+	- try not to rely on libraries too much, custom is better 
+	- try to keep as stateless as possible
+	- cut as much out while still creating a good product
+
+Structure Planning
+
+1. Setup Screen
+	- Interviewer has access
+	- Interviewee Name Fields
+	- Email Fields (both interviewer and interviewee)
+	- Create Session Button
+	- 
+	
+2. Main Interview Screen 
+	- Authentication and identification of user and interview position via entering email address
+	- A one box popup over the main interview screen
+	- Contains all main components
+
+	
+Architecture
+	- Two clients ask to open a web socket to a web server (long running) to create relay
+	- 
+
+Technologies to Research
+	- Socket IO + Django
+	- gevent
+	- Tornado IO Loop
+	- Nginx & Websockets
+	- greenlets & Twisted
+	- SPDY
+
+
