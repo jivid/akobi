@@ -1,4 +1,5 @@
 import json
+import redis
 
 from tornado.web import RequestHandler, Application
 from tornado.websocket import WebSocketHandler
@@ -12,21 +13,20 @@ class IndexHandler(RequestHandler):
 
 
 class InterviewHandler(WebSocketHandler):
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
     ongoing_interviews = {}
 
     def open(self, interview):
         print(u"opened.")
-        if not interview in InterviewHandler.ongoing_interviews:
-            InterviewHandler.ongoing_interviews[interview] = set()
 
+        InterviewHandler.r.sadd(interview, self);
         print "Adding %s to interview %s" % (str(self), interview)
-        InterviewHandler.ongoing_interviews[interview].add(self)
 
     def on_message(self, message):
         message = json.loads(message)
         print "Got message: %s" % str(message)
         interview = message['hash']
-        conns = InterviewHandler.ongoing_interviews[interview]
+        conns = InterviewHandler.r.smembers(interview)
         print "Going to send message to %d connections" % (len(conns))
         for conn in conns:
             conn.write_message(message['data'])
