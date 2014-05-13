@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CollabEdit</title>
+  <script src="scripts/diff_match_patch_uncompressed.js"></script>
+</head>
+<body>
+  <textarea name="Text1"  id = "1" cols="40" rows="5"></textarea>
+  <textarea name="Text2"  id = "2" cols="40" rows="5"></textarea>
+  <button onClick="onInterval();">
+  <script>
+  	var diffObj = new diff_match_patch();
+  	var text1Shadow = "";
+  	var text1 = "";
+  	var text2Shadow = "";
+  	var text2 = "";
+
+  	function log(msg){
+  		console.log(msg);
+  		console.log("text1Shadow: " + text1Shadow);
+  		console.log("text1: " + text1);
+  		console.log("text2Shadow: " + text2Shadow);
+  		console.log("text2: " + text2);
+  	}
+
+  	function onInterval(){
+  		// Get the text from each client.
+  		text1 = document.getElementById('1').value;
+  		text2 = document.getElementById('2').value;
+  		
+  		var diff = diffObj.diff_main(text1, text1Shadow);
+  		log("Diff text1 against it's shadow.");
+
+  		text1Shadow = text1;
+  		log("Update the shadow to text1");
+
+  		// Now patch text2Shadow
+  		var patch = diffObj.patch_make(text1, diff);
+  		text2Shadow = diffObj.patch_apply(patch, text2Shadow)[0];
+  		log("Now patch text2Shadow");
+
+  		//Now patch text2
+  		text2 = diffObj.patch_apply(patch, text2)[0];
+  		log("Now patch text2");
+
+  		// Now go the other way
+  		var diffReverse = diffObj.diff_main(text2, text2Shadow);
+  		log("Diff text2 against it's shadow.");
+  		text2Shadow = text2;
+  		log("Update the shadow to text2");
+  		text1Shadow = diffObj.patch_apply(diffReverse, text1Shadow)[0];
+  		log("Now patch text1Shadow");
+  		var patchReverse = diffObj.patch_make(diffReverse);
+  		text1 = diffObj.patch_apply(patchReverse, text1)[0];
+  		log("Now patch text1");
+
+  		// Synchronization complete update the text areas.
+  		document.getElementById('1').value = text1;
+  		document.getElementById('2').value = text2;
+  	}
+	
+  	//setInterval(onInterval,200);
+
+  </script>
+</body>
+</html>
