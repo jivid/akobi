@@ -4,83 +4,53 @@
   <meta charset="utf-8">
   <title>CollabEdit</title>
   <script src="scripts/diff_match_patch_uncompressed.js"></script>
+  <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 </head>
 <body>
   <textarea name="Text1"  id = "1" cols="40" rows="5"></textarea>
-  <textarea name="Text2"  id = "2" cols="40" rows="5"></textarea>
-  <button text="forward" onClick="patchForward();">
-  <button text="reverse" onClick="patchReverse();">
   <script>
   	var diffObj = new diff_match_patch();
   	var text1Shadow = "";
-  	var text1 = "";
-  	var text2Shadow = "";
-  	var text2 = "";
 
-  	function log(msg){
-  		console.log("");
-  		console.log(msg);
-  		console.log("text1Shadow: " + text1Shadow);
-  		console.log("text1: " + text1);
-  		console.log("text2Shadow: " + text2Shadow);
-  		console.log("text2: " + text2);
-  	}
+    var socket = new WebSocket('ws://localhost:8888');
 
-  	// See https://neil.fraser.name/writing/sync/
-  	// Dual Shadow Method
-  	function synchronize(){
-  		patchForward();
-  		patchReverse();
-  	}
+    socket.onmessage = function (evnt){
+      msg = JSON.parse(event.data);
+      switch (msg.type){
+        case 1:
+          to_send = {
+            type : 2,
+            data { get_diff() }
+          }
+          socket.send(JSON.stringify(to_send));
+        case 3:
+          apply_diff(msg.data)
+          ack = {
+            type : 4,
+            data {}
+          }
+          socket.send(ack);
+      }
+    }
 
-  	function patchForward(){
-  		// Get the text from each client.
-  		text1 = document.getElementById('1').value;
-  		text2 = document.getElementById('2').value;
-  		
-  		// Determine what has changed since last forward patch.
-  		var diff = diffObj.diff_main(text1Shadow, text1);
-
-  		// Save the current text to diff agaisnt in future.
-  		text1Shadow = text1;
-
-  		// Make and apply patch from diff to other client's shadow.
-  		var patch = diffObj.patch_make(text2Shadow, diff);
-  		text2Shadow = diffObj.patch_apply(patch, text2Shadow)[0];
-
-  		// Also apply patch to other client's main text.
-  		text2 = diffObj.patch_apply(patch, text2)[0];
-
-  		document.getElementById('1').value = text1;
-  		document.getElementById('2').value = text2;
-  	}
-
-  	// Just do the reverse of patchForward
-  	function patchReverse(){
-  		// Get the text from each client.
-  		text1 = document.getElementById('1').value;
-  		text2 = document.getElementById('2').value;
-  		
-  		var diff = diffObj.diff_main(text2Shadow, text2);
-
-  		text2Shadow = text2;
-
-  		var patch = diffObj.patch_make(text1Shadow, diff);
-  		text1Shadow = diffObj.patch_apply(patch, text1Shadow)[0];
-
-  		text1 = diffObj.patch_apply(patch, text1)[0];
-
-  		document.getElementById('1').value = text1;
-  		document.getElementById('2').value = text2;
-  	}
-
-	
-  	setInterval(synchronize, 1000);
-
-    document.getElementById('1').value += "new text";
-    document.getElementById('2').value += "new text";
+    function get_diff(){
+      var text1 = $("#1").val();
+      diff =  diffObj.diff_main(text1Shadow, text1);
+      // Save the current text to diff agaisnt in future.
+      text1Shadow = text1;
+      return diff;
+    }
 
 
+    function apply_diff(diff){
+      // Generate the patches.
+      var patch1 = diffObj.patch_make(text1Shadow, diff);
+      var patch2 = diffObj.patch_make(text1, diff);
+
+      // Patch the shadow then the main text.
+      text1Shadow = diffObj.patch_apply(patch1, text1Shadow)[0];
+      $("#1").val(diffObj.patch_apply(patch2, $("#1").val())[0]);
+    }
   </script>
 </body>
 </html>
