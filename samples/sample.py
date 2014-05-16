@@ -1,9 +1,12 @@
 import json
+import random
 
 from tornado.web import RequestHandler, Application
 from tornado.websocket import WebSocketHandler
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
+
+settings = {'auto_reload': True, 'debug': True}
 
 
 class IndexHandler(RequestHandler):
@@ -15,35 +18,36 @@ class InterviewHandler(WebSocketHandler):
     ongoing_interviews = {}
 
     def open(self, interview):
-        print(u"opened.")
-        if not interview in InterviewHandler.ongoing_interviews:
+        print "Web socket connection opened."
+        if interview not in InterviewHandler.ongoing_interviews:
             InterviewHandler.ongoing_interviews[interview] = set()
 
-        print "Adding %s to interview %s" % (str(self), interview)
         InterviewHandler.ongoing_interviews[interview].add(self)
+
+        # TODO (Warren): Manage clientIDs using Redis
+        # For now just assign a random integer from 0 to 100 for a client id
+        self.write_message(json.dumps({"client_id": random.randint(1, 100)}))
 
     def on_message(self, message):
         message = json.loads(message)
-        print "Got message: %s" % str(message)
-        interview = message['hash']
+        print "Received from web socket: %s" % str(message)
+
+        interview = message['interview_id']
+
+        # TODO (Warren): Manage interviewIDs using Redis
+        # For now stick in hash table
         conns = InterviewHandler.ongoing_interviews[interview]
-        print "Going to send message to %d connections" % (len(conns))
+
         for conn in conns:
             conn.write_message(message['data'])
 
     def on_close(self):
-        print(u"closed.")
+        print(u"Web socket connection closed.")
 
 
-settings = {'auto_reload': True, 'debug': True}
-
-# TODO: Ensure that a new SampleWebSocket instance isn't started for each
-# connection to the same URL path. This probably involves us writing some
-# middleware to route incoming connections to their respective websocket
-# handlers. (i.e. 1 per interview)
 app = Application([
-    (r'/i/(.*)/', IndexHandler),
-    (r'/i/(.*)/sock', InterviewHandler),
+    (r'/i/(\w+)/', IndexHandler),
+    (r'/i/(\w+)/sock', InterviewHandler),
     ], **settings)
 
 
