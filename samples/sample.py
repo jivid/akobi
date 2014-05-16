@@ -19,7 +19,7 @@ class InterviewHandler(WebSocketHandler):
 
     def open(self, interview):
         print "Web socket connection opened."
-        if not interview in InterviewHandler.ongoing_interviews:
+        if interview not in InterviewHandler.ongoing_interviews:
             InterviewHandler.ongoing_interviews[interview] = set()
 
         InterviewHandler.ongoing_interviews[interview].add(self)
