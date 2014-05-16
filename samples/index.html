@@ -8,24 +8,38 @@
 <body>
   <input type="text" id="message"/>
   <button id="send">send</button>
-  <input type="text" id="result1"></input>
+  <input type="text" id="result"></input>
   <script>
 
-  var interview = window.location.pathname.split('/')[2];
-  var sock1 = new WebSocket('ws://localhost:8888/i/' + interview + '/sock');
+  var interviewID = window.location.pathname.split('/')[2];
+  var webSocket = new WebSocket('ws://localhost:8888/i/' + interviewID + '/sock');
+  var clientID;
 
-  sock1.onmessage = function (evt) {
-    console.log("Got message" + evt.data);
-    $('#result1').val(evt.data);
+  function sendWebSocketRequest (request) {
+    console.log('Sending to web socket: ' + request.data);
+    webSocket.send(JSON.stringify(request));
+  }
+
+  webSocket.onmessage = function (evt) {
+    console.log('Received from web socket: ' + evt.data);
+    
+    if (typeof clientID === 'undefined') {
+      clientID = JSON.parse(evt.data).client_id;
+      return;
+    }
+
+    $('#result').val(evt.data);
   };
 
   $('#send').on('click', function() {
-    var to_send = {
-      hash: interview,
+    var sendDataRequest = {
+      interview_id: interviewID,
+      client_id: clientID,
+      type: 'send_data',
       data: $('#message').val()
     };
-    console.log(to_send);
-    sock1.send(JSON.stringify(to_send));
+
+    sendWebSocketRequest(sendDataRequest);
   });
 
   </script>
