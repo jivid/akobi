@@ -20,16 +20,18 @@
         case 1:
           to_send = {
             type : 2,
-            data { get_diff() }
+            data : get_diff()
           }
+          console.log("sending msg: " + JSON.stringify(to_send))
           socket.send(JSON.stringify(to_send));
         case 3:
-          apply_diff(msg.data)
+          console.log("applying diff: " + msg.toString());
+          apply_diff(msg);
           ack = {
             type : 4,
-            data {}
+            data : ""
           }
-          socket.send(ack);
+          socket.send(JSON.stringify(ack));
       }
     }
 
