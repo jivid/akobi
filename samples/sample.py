@@ -8,6 +8,7 @@ from tornado.ioloop import IOLoop
 
 settings = {'auto_reload': True, 'debug': True}
 
+
 class IndexHandler(RequestHandler):
     def get(self, interview):
         self.render('index.html')
@@ -22,11 +23,11 @@ class InterviewHandler(WebSocketHandler):
             InterviewHandler.ongoing_interviews[interview] = set()
 
         InterviewHandler.ongoing_interviews[interview].add(self)
-        
+
         # TODO (Warren): Manage clientIDs using Redis
         # For now just assign a random integer from 0 to 100 for a client id
-        self.write_message(json.dumps({"client_id" : random.randint(1,100)}))
-        
+        self.write_message(json.dumps({"client_id": random.randint(1, 100)}))
+
     def on_message(self, message):
         message = json.loads(message)
         print "Received from web socket: %s" % str(message)
@@ -36,7 +37,7 @@ class InterviewHandler(WebSocketHandler):
         # TODO (Warren): Manage interviewIDs using Redis
         # For now stick in hash table
         conns = InterviewHandler.ongoing_interviews[interview]
-        
+
         for conn in conns:
             conn.write_message(message['data'])
 
