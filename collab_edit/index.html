@@ -44,12 +44,11 @@
 
     function apply_diff(diff){
       // Generate the patches.
-      var patch1 = diffObj.patch_make(text1Shadow, diff);
-      var patch2 = diffObj.patch_make(text1, diff);
+      var patch = diffObj.patch_make(text1Shadow, diff);
 
       // Patch the shadow then the main text.
-      text1Shadow = diffObj.patch_apply(patch1, text1Shadow)[0];
-      $("#1").val(diffObj.patch_apply(patch2, $("#1").val())[0]);
+      text1Shadow = diffObj.patch_apply(patch, text1Shadow)[0];
+      $("#1").val(diffObj.patch_apply(patch, $("#1").val())[0]);
     }
   </script>
 </body>
