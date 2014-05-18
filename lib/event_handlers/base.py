@@ -8,4 +8,3 @@ class BaseEventHandler(object):
     @classmethod
     def handle(cls, *args, **kwargs):
         raise NotImplementedError
-

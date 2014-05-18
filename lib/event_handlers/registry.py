@@ -1,5 +1,6 @@
 __all__ = ('registry',)
 
+
 class EventHandlerRegistry(object):
     """
     Event handler registry that is global to the application. Uses the Borg
