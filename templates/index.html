@@ -6,27 +6,19 @@
   <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
 </head>
 <body>
-  <input type="text" id="message"/>
-  <button id="send">send</button>
-  <input type="text" id="result1"></input>
   <script>
 
-  var interview = window.location.pathname.split('/')[2];
-  var sock1 = new WebSocket('ws://localhost:8888/i/' + interview + '/sock');
+  var sock1 = new WebSocket('ws://localhost:8888/interview/socket');
 
-  sock1.onmessage = function (evt) {
-    console.log("Got message" + evt.data);
-    $('#result1').val(evt.data);
-  };
+  var heartbeat = {
+      datetime: "",
+      type: "heartbeat",
+      clientID: "",
+      interviewID: "",
+      data : ""
+  }
 
-  $('#send').on('click', function() {
-    var to_send = {
-      hash: interview,
-      data: $('#message').val()
-    };
-    console.log(to_send);
-    sock1.send(JSON.stringify(to_send));
-  });
+  setInterval(function(){sock1.send(JSON.stringify(heartbeat))}, 1000);
 
   </script>
 </body>

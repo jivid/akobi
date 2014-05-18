@@ -1,9 +1,10 @@
-from akobi.lib.event_handler.registry import registry
-from akobi.lib.event_handler.base import BaseEventHandler
+from lib.event_handlers.registry import registry
+from lib.event_handlers.base import BaseEventHandler
 
 
 class HeartbeatHandler(BaseEventHandler):
     def handle(self, message):
+        print("Got Heartbeat")
         pass
 
-registry.register("HeartbeatHandler", HeartbeatHandler)
+registry.register("Heartbeat", HeartbeatHandler)
