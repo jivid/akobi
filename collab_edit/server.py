@@ -5,9 +5,9 @@ from tornado.web import RequestHandler, Application
 from tornado.websocket import WebSocketHandler
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
+from threading import Timer
 
 state = 0
-
 
 class States:
     INITIAL = 1
@@ -75,6 +75,7 @@ class SocketHandler(WebSocketHandler):
 
     def on_message(self, message):
         global state
+        global synchronization_loop_delay
         print("got message " + message)
         if state == States.DIFF_WAIT_CL1:
             print("state was waiting for diff from client 1 now sending diff to client 2")
@@ -91,12 +92,10 @@ class SocketHandler(WebSocketHandler):
         elif state == States.ACK_WAIT_CL2:
             print("state was waiting for ack from client 2 going to initial state")
             wait_for_ack()
+            IOLoop.instance().add_timeout(.1, restart_synchronization_loop)
 
-        elif state == States.INITIAL:
-            time.sleep(30)
-            print("")
-            print("starting again asking for diff from client 1")
-            ask_diff(SocketHandler.sockets[0])
+        else:
+            print "got message while in invalid state"
 
     def on_close(self):
         pass
@@ -104,6 +103,12 @@ class SocketHandler(WebSocketHandler):
 application = Application([
     (r"/", SocketHandler),
 ])
+
+def restart_synchronization_loop():
+    print("")
+    print("starting again asking for diff from client 1")
+    ask_diff(SocketHandler.sockets[0])
+
 
 if __name__ == "__main__":
     application.listen(8888)

@@ -16,30 +16,44 @@
 
     socket.onmessage = function (evnt){
       msg = JSON.parse(event.data);
+      console.log("got message: " + JSON.stringify(msg));
+
       switch (msg.type){
         case 1:
           to_send = {
             type : 2,
             data : get_diff()
           }
-          console.log("sending msg: " + JSON.stringify(to_send))
+          console.log("sending msg: " + JSON.stringify(to_send));
           socket.send(JSON.stringify(to_send));
+          break;
         case 3:
-          console.log("applying diff: " + msg.toString());
-          apply_diff(msg);
+          console.log("applying diff: " + JSON.stringify(msg.data));
+          apply_diff(msg.data);
           ack = {
             type : 4,
             data : ""
           }
           socket.send(JSON.stringify(ack));
+          break;
       }
     }
 
     function get_diff(){
       var text1 = $("#1").val();
+
+      console.log("");
+      console.log("text1: " + text1)
+      console.log("text1Shadow: " + text1Shadow)
       diff =  diffObj.diff_main(text1Shadow, text1);
       // Save the current text to diff agaisnt in future.
       text1Shadow = text1;
+
+      console.log("");
+      console.log("got_diff");
+      console.log("Diff: " + diff);
+      console.log("text1shadow: " + text1Shadow);
+      console.log("text1: " + text1);
       return diff;
     }
 
@@ -51,6 +65,10 @@
       // Patch the shadow then the main text.
       text1Shadow = diffObj.patch_apply(patch, text1Shadow)[0];
       $("#1").val(diffObj.patch_apply(patch, $("#1").val())[0]);
+
+      console.log("applied diff: " + patch);
+      console.log("text1shadow: " + text1Shadow);
+      console.log("text1: " + $("#1").val());
     }
   </script>
 </body>
