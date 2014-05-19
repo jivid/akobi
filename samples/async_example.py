@@ -4,7 +4,6 @@ from tornado import gen
 from tornado.ioloop import IOLoop
 
 from akobi.lib.event_handlers.base import BaseEventHandler
-from akobi.lib.event_handlers.heartbeat import HeartbeatHandler
 from akobi.lib.event_handlers.registry import registry
 from akobi.lib.utils import async_handle
 
@@ -12,7 +11,6 @@ from akobi.lib.utils import async_handle
 class TimedMessageHandler(BaseEventHandler):
     @gen.engine
     def handle(self, iters, delay, *args, **kwargs):
-        iters = iters
         for i in range(iters):
             print("Going to come back up in %d seconds" % delay)
             yield gen.Task(IOLoop.instance().add_timeout, time.time() + delay)
