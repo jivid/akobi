@@ -9,16 +9,33 @@
   <script>
   var interviewID = window.location.pathname.split('/')[2];
   var webSocket = new WebSocket('ws://localhost:8888/i/' + interviewID + '/socket');
+  var clientID = '';
 
-  var heartbeat = {
-      datetime: "",
+  webSocket.onmessage = function (evt) {
+    console.log('Received from web socket: ' + evt.data);
+    
+    // TODO (Steve): Handle heartbeat response properly
+    // not just static text
+    if(evt.data == "Heartbeat Successful") {
+      //do nothing for now
+      return;
+    }
+
+    if (clientID == '') {
+      clientID = JSON.parse(evt.data).client_id;
+      return;
+    }
+  };
+
+  setInterval(function(){
+    var curDate = new Date()
+    webSocket.send(JSON.stringify({
+      datetime: curDate,
       type: "heartbeat",
-      clientID: "",
+      clientID: clientID,
       interviewID: interviewID,
       data : {}
-  }
-
-  setInterval(function(){webSocket.send(JSON.stringify(heartbeat))}, 1000);
+  }))}, 5000);
 
   </script>
 </body>

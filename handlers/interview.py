@@ -1,4 +1,5 @@
 import json
+import uuid
 from tornado.websocket import WebSocketHandler
 from akobi.lib import utils
 from akobi.lib.event_handlers.registry import registry
@@ -10,12 +11,15 @@ class InterviewHandler(WebSocketHandler):
     ongoing_interviews = {}
 
     def open(self, interview_id):
-        print "Web socket connection opened. with interview_id " + interview_id
+        print "Web socket connection opened with interview_id " + interview_id
         if interview_id not in InterviewHandler.ongoing_interviews:
             InterviewHandler.ongoing_interviews[interview_id] = set()
 
+        client_id = str(uuid.uuid4())
+        self.client_id = client_id
+        self.write_message(json.dumps({"client_id": client_id}))
         InterviewHandler.ongoing_interviews[interview_id].add(self)
-        
+
     def on_message(self, message):
         print "Received from web socket: %s" % str(message)
         message = json.loads(message)
