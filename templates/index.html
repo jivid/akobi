@@ -7,18 +7,18 @@
 </head>
 <body>
   <script>
-
-  var sock1 = new WebSocket('ws://localhost:8888/interview/socket');
+  var interviewID = window.location.pathname.split('/')[2];
+  var webSocket = new WebSocket('ws://localhost:8888/i/' + interviewID + '/socket');
 
   var heartbeat = {
       datetime: "",
       type: "heartbeat",
       clientID: "",
-      interviewID: "",
+      interviewID: interviewID,
       data : {}
   }
 
-  setInterval(function(){sock1.send(JSON.stringify(heartbeat))}, 1000);
+  setInterval(function(){webSocket.send(JSON.stringify(heartbeat))}, 1000);
 
   </script>
 </body>
