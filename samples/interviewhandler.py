@@ -36,6 +36,7 @@ class InterviewMemberHandler(websocket.WebSocketHandler):
             # do something with the new keypress. probably want to add it to
             # a buffer so that other clients connected to the namespace can
             # receive it
+            pass
 
         return
 
