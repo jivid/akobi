@@ -6,7 +6,7 @@ from akobi.lib.redis_client import redis_client
 
 class HeartbeatHandler(BaseEventHandler):
 
-    def handle(self, message, interviews):
+    def handle(self, message, interviews, *args, **kwargs):
         interview_id = message["interviewID"]
         client_id = message["clientID"]
         redis = redis_client.get_redis_instance()
@@ -28,6 +28,5 @@ class HeartbeatHandler(BaseEventHandler):
     #        if ((datetime.datetime.now() - conn.lastHeartbeat) > 60000):
     #            offline_participants.add(conn)
     #    return offline_participants
-
 
 registry.register("Heartbeat", HeartbeatHandler)
