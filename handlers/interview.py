@@ -10,6 +10,8 @@ from akobi.lib.applications.heartbeat import HeartbeatApplication
 from akobi.lib.initializer import Initializer
 from akobi.lib.interviews import ongoing_interviews
 from akobi.lib.applications import notes
+from akobi.lib.event_handlers.registry import registry
+from akobi.lib.event_handlers import heartbeat, collabedit
 
 
 class InterviewHandler(WebSocketHandler):
@@ -61,6 +63,7 @@ class InterviewHandler(WebSocketHandler):
                                     message["type"]))
 
         application.handle_message(message, ongoing_interviews)
+
 
     def on_close(self):
         log.debug("Web socket connection closed.")

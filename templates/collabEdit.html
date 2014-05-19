@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>CollabEdit</title>
-  <script src="file:///Users/djbrick/git/akobi/templates/scripts/diff_match_patch_uncompressed.js"></script>
+  <script src="http://54.186.180.211/static/scripts/diff_match_patch.js"></script>
   <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 </head>
 <body>
@@ -12,16 +12,33 @@
     var interviewID = window.location.pathname.split('/')[2];
     var webSocket = new WebSocket('ws://localhost:8888/i/' + interviewID + '/socket');
 
+    // Setup Heartbeats
     var heartbeat = {
         datetime: "",
         type: "heartbeat",
         clientID: "",
         interviewID: interviewID,
-        data : {}
+        data: {}
     }
 
-    setInterval(function(){webSocket.send(JSON.stringify(heartbeat))}, 1000)
+    // Send CollabEdit Initialization
+    // TODO make this dependent on text being entered
+    var initialization = {
+        datetime : "",
+        type: "collabedit",
+        clientID: "",
+        interviewID: interviewID,
+        data: {
+          type: 0,
+          data: {}
+        }
+    }
 
+    webSocket.onopen = function(){
+        webSocket.send(JSON.stringify(heartbeat))
+        setInterval(function(){webSocket.send(JSON.stringify(heartbeat))}, 1000)
+        webSocket.send(JSON.stringify(initialization))
+    }
 
   	var diffObj = new diff_match_patch();
   	var text1Shadow = "";
@@ -34,26 +51,32 @@
       switch (msg.type){
         case 1:
           to_send = {
-            type : "collabedit",
-            data : {
-              type : 2,
-              data : get_diff()
+            datetime: "",
+            type: "collabedit",
+            clientID: "",
+            interviewID: interviewID,
+            data: {
+              type: 2,
+              data: get_diff()
             } 
           }
           console.log("sending msg: " + JSON.stringify(to_send));
-          socket.send(JSON.stringify(to_send));
+          webSocket.send(JSON.stringify(to_send));
           break;
         case 3:
           console.log("applying diff: " + JSON.stringify(msg.data));
           apply_diff(msg.data);
           ack = {
-            types : "collabedit",
+            datetime: "",
+            type : "collabedit",
+            clientID: "",
+            interviewID: interviewID,
             data : {
               type : 4,
               data : {}
             }
           }
-          socket.send(JSON.stringify(ack));
+          webSocket.send(JSON.stringify(ack));
           break;
       }
     }

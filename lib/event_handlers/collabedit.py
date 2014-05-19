@@ -1,3 +1,4 @@
+import json
 from tornado.ioloop import IOLoop
 from akobi.lib.event_handlers.registry import registry
 from akobi.lib.event_handlers.base import BaseEventHandler
@@ -12,69 +13,77 @@ class CollabEditHandler(BaseEventHandler):
     DIFF_WAIT_CL2 = 4
     ACK_WAIT_CL2 = 5
 
-    state = 0
+    def __init__(self):
+        self.sockets = []
+        self.interview_id = 0
+        self.interview_states = {}
 
-    interviews = {}
+    def handle(self, message, interview, interview_id, *args, **kwargs):
 
-    def handle(self, message, interviews, *args, **kwargs):
-        # Collab Edit specific message data is in the data field.    
+        self.sockets = list(interview)
+        self.interview_id = interview_id
+
+         # Collab Edit specific message data is in the data field. 
         message = message["data"]
-        CollabEditHandler.interviews = interviews
-        if len(interviews) > 2:
-            print("Too many users connected to collabedit")
+        if len(self.sockets) != 2:
+            # We only want to do anything if we have 2 connected clients.
+            return
 
-        print("got message " + message)
-        if CollabEditHandler.state == DIFF_WAIT_CL1:
-            print("state was waiting for diff from client 1 now sending diff to client 2")
-            wait_for_diff_then_send(json.loads(message)["data"], interviews[1])
+        if self.interview_id not in self.interview_states:
+            self.interview_states[self.interview_id] = CollabEditHandler.INITIAL
+            self.start_synchronization_loop()
+          
+        if self.interview_states[self.interview_id] == CollabEditHandler.DIFF_WAIT_CL1:
+            self.wait_for_diff_then_send(message["data"], self.sockets[1])
+            self.interview_states[self.interview_id]  = self.interview_states[self.interview_id] + 1
 
-        elif CollabEditHandler.state == ACK_WAIT_CL1:
-            print("state was waiting for ack from client 1 now asking for diff from client 2")
-            wait_for_ack_then_ask_diff(interviews[1])
+        elif self.interview_states[self.interview_id]  == CollabEditHandler.ACK_WAIT_CL1:
+            self.wait_for_ack_then_ask_diff(self.sockets[1])
+            self.interview_states[self.interview_id]  = self.interview_states[self.interview_id] + 1
 
-        elif CollabEditHandler.state == DIFF_WAIT_CL2:
-            print("state was waiting for diff from client 2 now sending diff to client 1")
-            wait_for_diff_then_send(json.loads(message)["data"], interviews[0])
+        elif self.interview_states[self.interview_id]  == CollabEditHandler.DIFF_WAIT_CL2:
+            self.wait_for_diff_then_send(message["data"], self.sockets[0])
+            self.interview_states[self.interview_id] = self.interview_states[self.interview_id]  + 1
 
-        elif CollabEditHandler.state == ACK_WAIT_CL2:
-            print("state was waiting for ack from client 2 going to initial state")
-            wait_for_ack()
-            IOLoop.instance().add_timeout(.1, restart_synchronization_loop)
+        elif self.interview_states[self.interview_id]  == CollabEditHandler.ACK_WAIT_CL2:
+            self.interview_states[self.interview_id]  = CollabEditHandler.INITIAL
+            IOLoop.instance().add_timeout(.1, self.start_synchronization_loop)
 
         else:
-            print "got message while in invalid state"
+            print "got message : "  + str(message) + "while in invalid state: " + str(self.interview_states[self.interview_id])
         
-    def write_message(message, socket):
-        print("Writing message: " + message)
-        socket.write_message(message)
+    def write_message(self, message, socket):
+        #  print("Writing message: " + str(message))
+        package = {}
+        package["datetime"] = ""
+        package["type"] = "collabedit"
+        package["clientId"] = ""
+        package["interviewID"] = self.interview_id
+        package["data"] = message
+        socket.write_message(json.dumps(package))
 
-    def ask_diff(socket):
+    def ask_diff(self, socket):
         message = {}
         message["type"] = 1
         message["data"] = None
-        write_message(json.dumps(message), socket)
-        state = state + 1
-
-    def wait_for_diff_then_send(diff, socket):
+        self.write_message(message, socket)
+    def wait_for_diff_then_send(self, diff, socket):
         message = {}
         message["type"] = 3
         message["data"] = diff
-        write_message(json.dumps(message), socket)
-        state = state + 1
+        self.write_message(message, socket)
 
-    def wait_for_ack_then_ask_diff(socket):
+    def wait_for_ack_then_ask_diff(self, socket):
         message = {}
         message["type"] = 1
         message["data"] = None
-        write_message(json.dumps(message), socket)
-        state = state + 1
+        self.write_message(message, socket)
 
-    def wait_for_ack():
-        state = States.INITIAL
-
-    def restart_synchronization_loop():
+    def start_synchronization_loop(self):
         print("")
-        print("starting again asking for diff from client 1")
-        ask_diff(CollabEditHandler.interviews[0])
+        print("starting synchronization loop asking for diff from client 1")
+        print str(self.sockets[0])
+        self.ask_diff(self.sockets[0])
+        self.interview_states[self.interview_id] = self.interview_states[self.interview_id] + 1
 
-registry.register("CollabEdit", CollabEditHandler)
+registry.register("Collabedit", CollabEditHandler())
