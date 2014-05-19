@@ -9,7 +9,7 @@ class InterviewHandler(WebSocketHandler):
 
     def open(self):
         print "Web socket connection opened."
-        
+
     def on_message(self, message):
         print "Received from web socket: %s" % str(message)
         message = json.loads(message)
