@@ -15,7 +15,7 @@ class InterviewHandler(WebSocketHandler):
             InterviewHandler.ongoing_interviews[interview_id] = set()
 
         InterviewHandler.ongoing_interviews[interview_id].add(self)
-        
+
     def on_message(self, message):
         print "Received from web socket: %s" % str(message)
         message = json.loads(message)
