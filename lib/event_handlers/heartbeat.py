@@ -1,5 +1,5 @@
-from lib.event_handlers.registry import registry
-from lib.event_handlers.base import BaseEventHandler
+from akobi.lib.event_handlers.registry import registry
+from akobi.lib.event_handlers.base import BaseEventHandler
 
 
 class HeartbeatHandler(BaseEventHandler):

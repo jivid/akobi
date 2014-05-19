@@ -11,11 +11,11 @@
   var sock1 = new WebSocket('ws://localhost:8888/interview/socket');
 
   var heartbeat = {
-      datetime: "",
+      datetime: {},
       type: "heartbeat",
-      clientID: "",
-      interviewID: "",
-      data : ""
+      clientID: {},
+      interviewID: {},
+      data : {}
   }
 
   setInterval(function(){sock1.send(JSON.stringify(heartbeat))}, 1000);
