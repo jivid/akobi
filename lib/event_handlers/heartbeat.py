@@ -4,8 +4,8 @@ from akobi.lib import log
 
 
 class HeartbeatHandler(BaseEventHandler):
-    def handle(self, message, interviews):
-        log.info_log(
-            'Got Heartbeat for interview:' + message["interviewID"])
+
+    def handle(self, message, *args, **kwargs):
+        print("Got Heartbeat")
 
 registry.register("Heartbeat", HeartbeatHandler)
