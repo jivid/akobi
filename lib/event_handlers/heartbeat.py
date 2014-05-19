@@ -3,7 +3,7 @@ from akobi.lib.event_handlers.base import BaseEventHandler
 
 
 class HeartbeatHandler(BaseEventHandler):
-    def handle(self, message, *args, **kargs):
+    def handle(self, message, *args, **kwargs):
         print("Got Heartbeat")
 
 registry.register("Heartbeat", HeartbeatHandler)
