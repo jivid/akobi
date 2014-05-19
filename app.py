@@ -2,6 +2,7 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 from akobi.handlers import interview, index
+from akobi.lib import log
 
 settings = {'auto_reload': True, 'debug': True}
 
