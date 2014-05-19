@@ -5,6 +5,5 @@ from lib.event_handlers.base import BaseEventHandler
 class HeartbeatHandler(BaseEventHandler):
     def handle(self, message):
         print("Got Heartbeat")
-        pass
 
 registry.register("Heartbeat", HeartbeatHandler)

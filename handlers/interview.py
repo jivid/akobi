@@ -1,9 +1,8 @@
+import json
 from tornado.websocket import WebSocketHandler
+from lib import utils
 from lib.event_handlers.registry import registry
 from lib.event_handlers import heartbeat
-from lib import utils
-
-import json
 
 
 class InterviewHandler(WebSocketHandler):
