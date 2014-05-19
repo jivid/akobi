@@ -1,14 +1,15 @@
 from akobi.lib.event_handlers.registry import registry
 from akobi.lib.event_handlers.base import BaseEventHandler
 
-import redis
+from akobi.lib.redis_client import redis_client
 
 
 class HeartbeatHandler(BaseEventHandler):
+
     def handle(self, message, interviews):
         interview_id = message["interviewID"]
         client_id = message["clientID"]
-
+        redis = redis_client.get_redis_instance()
         #print(
         #    "Got Heartbeat for interview '" + interview_id +
         #    "' and client '" + client_id + "'")
@@ -17,6 +18,9 @@ class HeartbeatHandler(BaseEventHandler):
         for socket in sockets:
             if socket.client_id == client_id:
                 socket.write_message("Heartbeat Successful")
+
+        redis.hset("heartbeat", client_id, message['datetime'])
+        print(redis.hget("heartbeat", client_id))
 
     #def find_offline_participants(self, conns):
     #    offline_participants = set()
