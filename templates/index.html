@@ -16,26 +16,29 @@
     
     // TODO (Steve): Handle heartbeat response properly
     // not just static text
-    if(evt.data == "Heartbeat Successful") {
+    type = JSON.parse(evt.data).type;
+    if(type == 'heartbeat_response') {
       //do nothing for now
       return;
     }
 
-    if (clientID == '') {
-      clientID = JSON.parse(evt.data).client_id;
+    if (type == 'open_response') {
+      clientID = JSON.parse(evt.data).clientID;
+
+      setInterval(function(){
+        var curDate = new Date()
+        webSocket.send(JSON.stringify({
+          datetime: curDate,
+          type: "heartbeat",
+          clientID: clientID,
+          interviewID: interviewID,
+          data : {}
+      }))}, 5000);
       return;
     }
   };
 
-  setInterval(function(){
-    var curDate = new Date()
-    webSocket.send(JSON.stringify({
-      datetime: curDate,
-      type: "heartbeat",
-      clientID: clientID,
-      interviewID: interviewID,
-      data : {}
-  }))}, 5000);
+  
 
   </script>
 </body>
