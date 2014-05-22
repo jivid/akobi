@@ -4,7 +4,7 @@ logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s]"
                                  + " [%(levelname)-5.5s] %(message)s")
 rootLogger = logging.getLogger()
 
-fileHandler = logging.FileHandler(filename='logs/log.log')
+fileHandler = logging.FileHandler(filename='akobi_output.log')
 fileHandler.setFormatter(logFormatter)
 rootLogger.addHandler(fileHandler)
 
