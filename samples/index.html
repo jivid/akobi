@@ -23,6 +23,14 @@
   webSocket.onmessage = function (evt) {
     console.log('Received from web socket: ' + evt.data);
     
+    // TODO (Steve): Handle heartbeat response properly
+    // not just static text
+    if(evt.data == "Heartbeat Successful") {
+      //do nothing for now
+      return;
+    }
+
+
     if (typeof clientID === 'undefined') {
       clientID = JSON.parse(evt.data).client_id;
       return;
@@ -42,6 +50,15 @@
     sendWebSocketRequest(sendDataRequest);
   });
 
+  setInterval(function() {
+      var sendDataRequest = {
+        interview_id: interviewID,
+        client_id: clientID,
+        type: 'heartbeat',
+        data: 'Heartbeat send'
+      };
+      sendWebSocketRequest(sendDataRequest);
+    }, 15000);
   </script>
 </body>
 </html>
