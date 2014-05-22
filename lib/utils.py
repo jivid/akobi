@@ -5,6 +5,9 @@ from akobi.lib.event_handlers.base import BaseEventHandler
 
 def message_type_to_handler(message_type):
     words = message_type.split('_')
+    if (len(words) > 1):
+        raise RuntimeError("Attempted to dispatch two handlers!"
+                           + "Message: %s", message_type)
     handler = "".join([w.title() for w in words])
     return handler
 

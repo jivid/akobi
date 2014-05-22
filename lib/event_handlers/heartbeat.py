@@ -1,4 +1,4 @@
-import logging
+from akobi import log
 from akobi.lib.event_handlers.registry import registry
 from akobi.lib.event_handlers.base import BaseEventHandler
 
@@ -6,6 +6,6 @@ from akobi.lib.event_handlers.base import BaseEventHandler
 class HeartbeatHandler(BaseEventHandler):
 
     def handle(self, message, *args, **kwargs):
-        logging.info("Got Heartbeat")
+        log.info("Got Heartbeat")
 
 registry.register("Heartbeat", HeartbeatHandler)

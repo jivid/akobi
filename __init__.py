@@ -1,4 +1,17 @@
 import logging
 
-logging.basicConfig(
-    format='%(levelname)s:%(message)s', level=logging.INFO)
+logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s]"
+                                 + " [%(levelname)-5.5s] %(message)s")
+rootLogger = logging.getLogger()
+
+fileHandler = logging.FileHandler(filename='logs/log.log')
+fileHandler.setFormatter(logFormatter)
+rootLogger.addHandler(fileHandler)
+
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
+rootLogger.addHandler(consoleHandler)
+
+rootLogger.setLevel(logging.DEBUG)
+
+log = rootLogger
