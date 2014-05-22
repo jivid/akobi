@@ -7,18 +7,18 @@ logger-configuration-to-log-to-file-and-print-to-stdout
 
 import logging
 
-logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s]"
-                                 + " [%(levelname)-5.5s] %(message)s")
-rootLogger = logging.getLogger()
+log_formatter = logging.Formatter("%(asctime)s [%(threadName)s]"
+                                 + " [%(levelname)s] %(message)s")
+root_logger = logging.getLogger()
 
-fileHandler = logging.FileHandler(filename='akobi_output.log')
-fileHandler.setFormatter(logFormatter)
-rootLogger.addHandler(fileHandler)
+file_handler = logging.FileHandler(filename='akobi_output.log')
+file_handler.setFormatter(log_formatter)
+root_logger.addHandler(file_handler)
 
-consoleHandler = logging.StreamHandler()
-consoleHandler.setFormatter(logFormatter)
-rootLogger.addHandler(consoleHandler)
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(log_formatter)
+root_logger.addHandler(console_handler)
 
-rootLogger.setLevel(logging.DEBUG)
+root_logger.setLevel(logging.INFO)
 
-log = rootLogger
+log = root_logger
