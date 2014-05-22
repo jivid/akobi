@@ -23,10 +23,12 @@ class HeartbeatHandler(BaseEventHandler):
                     'interviewID': interview_id,
                     'data': {}
                     }
-        try:
-            sockets = interviews[interview_id]
-        except KeyError, e:
-            logging.error("Could not find interview ID")
+
+        if not interview_id in interviews:
+            logging.error("Could not find interview ID '%s'" % (interview_id))
+            return
+
+        sockets = interviews[interview_id]
 
         found = False
         for socket in sockets:
@@ -37,7 +39,7 @@ class HeartbeatHandler(BaseEventHandler):
                 socket.write_message(json.dumps(response))
                 found = True
         if not found:
-            logging.error("No client with id '%s' in interview with id '%s'
+            logging.error("No client with id '%s' in interview with id '%s'"
                           % (client_id, interview_id))
 
         redis.hset("heartbeat", client_id, message['datetime'])
