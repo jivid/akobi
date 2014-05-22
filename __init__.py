@@ -1,3 +1,10 @@
+'''
+Logging component. Implemented according to:
+
+http://stackoverflow.com/questions/13733552/
+logger-configuration-to-log-to-file-and-print-to-stdout
+'''
+
 import logging
 
 logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s]"
