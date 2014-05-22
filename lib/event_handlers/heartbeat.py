@@ -2,10 +2,10 @@ import logging
 import datetime
 import json
 
-from akobi import log
 from akobi.lib.event_handlers.registry import registry
 from akobi.lib.event_handlers.base import BaseEventHandler
 from akobi.lib.redis_client import redis_client
+from akobi import log
 
 
 class HeartbeatHandler(BaseEventHandler):
@@ -26,7 +26,7 @@ class HeartbeatHandler(BaseEventHandler):
                     'data': {}
                     }
 
-        if not interview_id in interviews:
+        if interview_id not in interviews:
             logging.error("Could not find interview ID '%s'" % (interview_id))
             return
 
