@@ -5,8 +5,8 @@ import uuid
 from tornado.websocket import WebSocketHandler
 from akobi import log
 from akobi.lib import utils
-from akobi.lib.event_handlers.registry import registry
-from akobi.lib.event_handlers import heartbeat
+from akobi.lib.applications.registry import registry
+from akobi.lib.applications import heartbeat
 
 
 class InterviewHandler(WebSocketHandler):
@@ -33,8 +33,9 @@ class InterviewHandler(WebSocketHandler):
         message = json.loads(message)
         log.debug("Received message from web socket. InterviewID %s" %
                   message['interviewID'])
-        handler = registry.find(utils.message_type_to_handler(message['type']))
-        handler().handle(
+        application = registry.find(
+            utils.message_type_to_application_name(message["type"]))
+        application().handle_message(
             message, InterviewHandler.ongoing_interviews)
 
     def on_close(self):
