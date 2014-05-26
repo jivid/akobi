@@ -5,11 +5,13 @@ import json
 from akobi.lib.event_handlers.registry import registry
 from akobi.lib.event_handlers.base import BaseEventHandler
 from akobi.lib.redis_client import redis_client
+from akobi import log
 
 
 class HeartbeatHandler(BaseEventHandler):
 
     def handle(self, message, interviews, *args, **kwargs):
+        log.debug("Got Heartbeat")
         interview_id = message['interviewID']
         client_id = message['clientID']
         redis = redis_client.get_redis_instance()
@@ -24,7 +26,7 @@ class HeartbeatHandler(BaseEventHandler):
                     'data': {}
                     }
 
-        if not interview_id in interviews:
+        if interview_id not in interviews:
             logging.error("Could not find interview ID '%s'" % (interview_id))
             return
 
