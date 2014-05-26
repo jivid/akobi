@@ -8,7 +8,7 @@ settings = {'auto_reload': True, 'debug': True}
 app = Application([
     (r'/', index.IndexHandler),
     (r'/setup_complete', index.SetupHandler),
-    (r'/i/(\w+)/', index.InterviewHandler),
+    (r'/i/(\w+)', index.InterviewHandler),
     (r'/i/(\w+)/socket', interview.InterviewHandler),
     ], **settings)
 
