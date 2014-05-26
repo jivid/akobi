@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tornado WebSocket Sample</title>
+  <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
+</head>
+<body>
+  <script>
+  var interviewID = window.location.pathname.split('/')[2];
+  var webSocket = new WebSocket('ws://localhost:8888/i/' + interviewID + '/socket');
+  var clientID = '';
+
+  webSocket.onmessage = function (evt) {
+    console.log('Received from web socket: ' + evt.data);
+    
+    // TODO (Steve): Handle heartbeat response properly
+    // not just static text
+    type = JSON.parse(evt.data).type;
+    if(type == 'heartbeat_response') {
+      //do nothing for now
+      return;
+    }
+
+    if (type == 'open_response') {
+      clientID = JSON.parse(evt.data).clientID;
+
+      setInterval(function(){
+        var curDate = new Date()
+        webSocket.send(JSON.stringify({
+          datetime: curDate,
+          type: "heartbeat",
+          clientID: clientID,
+          interviewID: interviewID,
+          data : {}
+      }))}, 5000);
+      return;
+    }
+  };
+
+  
+
+  </script>
+</body>
+</html>
+
