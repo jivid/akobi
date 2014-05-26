@@ -22,7 +22,7 @@ registry.register("TimedMessageHandler", TimedMessageHandler)
 
 timed = registry.find("TimedMessageHandler")()
 timed_new = registry.find("TimedMessageHandler")()
-add_callback(timed, 6, 5)
-add_callback(timed_new, 3, 10)
+handle_message_as_callback(timed, 6, 5)
+handle_message_as_callback(timed_new, 3, 10)
 
 IOLoop.instance().start()

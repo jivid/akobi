@@ -24,9 +24,10 @@ class ApplicationRegistry(object):
             application = self.applications[application_name]
         else:
             logging.error(
-                "Tried to find unregistered application: " % application_name)
-            application = None
-
+                "Tried to find unregistered application: %s"
+                % (application_name))
+            raise KeyError()
+            
         return application
 
 registry = ApplicationRegistry()

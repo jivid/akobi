@@ -10,10 +10,11 @@ def message_type_to_application_name(message_type):
 
 
 # Adds the application msg handler to the bottom of the event queue.
-def add_callback(application, *args, **kwargs):
+def handle_message_as_callback(application, *args, **kwargs):
     if not isinstance(application, BaseApplication):
-            raise RuntimeError("Application passed to async_handle must subclass "
-                               + "BaseApplication")
+            raise RuntimeError(
+                "Application passed to async_handle must subclass "
+                + "BaseApplication")
 
     if not hasattr(handler, "handle"):
         raise AttributeError("%s doesn't have a handle() method" %
