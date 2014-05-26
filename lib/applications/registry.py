@@ -41,7 +41,7 @@ class ApplicationRegistry(object):
 
     def init_interview(self, interview_id):
         if interview_id not in self.interviews:
-            raise KeyError("Interview id has not been added to registry")
+            raise KeyError("Interview ID has not been added to registry")
 
         for app_name in self.interviews[interview_id]:
             self._create_app_instance(interview_id, app_name)
@@ -53,7 +53,7 @@ class ApplicationRegistry(object):
 
     def find(self, interview_id, app_name):
         if interview_id not in self.interviews:
-            raise KeyError("Interview id is not present in the registry")
+            raise KeyError("Interview ID is not present in the registry")
 
         if app_name not in self.interviews[interview_id]:
             raise KeyError("Application name is not present in the registry")
