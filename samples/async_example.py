@@ -3,12 +3,12 @@ import time
 from tornado import gen
 from tornado.ioloop import IOLoop
 
-from akobi.lib.event_handlers.base import BaseEventHandler
-from akobi.lib.event_handlers.registry import registry
-from akobi.lib.utils import add_callback
+from akobi.lib.applications.base import BaseApplication
+from akobi.lib.applications.registry import registry
+from akobi.lib.utils import handle_message_as_callback
 
 
-class TimedMessageHandler(BaseEventHandler):
+class TimedMessageHandler(BaseApplication):
     @gen.engine
     def handle(self, iters, delay, *args, **kwargs):
         for i in range(iters):

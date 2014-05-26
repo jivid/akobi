@@ -16,7 +16,7 @@ def handle_message_as_callback(application, *args, **kwargs):
                 "Application passed to async_handle must subclass "
                 + "BaseApplication")
 
-    if not hasattr(handler, "handle"):
+    if not hasattr(application, "handle_message"):
         raise AttributeError("%s doesn't have a handle() method" %
                              handler.__class__.__name__)
 
