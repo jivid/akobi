@@ -1,4 +1,3 @@
-import datetime
 import json
 import uuid
 
@@ -20,13 +19,8 @@ class InterviewHandler(WebSocketHandler):
             InterviewHandler.ongoing_interviews[interview_id] = set()
 
         self.client_id = uuid.uuid4()
-        response = {'datetime': str(datetime.datetime.now()),
-                    'type': "open_response",
-                    'clientID': str(self.client_id),
-                    'interviewID': interview_id,
-                    'data': {}
-                    }
-        self.write_message(json.dumps(response))
+        self.write_message(utils.create_message("open_response",
+                           str(self.client_id), interview_id))
         InterviewHandler.ongoing_interviews[interview_id].add(self)
 
     def on_message(self, message):
