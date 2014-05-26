@@ -1,13 +1,17 @@
+import logging
+import datetime
+import json
+
 from akobi import log
 from akobi.lib import utils
-from akobi.lib.event_handlers.registry import registry
-from akobi.lib.event_handlers.base import BaseEventHandler
+from akobi.lib.applications.registry import registry
+from akobi.lib.applications.base import BaseApplication
 from akobi.lib.redis_client import redis_client
 
 
-class HeartbeatHandler(BaseEventHandler):
+class HeartbeatApplication(BaseApplication):
 
-    def handle(self, message, interviews, *args, **kwargs):
+    def handle_message(self, message, interviews, *args, **kwargs):
         log.debug("Got Heartbeat")
         interview_id = message['interviewID']
         client_id = message['clientID']
@@ -38,4 +42,4 @@ class HeartbeatHandler(BaseEventHandler):
         redis.hset("heartbeat", client_id, message['datetime'])
         log.debug(redis.hget("heartbeat", client_id))
 
-registry.register("Heartbeat", HeartbeatHandler)
+registry.register("Heartbeat", HeartbeatApplication)
