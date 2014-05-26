@@ -1,3 +1,5 @@
+import datetime
+import json
 from tornado.ioloop import IOLoop
 
 from akobi.lib.event_handlers.base import BaseEventHandler
@@ -19,3 +21,14 @@ def async_handle(handler, *args, **kwargs):
                              handler.__class__.__name__)
 
     IOLoop.instance().add_callback(handler.handle, *args, **kwargs)
+
+
+# Every arg after interview_id should be in the form <key>="<value>"
+# to be placed into data field of message
+def create_message(message_type, client_id, interview_id, *args, **kwargs):
+    message = {'datetime': str(datetime.datetime.now()),
+               'type': message_type,
+               'clientID': client_id,
+               'interviewID': interview_id,
+               'data': kwargs}
+    return json.dumps(message)
