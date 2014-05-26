@@ -22,7 +22,7 @@ def handle_message_as_callback(application, *args, **kwargs):
         raise AttributeError("%s doesn't have a handle() method" %
                              handler.__class__.__name__)
 
-    IOLoop.instance().add_callback(handler.handle, *args, **kwargs)
+    IOLoop.instance().add_callback(application.handle_message, *args, **kwargs)
 
 
 # Every arg after interview_id should be in the form <key>="<value>"
