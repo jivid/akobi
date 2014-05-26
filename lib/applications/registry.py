@@ -1,4 +1,4 @@
-import logging
+from akobi import log
 
 __all__ = ('registry',)
 
@@ -23,11 +23,11 @@ class ApplicationRegistry(object):
         if application_name in self.applications:
             application = self.applications[application_name]
         else:
-            logging.error(
+            log.error(
                 "Tried to find unregistered application: %s"
                 % (application_name))
             raise KeyError()
-            
+
         return application
 
 registry = ApplicationRegistry()
