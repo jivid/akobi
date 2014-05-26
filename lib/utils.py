@@ -1,21 +1,23 @@
 from tornado.ioloop import IOLoop
 
-from akobi.lib.event_handlers.base import BaseEventHandler
+from akobi.lib.applications.base import BaseApplication
 
 
-def message_type_to_handler(message_type):
+def message_type_to_application_name(message_type):
     words = message_type.split('_')
-    handler = "".join([w.title() for w in words])
-    return handler
+    application_name = "".join([w.title() for w in words])
+    return application_name
 
 
-def async_handle(handler, *args, **kwargs):
-    if not isinstance(handler, BaseEventHandler):
-            raise RuntimeError("Handler passed to async_handle must subclass "
-                               + "BaseEventHandler")
+# Adds the application msg handler to the bottom of the event queue.
+def handle_message_as_callback(application, *args, **kwargs):
+    if not isinstance(application, BaseApplication):
+            raise RuntimeError(
+                "Application passed to async_handle must subclass "
+                + "BaseApplication")
 
-    if not hasattr(handler, "handle"):
+    if not hasattr(application, "handle_message"):
         raise AttributeError("%s doesn't have a handle() method" %
                              handler.__class__.__name__)
 
-    IOLoop.instance().add_callback(handler.handle, *args, **kwargs)
+    IOLoop.instance().add_callback(application.handle, *args, **kwargs)

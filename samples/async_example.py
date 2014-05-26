@@ -3,12 +3,12 @@ import time
 from tornado import gen
 from tornado.ioloop import IOLoop
 
-from akobi.lib.event_handlers.base import BaseEventHandler
-from akobi.lib.event_handlers.registry import registry
-from akobi.lib.utils import async_handle
+from akobi.lib.applications.base import BaseApplication
+from akobi.lib.applications.registry import registry
+from akobi.lib.utils import handle_message_as_callback
 
 
-class TimedMessageHandler(BaseEventHandler):
+class TimedMessageHandler(BaseApplication):
     @gen.engine
     def handle(self, iters, delay, *args, **kwargs):
         for i in range(iters):
@@ -22,8 +22,7 @@ registry.register("TimedMessageHandler", TimedMessageHandler)
 
 timed = registry.find("TimedMessageHandler")()
 timed_new = registry.find("TimedMessageHandler")()
-
-async_handle(timed, 6, 5)
-async_handle(timed_new, 3, 10)
+handle_message_as_callback(timed, 6, 5)
+handle_message_as_callback(timed_new, 3, 10)
 
 IOLoop.instance().start()
