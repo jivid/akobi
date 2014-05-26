@@ -17,8 +17,10 @@ class Initializer(object):
 
     @staticmethod
     def _instantiate_for_interview(interview_id):
+        registry.init_interview(interview_id)
         pass
 
     @staticmethod
     def _setup_apps(interview_id);
+        # Find apps from registry and call their on_joins as callbacks
         pass
