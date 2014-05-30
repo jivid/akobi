@@ -68,7 +68,7 @@ class ApplicationRegistry(object):
         if self.interviews[interview_id][app_name] is None:
             raise TypeError("Application is not instantiated")
 
-        return self.interviewss[interview_id][app_name]
+        return self.interviews[interview_id][app_name]
 
 
 registry = ApplicationRegistry()
