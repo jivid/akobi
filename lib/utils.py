@@ -1,5 +1,7 @@
 import datetime
 import json
+import random
+
 from tornado.ioloop import IOLoop
 
 from akobi.lib.applications.base import BaseApplication
@@ -34,3 +36,9 @@ def create_message(message_type, client_id, interview_id, *args, **kwargs):
                'interviewID': interview_id,
                'data': kwargs}
     return json.dumps(message)
+
+
+def make_random_string(length=12,
+                       allowed_chars='abcdefghijklmnopqrstuvwxyz'
+                                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
+    return ''.join([random.choice(allowed_chars) for i in range(length)])

@@ -1,7 +1,6 @@
-import string
-import random
 from tornado.web import RequestHandler
 
+from akobi.lib.utils import make_random_string
 
 class InterviewHandler(RequestHandler):
     def get(self, *args, **kwargs):
@@ -22,9 +21,7 @@ class SetupHandler(RequestHandler):
 
         # TODO: We should probably do this more like a product serial than
         # just a random id.
-        interview_id_list = [random.choice(
-            string.ascii_letters + string.digits) for n in xrange(30)]
-        interview_id = "".join(interview_id_list)
+        interview_id = make_random_string(length=30)
 
         # Currently the notes /  collab_code variables are just displayed back
         # to the user, and not used for anything.
