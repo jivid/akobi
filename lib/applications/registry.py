@@ -19,9 +19,17 @@ class ApplicationRegistry(object):
         self.__dict__ = self.__shared_state
 
     def register(self, name, application):
+        """
+        Register the application in the 'available' dict. After this point,
+        the application will be available for adding to specific interviews.
+        We use a last-write-wins approach here where if an application is
+        registered twice under the same name, the second register call is
+        the one that persists
+        """
         if not issubclass(application, BaseApplication):
-            raise TypeError("App doesn't subclass BaseApplication")
-
+            raise TypeError("%s isn't a descendent of BaseApplication!"
+                            % application)
+            
         self.available[name] = application
 
     def register_to_interview(self, interview_id, app_name):
@@ -49,7 +57,6 @@ class ApplicationRegistry(object):
     def _create_app_instance(self, interview_id, app_name):
         app_instance = self.available[app_name]()
         self.interviews[interview_id][app_name] = app_instance
-        log.info("Added app %s to interview %s" % interview_id, app_name)
 
     def find(self, interview_id, app_name):
         if interview_id not in self.interviews:
