@@ -22,14 +22,17 @@ class ApplicationRegistry(object):
         """
         Register the application in the 'available' dict. After this point,
         the application will be available for adding to specific interviews.
-        We use a last-write-wins approach here where if an application is
-        registered twice under the same name, the second register call is
-        the one that persists
+        We only allow an application name to be registered once. Re-using an
+        already used name will result in a TypeError
         """
         if not issubclass(application, BaseApplication):
             raise TypeError("%s isn't a descendent of BaseApplication!"
                             % application)
-            
+
+        if name in self.available:
+            raise TypeError("There is already an application registered with "
+                            "the name %s!" % name)
+
         self.available[name] = application
 
     def register_to_interview(self, interview_id, app_name):
