@@ -38,8 +38,12 @@ class InterviewHandler(WebSocketHandler):
         message = json.loads(message)
         log.debug("Received message from web socket. InterviewID %s" %
                   message['interviewID'])
-        application = registry.find(
-            utils.message_type_to_application_name(message["type"]))
+        '''
+        TODO (Divij): If message type is init add application to interview
+        '''
+        application = registry.find(message['interviewID'],
+                                    utils.message_type_to_application_name(
+                                    message["type"]))
         application().handle_message(
             message, InterviewHandler.ongoing_interviews)
 
