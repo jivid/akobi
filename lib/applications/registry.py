@@ -41,12 +41,6 @@ class ApplicationRegistry(object):
     def _add_interview(self, interview_id):
         self.interviews[interview_id] = {}
 
-    def apps_for_interview(self, interview_id):
-        if interview_id not in self.interviews:
-            return None
-
-        return self.interviews[interview_id]
-
     def init_interview(self, interview_id):
         if interview_id not in self.interviews:
             raise KeyError("Interview ID has not been added to registry")
