@@ -13,6 +13,10 @@ def message_type_to_application_name(message_type):
     return application_name
 
 
+def function_as_callback(function, *args, **kwargs):
+    IOLoop.instance().add_callback(function, *args, **kwargs)
+
+
 # Adds the application msg handler to the bottom of the event queue.
 def handle_message_as_callback(application, *args, **kwargs):
     if not isinstance(application, BaseApplication):
@@ -24,7 +28,7 @@ def handle_message_as_callback(application, *args, **kwargs):
         raise AttributeError("%s doesn't have a handle() method" %
                              handler.__class__.__name__)
 
-    IOLoop.instance().add_callback(application.handle_message, *args, **kwargs)
+    function_as_callback(application.handle_message, *args, **kwargs)
 
 
 # Every arg after interview_id should be in the form <key>="<value>"

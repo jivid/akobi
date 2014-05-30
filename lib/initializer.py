@@ -1,3 +1,10 @@
+from tornado import gen
+
+from akobi.lib.application.registry import registry
+from akobi.lib.interviews import ongoing_interviews
+from akobi.lib.utils import function_as_callback
+
+
 class Initializer(object):
     """
     Initialize the interview for a particular client. Called by the
@@ -5,14 +12,24 @@ class Initializer(object):
     message from the client (which happens whenever a new client joins)
     """
 
+    # This class is never going to be instantiated, so having a Borg here
+    # isn't going to work. Instead just use a class variable
     _apps_instantiated = False
 
     @classmethod
-    def initialize(cls, interview_id, client_id):
-        if not cls._apps_instantiated:
-            cls._instantiate_for_interview(interview_id)
+    @gen.engine
+    def initialize(cls, interview_id, client_sock):
+        # There's no need to re-check if the client belongs to the interview
+        # here. We assume that this is already done in the RequestHandler that
+        # receives the client's email ID for the first time. Just go ahead
+        # and add the socket to ongoing_interviews here
+        ongoing_interviews[interview_id].add(client_sock)
 
-        cls._setup_apps(interview_id)
+        # TODO: Figure out whether or not I want to gen.Tasks her
+        if not cls._apps_instantiated:
+            yield gen.Task(cls._instantiate_for_interview, interview_id)
+
+        yield gen.Task(cls._setup_apps, interview_id, client_sock)
         pass
 
     @staticmethod
@@ -21,6 +38,9 @@ class Initializer(object):
         pass
 
     @staticmethod
-    def _setup_apps(interview_id);
+    def _setup_apps(interview_id, client_sock):
         # Find apps from registry and call their on_joins as callbacks
-        pass
+        apps = registry.apps_for_interview(interview_id)
+
+        for app in apps:
+            function_as_callback(app.on_join, client_sock)
