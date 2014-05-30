@@ -1,3 +1,7 @@
+import datetime
+import json
+import random
+
 from tornado.ioloop import IOLoop
 
 from akobi.lib.applications.base import BaseApplication
@@ -20,4 +24,21 @@ def handle_message_as_callback(application, *args, **kwargs):
         raise AttributeError("%s doesn't have a handle() method" %
                              handler.__class__.__name__)
 
-    IOLoop.instance().add_callback(application.handle, *args, **kwargs)
+    IOLoop.instance().add_callback(application.handle_message, *args, **kwargs)
+
+
+# Every arg after interview_id should be in the form <key>="<value>"
+# to be placed into data field of message
+def create_message(message_type, client_id, interview_id, *args, **kwargs):
+    message = {'datetime': str(datetime.datetime.now()),
+               'type': message_type,
+               'clientID': client_id,
+               'interviewID': interview_id,
+               'data': kwargs}
+    return json.dumps(message)
+
+
+def make_random_string(length=12,
+                       allowed_chars='abcdefghijklmnopqrstuvwxyz'
+                                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
+    return ''.join([random.choice(allowed_chars) for i in range(length)])

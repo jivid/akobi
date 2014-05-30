@@ -6,7 +6,9 @@ from akobi.handlers import interview, index
 settings = {'auto_reload': True, 'debug': True}
 
 app = Application([
-    (r'/i/(\w+)/', index.IndexHandler),
+    (r'/', index.IndexHandler),
+    (r'/setup_complete', index.SetupHandler),
+    (r'/i/(\w+)', index.InterviewHandler),
     (r'/i/(\w+)/socket', interview.InterviewHandler),
     ], **settings)
 

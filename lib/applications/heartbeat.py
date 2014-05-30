@@ -2,10 +2,11 @@ import logging
 import datetime
 import json
 
+from akobi import log
+from akobi.lib import utils
 from akobi.lib.applications.registry import registry
 from akobi.lib.applications.base import BaseApplication
 from akobi.lib.redis_client import redis_client
-from akobi import log
 
 
 class HeartbeatApplication(BaseApplication):
@@ -15,19 +16,12 @@ class HeartbeatApplication(BaseApplication):
         interview_id = message['interviewID']
         client_id = message['clientID']
         redis = redis_client.get_redis_instance()
-        logging.debug(
+        log.debug(
             "Got Heartbeat for interview '%s' and client '%s'"
             % (interview_id, client_id))
 
-        response = {'datetime': str(datetime.datetime.now()),
-                    'type': 'heartbeat_response',
-                    'clientID': client_id,
-                    'interviewID': interview_id,
-                    'data': {}
-                    }
-
         if interview_id not in interviews:
-            logging.error("Could not find interview ID '%s'" % (interview_id))
+            log.error("Could not find interview ID '%s'" % (interview_id))
             return
 
         sockets = interviews[interview_id]
@@ -35,16 +29,17 @@ class HeartbeatApplication(BaseApplication):
         found = False
         for socket in sockets:
             if not hasattr(socket, 'client_id'):
-                logging.error("Socket in interview '%s' has no client ID"
-                              % (interview_id))
+                log.error("Socket in interview '%s' has no client ID"
+                          % (interview_id))
             if str(socket.client_id) == client_id:
-                socket.write_message(json.dumps(response))
+                socket.write_message(utils.create_message("heartbeat_response",
+                                     client_id, interview_id))
                 found = True
         if not found:
-            logging.error("No client with id '%s' in interview with id '%s'"
-                          % (client_id, interview_id))
+            log.error("No client with id '%s' in interview with id '%s'"
+                      % (client_id, interview_id))
 
         redis.hset("heartbeat", client_id, message['datetime'])
-        logging.debug(redis.hget("heartbeat", client_id))
+        log.debug(redis.hget("heartbeat", client_id))
 
 registry.register("Heartbeat", HeartbeatApplication)
