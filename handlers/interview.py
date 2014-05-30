@@ -41,10 +41,20 @@ class InterviewHandler(WebSocketHandler):
         '''
         TODO (Divij): If message type is init add application to interview
         '''
+
+        '''
+        TODO (Divij): Remove next two lines of code. Hack to make develop
+        stable.
+        '''
+        registry.register_to_interview(message['interviewID'],
+                                       utils.message_type_to_application_name(
+                                       message["type"]))
+        registry.init_interview(message['interviewID'])
+
         application = registry.find(message['interviewID'],
                                     utils.message_type_to_application_name(
                                     message["type"]))
-        application().handle_message(
+        application.handle_message(
             message, InterviewHandler.ongoing_interviews)
 
     def on_close(self):
