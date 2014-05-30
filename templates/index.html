@@ -8,9 +8,10 @@
   <h1>Create your interview</h1>
   <h2>(1) Choose your Modules</h2>
   <form action="/setup_complete" method="get">
-    <input type="checkbox" name="collab_code">Collaborative Coding</input>
+    {% for application in applications %}
+    <input type="checkbox" name="{{ application }}">{{ application }}</input>
     <br/>
-    <input type="checkbox" name="notes">Notes</input>
+    {% end %}
     <h2>(2) Profit</h2>
     <input type="submit" value="Profit">
   </form>
