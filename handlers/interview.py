@@ -44,7 +44,7 @@ class InterviewHandler(WebSocketHandler):
                       % (self.client_id, self.interview_id))
             registry.register_to_interview(self.interview_id, "Heartbeat")
             Initializer.initialize(message['interviewID'], self)
-            
+
             # We don't want to do anything else in this function so just return
             return
 
@@ -53,6 +53,6 @@ class InterviewHandler(WebSocketHandler):
                                     message["type"]))
 
         application().handle_message(message, ongoing_interviews)
-        
+
     def on_close(self):
         log.debug("Web socket connection closed.")
