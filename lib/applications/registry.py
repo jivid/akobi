@@ -52,9 +52,12 @@ class ApplicationRegistry(object):
 
     def init_interview(self, interview_id):
         if interview_id not in self.interviews:
-            raise KeyError("Interview ID has not been added to registry")
+            self._add_interview(interview_id)
 
-        for app_name in self.interviews[interview_id]:
+        interview_apps = self.apps_for_interview(interview_id)
+        for app_name in interview_apps:
+            log.info("Instantiating %s for interview %s" % (app_name,
+                     interview_id))
             self._create_app_instance(interview_id, app_name)
 
     def _create_app_instance(self, interview_id, app_name):

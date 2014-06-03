@@ -6,7 +6,8 @@ from tornado.websocket import WebSocketHandler
 from akobi import log
 from akobi.lib import utils
 from akobi.lib.applications.registry import registry
-from akobi.lib.applications import heartbeat
+from akobi.lib.applications.heartbeat import HeartbeatApplication
+from akobi.lib.initializer import Initializer
 from akobi.lib.interviews import ongoing_interviews
 
 
@@ -37,14 +38,21 @@ class InterviewHandler(WebSocketHandler):
         message = json.loads(message)
         log.debug("Received message from web socket. InterviewID %s" %
                   message['interviewID'])
-        '''
-        TODO (Divij): If message type is init add application to interview
-        '''
+        
+        if message['type'] == "init_interview":
+            log.debug("Initializing interview for client %s on interview %s"
+                      % (self.client_id, self.interview_id))
+            registry.register_to_interview(self.interview_id, "Heartbeat")
+            Initializer.initialize(message['interviewID'], self)
+            
+            # We don't want to do anything else in this function so just return
+            return
+
         application = registry.find(message['interviewID'],
                                     utils.message_type_to_application_name(
                                     message["type"]))
-        application().handle_message(
-            message, ongoing_interviews)
 
+        application().handle_message(message, ongoing_interviews)
+        
     def on_close(self):
         log.debug("Web socket connection closed.")

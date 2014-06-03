@@ -1,6 +1,7 @@
 from tornado import gen
 
-from akobi.lib.application.registry import registry
+from akobi import log
+from akobi.lib.applications.registry import registry
 from akobi.lib.interviews import ongoing_interviews
 from akobi.lib.utils import function_as_callback
 
@@ -23,24 +24,25 @@ class Initializer(object):
         # here. We assume that this is already done in the RequestHandler that
         # receives the client's email ID for the first time. Just go ahead
         # and add the socket to ongoing_interviews here
+        log.debug("Added client %s to ongoing interviews" % client_sock.client_id)
         ongoing_interviews[interview_id].add(client_sock)
 
         # TODO: Figure out whether or not I want to gen.Tasks her
         if not cls._apps_instantiated:
-            yield gen.Task(cls._instantiate_for_interview, interview_id)
+            log.debug("Need to instantiate apps")
+            cls._instantiate_for_interview(interview_id)
 
-        yield gen.Task(cls._setup_apps, interview_id, client_sock)
-        pass
+        cls._setup_apps(interview_id, client_sock)
 
     @staticmethod
     def _instantiate_for_interview(interview_id):
         registry.init_interview(interview_id)
-        pass
 
     @staticmethod
     def _setup_apps(interview_id, client_sock):
         # Find apps from registry and call their on_joins as callbacks
         apps = registry.apps_for_interview(interview_id)
 
-        for app in apps:
-            function_as_callback(app.on_join, client_sock)
+        for app_name in apps:
+            instance = apps[app_name]
+            function_as_callback(instance.on_join, client_sock)
