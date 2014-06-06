@@ -3,6 +3,8 @@ from tornado.web import RequestHandler
 from akobi.lib.utils import make_random_string
 from akobi.lib.applications.registry import registry
 
+applications = registry.available.keys()
+applications.remove("Heartbeat")
 
 class InterviewHandler(RequestHandler):
     def get(self, *args, **kwargs):
@@ -12,7 +14,7 @@ class InterviewHandler(RequestHandler):
 
 class IndexHandler(RequestHandler):
     def get(self, *args, **kwargs):
-        self.render('../templates/index.html', applications=registry.available)
+        self.render('../templates/index.html', applications=applications)
 
 
 class SetupHandler(RequestHandler):
@@ -20,9 +22,11 @@ class SetupHandler(RequestHandler):
 
         # HTML checkboxes pass nothing if they are unchecked.
         application_state = {}
-        for application in registry.available:
-            application_state[application] = self.get_query_argument(
-                application, default="off")
+
+        for application in applications:
+            if (self.get_query_argument(application)):
+                application_state[application] = self.get_query_argument(
+                                                                application)
 
         # TODO: We should probably do this more like a product serial than
         # just a random id.
