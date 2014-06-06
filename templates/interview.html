@@ -8,17 +8,18 @@
 </head>
 <h1>{{ applications }}</h1>
 <body>
-  <textarea id="notes" rows="4" cols="50">
-  Enter your interview notes here. They will be emailed to you at the end of the interview.
-  </textarea>
+  {% if applications["Notes"][0] == "on" %}
+    <textarea id="notes" rows="4" cols="50">
+    Enter your interview notes here. They will be emailed to you at the end of the interview.
+      </textarea>
+  {% end %}
   <script>
-
     function sendHeartbeat(){
         sendMessage("heartbeat", clientID, interviewID, webSocket, {});
     }
 
     function sendNotes(){
-        sendMessage("notes", clientID, interviewID,webSocket,
+        sendMessage("notes", clientID, interviewID, webSocket,
             JSON.stringify(notes.value));
     }
 
@@ -44,8 +45,10 @@
         if (type == 'open_response') {
           clientID = JSON.parse(evt.data).clientID;
           heartbeatTimer = setInterval(sendHeartbeat, 5000);
-          notesTimer = setInterval(sendNotes, 5000);
-          return;
+          if (notes){
+            notesTimer = setInterval(sendNotes, 5000);
+          }
+            return;
         }
     };
 
