@@ -4,42 +4,54 @@
   <meta charset="utf-8">
   <title>Tornado WebSocket Sample</title>
   <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
+  <script src="http://54.186.180.211/static/scripts/akobi_lib.js"></script>
 </head>
 <body>
+  <textarea id="notes" rows="4" cols="50">
+  Enter your interview notes here. They will be emailed to you at the end of the interview.
+  </textarea>
   <script>
-  var interviewID = window.location.pathname.split('/')[2];
-  var webSocket = new WebSocket('ws://localhost:8888/i/' + interviewID + '/socket');
-  var clientID = '';
 
-  webSocket.onmessage = function (evt) {
-    console.log('Received from web socket: ' + evt.data);
-    
-    // TODO (Steve): Handle heartbeat response properly
-    // not just static text
-    type = JSON.parse(evt.data).type;
-    if(type == 'heartbeat_response') {
-      //do nothing for now
-      return;
+    function sendHeartbeat(){
+        sendMessage("heartbeat", clientID, interviewID, webSocket, {});
     }
 
-    if (type == 'open_response') {
-      clientID = JSON.parse(evt.data).clientID;
-
-      setInterval(function(){
-        var curDate = new Date()
-        webSocket.send(JSON.stringify({
-          datetime: curDate,
-          type: "heartbeat",
-          clientID: clientID,
-          interviewID: interviewID,
-          data : {}
-      }))}, 5000);
-      return;
+    function sendNotes(){
+        sendMessage("notes", clientID, interviewID,webSocket,
+            JSON.stringify(notes.value));
     }
-  };
 
-  
+    var interviewID = window.location.pathname.split('/')[2];
+    var webSocket = new WebSocket(
+        'ws://localhost:8888/i/' + interviewID + '/socket');
+    var clientID = '';
+    var notes = document.querySelector('#notes');
+    var heartbeatTimer = null;
+    var notesTimer = null;
 
+    webSocket.onmessage = function (evt) {
+        console.log('Received from web socket: ' + evt.data);
+        
+        // TODO (Steve): Handle heartbeat response properly
+        // not just static text
+        type = JSON.parse(evt.data).type;
+        if(type == 'heartbeat_response') {
+          //do nothing for now
+          return;
+        }
+
+        if (type == 'open_response') {
+          clientID = JSON.parse(evt.data).clientID;
+          heartbeatTimer = setInterval(sendHeartbeat, 5000);
+          notesTimer = setInterval(sendNotes, 5000);
+          return;
+        }
+    };
+
+      webSocket.onclose = function(){
+        clearInterval(heartbeatTimer);
+        clearInterval(notesTimer);
+      }
   </script>
 </body>
 </html>

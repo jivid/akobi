@@ -1,4 +1,3 @@
-
 function isValidJson(data){
 	try {
         JSON.parse(data);

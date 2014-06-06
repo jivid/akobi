@@ -7,6 +7,7 @@ from akobi import log
 from akobi.lib import utils
 from akobi.lib.applications.registry import registry
 from akobi.lib.applications import heartbeat
+from akobi.lib.applications import notes
 
 
 class InterviewHandler(WebSocketHandler):
