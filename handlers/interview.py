@@ -49,6 +49,7 @@ class InterviewHandler(WebSocketHandler):
             '''
             registry.register_to_interview(self.interview_id, "Heartbeat")
             registry.register_to_interview(self.interview_id, "Notes")
+
             Initializer.initialize(message['interviewID'], self)
             return
 

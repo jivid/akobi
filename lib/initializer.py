@@ -33,14 +33,14 @@ class Initializer(object):
             cls._instantiate_for_interview(interview_id)
             cls._apps_instantiated = True
 
-        cls._setup_apps(interview_id, client_socket)
+        cls.notify_apps_client_joined(interview_id, client_socket)
 
     @staticmethod
     def _instantiate_for_interview(interview_id):
         registry.init_interview(interview_id)
 
     @staticmethod
-    def _setup_apps(interview_id, client_socket):
+    def notify_apps_client_joined(interview_id, client_socket):
         # Find apps from registry and call their on_joins as callbacks
         apps = registry.apps_for_interview(interview_id)
 
