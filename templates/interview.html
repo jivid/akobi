@@ -62,9 +62,7 @@
 
         if (type == 'open_response') {
           clientID = JSON.parse(evt.data).clientID;
-          console.log('Initing interview.');
           initInterview(clientID);
-          console.log('Done interview.');
           heartbeatTimer = setInterval(sendHeartbeat, 5000);
           if (notes){
             notesTimer = setInterval(sendNotes, 5000);
