@@ -4,12 +4,10 @@
   <meta charset="utf-8">
   <title>Akobi Bitches!!!!!</title>
 </head>
-<body>
-  <h2>Notes is: {{ notes}}</h2>
-  <h2>Collab code is: {{ collab_code}}<h2>
-  <h2>
+<body>	{% import urllib %}
+	{% set query_string = "?" + urllib.urlencode(application_state) %}
   	Interview url is:
-  	<a href="/i/{{interview_id}}">url</a>
+  	<a href="/i/{{interview_id}}{{query_string}}">url</a>
   </h2>
 </body>
 </html>
