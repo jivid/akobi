@@ -43,8 +43,8 @@ class InterviewHandler(WebSocketHandler):
             log.debug("Initializing interview for client %s on interview %s"
                       % (self.client_id, self.interview_id))
             Initializer.initialize(message['interviewID'], self)
-            registry.init_interview(message['interviewID'])
             registry.register_to_interview(self.interview_id, "Heartbeat")
+            registry.init_interview(message['interviewID'])
             return
 
         application = registry.find(message['interviewID'],
