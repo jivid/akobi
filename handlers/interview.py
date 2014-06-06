@@ -9,6 +9,7 @@ from akobi.lib.applications.registry import registry
 from akobi.lib.applications.heartbeat import HeartbeatApplication
 from akobi.lib.initializer import Initializer
 from akobi.lib.interviews import ongoing_interviews
+from akobi.lib.applications import notes
 
 
 class InterviewHandler(WebSocketHandler):

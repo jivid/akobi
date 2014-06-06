@@ -1,4 +1,3 @@
-
 function isValidJson(data){
     if (jQuery.isEmptyObject(data)) {
         return true;
