@@ -24,7 +24,8 @@ class Initializer(object):
         # here. We assume that this is already done in the RequestHandler that
         # receives the client's email ID for the first time. Just go ahead
         # and add the socket to ongoing_interviews here
-        log.debug("Added client %s to ongoing interviews" % client_sock.client_id)
+        log.debug("Added client %s to ongoing interviews" %
+                  client_sock.client_id)
         ongoing_interviews[interview_id].add(client_sock)
 
         # TODO: Figure out whether or not I want to gen.Tasks her

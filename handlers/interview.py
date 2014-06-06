@@ -56,7 +56,7 @@ class InterviewHandler(WebSocketHandler):
 
         application = registry.find(message['interviewID'],
                                     utils.message_type_to_application_name(
-                                    message["type"]));
+                                    message["type"]))
 
         application.handle_message(message, ongoing_interviews)
 
