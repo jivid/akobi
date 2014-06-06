@@ -52,11 +52,8 @@
     webSocket.onmessage = function (evt) {
         console.log('Received from web socket: ' + evt.data);
 
-        // TODO (Steve): Handle heartbeat response properly
-        // not just static text
         type = JSON.parse(evt.data).type;
         if(type == 'heartbeat_response') {
-          //do nothing for now
           return;
         }
 

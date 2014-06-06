@@ -8,6 +8,9 @@ from akobi.lib.redis_client import redis_client
 
 class NotesApplication(BaseApplication):
 
+    def on_join(self, *args, **kwargs):
+        log.info("on_join for notes application called.")
+
     def handle_message(self, message, interviews, *args, **kwargs):
         interview_id = message['interviewID']
         client_id = message['clientID']

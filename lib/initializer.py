@@ -18,32 +18,32 @@ class Initializer(object):
     _apps_instantiated = False
 
     @classmethod
-    @gen.engine
-    def initialize(cls, interview_id, client_sock):
+    def initialize(cls, interview_id, client_socket):
         # There's no need to re-check if the client belongs to the interview
         # here. We assume that this is already done in the RequestHandler that
         # receives the client's email ID for the first time. Just go ahead
         # and add the socket to ongoing_interviews here
         log.debug("Added client %s to ongoing interviews" %
-                  client_sock.client_id)
-        ongoing_interviews[interview_id].add(client_sock)
+                  client_socket.client_id)
+        ongoing_interviews[interview_id].add(client_socket)
 
-        # TODO: Figure out whether or not I want to gen.Tasks her
+        # TODO: Figure out whether or not I want to gen.Tasks here
         if not cls._apps_instantiated:
             log.debug("Need to instantiate apps")
             cls._instantiate_for_interview(interview_id)
+            cls._apps_instantiated = True
 
-        cls._setup_apps(interview_id, client_sock)
+        cls._setup_apps(interview_id, client_socket)
 
     @staticmethod
     def _instantiate_for_interview(interview_id):
         registry.init_interview(interview_id)
 
     @staticmethod
-    def _setup_apps(interview_id, client_sock):
+    def _setup_apps(interview_id, client_socket):
         # Find apps from registry and call their on_joins as callbacks
         apps = registry.apps_for_interview(interview_id)
 
         for app_name in apps:
             instance = apps[app_name]
-            function_as_callback(instance.on_join, client_sock)
+            function_as_callback(instance.on_join, client_socket)
