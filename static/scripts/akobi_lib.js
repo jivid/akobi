@@ -1,7 +1,8 @@
 function isValidJson(data){
-    if (jQuery.isEmptyObject(data)) {
-        return true;
-    }
+
+  if (jQuery.isEmptyObject(data)) {
+      return true;
+  }
 	try {
         JSON.parse(data);
     } catch (e) {

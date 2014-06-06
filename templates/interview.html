@@ -13,15 +13,6 @@
   </textarea>
   <script>
 
-    function sendHeartbeat(){
-        sendMessage("heartbeat", clientID, interviewID, webSocket, {});
-    }
-
-    function sendNotes(){
-        sendMessage("notes", clientID, interviewID,webSocket,
-            JSON.stringify(notes.value));
-    }
-
     var interviewID = window.location.pathname.split('/')[2];
     var webSocket = new WebSocket(
         'ws://localhost:8888/i/' + interviewID + '/socket');
@@ -29,6 +20,23 @@
     var notes = document.querySelector('#notes');
     var heartbeatTimer = null;
     var notesTimer = null;
+
+    function initInterview(clientID) {
+        sendMessage('init_interview',
+                    clientID,
+                    interviewID,
+                    webSocket,
+                    '{}');
+     }
+
+    function sendHeartbeat(){
+        sendMessage("heartbeat", clientID, interviewID, webSocket, '{}');
+    }
+
+    function sendNotes(){
+        sendMessage("notes", clientID, interviewID,webSocket,
+            JSON.stringify(notes.value));
+    }
 
     webSocket.onmessage = function (evt) {
         console.log('Received from web socket: ' + evt.data);
@@ -43,7 +51,9 @@
 
         if (type == 'open_response') {
           clientID = JSON.parse(evt.data).clientID;
-          initInterview(clientID, interviewID);
+          console.log('Initing interview.');
+          initInterview(clientID);
+          console.log('Done interview.');
           heartbeatTimer = setInterval(sendHeartbeat, 5000);
           notesTimer = setInterval(sendNotes, 5000);
           return;
@@ -55,13 +65,6 @@
         clearInterval(notesTimer);
     }
 
-    function initInterview(clientID, interviewID) {
-        sendMessage('init_interview',
-                    clientID,
-                    interviewID,
-                    webSocket,
-                    {});
-     }
   </script>
 </body>
 </html>
