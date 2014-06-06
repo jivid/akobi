@@ -38,21 +38,20 @@ class InterviewHandler(WebSocketHandler):
         message = json.loads(message)
         log.debug("Received message from web socket. InterviewID %s" %
                   message['interviewID'])
-        
+
         if message['type'] == "init_interview":
             log.debug("Initializing interview for client %s on interview %s"
                       % (self.client_id, self.interview_id))
-            registry.register_to_interview(self.interview_id, "Heartbeat")
             Initializer.initialize(message['interviewID'], self)
-
-            # We don't want to do anything else in this function so just return
+            registry.init_interview(message['interviewID'])
+            registry.register_to_interview(self.interview_id, "Heartbeat")
             return
 
         application = registry.find(message['interviewID'],
                                     utils.message_type_to_application_name(
-                                    message["type"]))
+                                    message["type"]));
 
-        application().handle_message(message, ongoing_interviews)
+        application.handle_message(message, ongoing_interviews)
 
     def on_close(self):
         log.debug("Web socket connection closed.")
