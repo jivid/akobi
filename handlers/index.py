@@ -3,10 +3,8 @@ from tornado.web import RequestHandler
 from akobi.lib.utils import make_random_string
 from akobi.lib.applications.registry import registry
 
-def isUserApplication(application_name):
-        return application_name != "Heartbeat"
-
-applications = filter(isUserApplication, registry.available)
+applications = registry.available.keys()
+applications.remove("Heartbeat")
 
 class InterviewHandler(RequestHandler):
     def get(self, *args, **kwargs):
@@ -26,8 +24,9 @@ class SetupHandler(RequestHandler):
         application_state = {}
 
         for application in applications:
-            application_state[application] = self.get_query_argument(
-                application, default="off")
+            if (self.get_query_argument(application)):
+                application_state[application] = self.get_query_argument(
+                                                                application)
 
         # TODO: We should probably do this more like a product serial than
         # just a random id.
