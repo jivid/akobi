@@ -39,6 +39,11 @@ class ApplicationRegistry(object):
         if interview_id not in self.interviews:
             self._add_interview(interview_id)
 
+        if app_name in self.interviews[interview_id]:
+            log.debug("Found application name.")
+            return
+
+        log.debug("Setting instance to none.")
         self.interviews[interview_id][app_name] = None
 
     def apps_for_interview(self, interview_id):
@@ -65,13 +70,15 @@ class ApplicationRegistry(object):
 
     def find(self, interview_id, app_name):
         if interview_id not in self.interviews:
-            raise KeyError("Interview ID is not present in the registry")
+            raise KeyError("Interview ID %s not present in the registry" %
+                           interview_id)
 
         if app_name not in self.interviews[interview_id]:
-            raise KeyError("Application name is not present in the registry")
+            raise KeyError("%s is not present in the registry" % app_name)
 
         if self.interviews[interview_id][app_name] is None:
-            raise TypeError("Application is not instantiated")
+            raise TypeError("%s is not instantiated for interview"
+                            % app_name, interview_id)
 
         return self.interviews[interview_id][app_name]
 

@@ -51,6 +51,9 @@ class InterviewHandler(WebSocketHandler):
             registry.register_to_interview(self.interview_id, "Notes")
 
             Initializer.initialize(message['interviewID'], self)
+
+            self.write_message(utils.create_message("init_finished",
+                               self.client_id, self.interview_id))
             return
 
         application = registry.find(message['interviewID'],

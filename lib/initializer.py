@@ -13,10 +13,6 @@ class Initializer(object):
     message from the client (which happens whenever a new client joins)
     """
 
-    # This class is never going to be instantiated, so having a Borg here
-    # isn't going to work. Instead just use a class variable
-    _apps_instantiated = False
-
     @classmethod
     def initialize(cls, interview_id, client_socket):
         # There's no need to re-check if the client belongs to the interview
@@ -28,10 +24,7 @@ class Initializer(object):
         ongoing_interviews[interview_id].add(client_socket)
 
         # TODO: Figure out whether or not I want to gen.Tasks here
-        if not cls._apps_instantiated:
-            log.debug("Need to instantiate apps")
-            cls._instantiate_for_interview(interview_id)
-            cls._apps_instantiated = True
+        cls._instantiate_for_interview(interview_id)
 
         cls.notify_apps_client_joined(interview_id, client_socket)
 
@@ -45,5 +38,7 @@ class Initializer(object):
         apps = registry.apps_for_interview(interview_id)
 
         for app_name in apps:
+            log.debug("Pulled application out of apps_for_interview %s" %
+                      app_name)
             instance = apps[app_name]
             function_as_callback(instance.on_join, client_socket)

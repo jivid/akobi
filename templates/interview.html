@@ -16,7 +16,7 @@
   <script>
 
     function sendHeartbeat(){
-        sendMessage("heartbeat", clientID, interviewID, webSocket, {});
+        sendMessage("heartbeat", clientID, interviewID, webSocket, '{}');
     }
 
     function sendNotes(){
@@ -40,31 +40,27 @@
                     '{}');
      }
 
-    function sendHeartbeat(){
-        sendMessage("heartbeat", clientID, interviewID, webSocket, '{}');
-    }
-
-    function sendNotes(){
-        sendMessage("notes", clientID, interviewID,webSocket,
-            JSON.stringify(notes.value));
-    }
-
     webSocket.onmessage = function (evt) {
         console.log('Received from web socket: ' + evt.data);
 
         type = JSON.parse(evt.data).type;
-        if(type == 'heartbeat_response') {
+        if (type == 'heartbeat_response') {
           return;
+        }
+
+        if (type == 'init_finished') {
+          clientID = JSON.parse(evt.data).clientID;
+          heartbeatTimer = setInterval(sendHeartbeat, 5000);
+          if (notes) {
+            notesTimer = setInterval(sendNotes, 5000);
+          }
+            return;
+
         }
 
         if (type == 'open_response') {
           clientID = JSON.parse(evt.data).clientID;
           initInterview(clientID);
-          heartbeatTimer = setInterval(sendHeartbeat, 5000);
-          if (notes){
-            notesTimer = setInterval(sendNotes, 5000);
-          }
-            return;
         }
     };
 
