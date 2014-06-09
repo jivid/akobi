@@ -79,7 +79,7 @@ class ApplicationRegistry(object):
             # so the initializer can be left stateless
             if self.interviews[interview_id][app_name] is not None:
                 log.info("%s has already been instantiated for %s" % (app_name,
-                    interview_id)
+                    interview_id))
                 continue
 
             log.info("Instantiating %s for interview %s" % (app_name,
