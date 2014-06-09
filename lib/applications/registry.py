@@ -6,8 +6,21 @@ __all__ = ('registry',)
 
 class ApplicationRegistry(object):
     """
-    Event handler registry that is global to the application. Uses the Borg
-    design pattern (bit.ly/1oxVQNI) to maintain a global list of handlers.
+    Application registry that keeps track of all available applications as
+    well as applications registered to currently running interviews. Only one
+    instance of this registry exists per instance of the Akobi application, so
+    to maintain correct state, we use the Borg design pattern (bit.ly/1oxVQNI)
+
+    Within the registry, an interview moves through a total of 3 states:
+        1. Added - The registry is aware that the interview exists, but has
+                   no applications registered to it.
+
+        2. Apps Registered - The interview now has some applications registered
+                             to it, but they haven't been instantiated yet.
+
+        3. Apps Instantiated - All apps registered to the interview are now
+                               instantiated and can be freely used.
+
     """
 
     __shared_state = {
@@ -39,16 +52,36 @@ class ApplicationRegistry(object):
         if interview_id not in self.interviews:
             self._add_interview(interview_id)
 
+        if app_name in self.interviews[interview_id]:
+            log.debug("Application %s already registered to %s." % (app_name,
+                interview_id))
+            return
+
+        log.debug("Setting %s in %s to none." % (app_name, interview_id))
         self.interviews[interview_id][app_name] = None
+
+    def apps_for_interview(self, interview_id):
+        return self.interviews[interview_id]\
+            if interview_id in self.interviews else None
 
     def _add_interview(self, interview_id):
         self.interviews[interview_id] = {}
 
     def init_interview(self, interview_id):
         if interview_id not in self.interviews:
-            raise KeyError("Interview ID has not been added to registry")
+            self._add_interview(interview_id)
 
-        for app_name in self.interviews[interview_id]:
+        interview_apps = self.apps_for_interview(interview_id)
+        for app_name in interview_apps:
+            # Under no circumstance should we re-instatiate apps, doing so can
+            # make them to lose state. Since the interview initializer is called
+            # everytime a client connects, we move this logic into the registry
+            # so the initializer can be left stateless
+            if self.interviews[interview_id][app_name] is not None:
+                continue
+
+            log.info("Instantiating %s for interview %s" % (app_name,
+                     interview_id))
             self._create_app_instance(interview_id, app_name)
 
     def _create_app_instance(self, interview_id, app_name):
@@ -57,13 +90,15 @@ class ApplicationRegistry(object):
 
     def find(self, interview_id, app_name):
         if interview_id not in self.interviews:
-            raise KeyError("Interview ID is not present in the registry")
+            raise KeyError("Interview ID %s not present in the registry" %
+                           interview_id)
 
         if app_name not in self.interviews[interview_id]:
-            raise KeyError("Application name is not present in the registry")
+            raise KeyError("%s is not present in the registry" % app_name)
 
         if self.interviews[interview_id][app_name] is None:
-            raise TypeError("Application is not instantiated")
+            raise TypeError("%s is not instantiated for interview"
+                            % app_name, interview_id)
 
         return self.interviews[interview_id][app_name]
 

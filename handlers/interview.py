@@ -6,13 +6,13 @@ from tornado.websocket import WebSocketHandler
 from akobi import log
 from akobi.lib import utils
 from akobi.lib.applications.registry import registry
-from akobi.lib.applications import heartbeat
+from akobi.lib.applications.heartbeat import HeartbeatApplication
+from akobi.lib.initializer import Initializer
+from akobi.lib.interviews import ongoing_interviews
 from akobi.lib.applications import notes
 
 
 class InterviewHandler(WebSocketHandler):
-
-    ongoing_interviews = {}
 
     def __init__(self, *args, **kwargs):
         super(InterviewHandler, self).__init__(*args, **kwargs)
@@ -22,8 +22,8 @@ class InterviewHandler(WebSocketHandler):
     def open(self, interview_id):
         log.debug(
             "Web socket connection opened with interview_id %s" % interview_id)
-        if interview_id not in InterviewHandler.ongoing_interviews:
-            InterviewHandler.ongoing_interviews[interview_id] = set()
+        if interview_id not in ongoing_interviews:
+            ongoing_interviews[interview_id] = set()
 
         if self.client_id is None:
             self.client_id = utils.make_random_string(length=30)
@@ -33,30 +33,34 @@ class InterviewHandler(WebSocketHandler):
 
         self.write_message(utils.create_message("open_response",
                            self.client_id, self.interview_id))
-        InterviewHandler.ongoing_interviews[interview_id].add(self)
+        ongoing_interviews[interview_id].add(self)
 
     def on_message(self, message):
         message = json.loads(message)
         log.debug("Received message from web socket. InterviewID %s" %
                   message['interviewID'])
-        '''
-        TODO (Divij): If message type is init add application to interview
-        '''
 
-        '''
-        TODO (Divij): Remove next two lines of code. Hack to make develop
-        stable.
-        '''
-        registry.register_to_interview(message['interviewID'],
-                                       utils.message_type_to_application_name(
-                                       message["type"]))
-        registry.init_interview(message['interviewID'])
+        if message['type'] == "init_interview":
+            log.debug("Initializing interview for client %s on interview %s"
+                      % (self.client_id, self.interview_id))
+
+            '''
+            TODO: Register application to interview on selection screen.
+            '''
+            registry.register_to_interview(self.interview_id, "Heartbeat")
+            registry.register_to_interview(self.interview_id, "Notes")
+
+            Initializer.initialize(message['interviewID'], self)
+
+            self.write_message(utils.create_message("init_finished",
+                               self.client_id, self.interview_id))
+            return
 
         application = registry.find(message['interviewID'],
                                     utils.message_type_to_application_name(
                                     message["type"]))
-        application.handle_message(
-            message, InterviewHandler.ongoing_interviews)
+
+        application.handle_message(message, ongoing_interviews)
 
     def on_close(self):
         log.debug("Web socket connection closed.")

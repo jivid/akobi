@@ -14,8 +14,9 @@
     </textarea>
   {% end %}
   <script>
+
     function sendHeartbeat(){
-        sendMessage("heartbeat", clientID, interviewID, webSocket, {});
+        sendMessage("heartbeat", clientID, interviewID, webSocket, '{}');
     }
 
     function sendNotes(){
@@ -31,31 +32,43 @@
     var heartbeatTimer = null;
     var notesTimer = null;
 
+    function initInterview(clientID) {
+        sendMessage('init_interview',
+                    clientID,
+                    interviewID,
+                    webSocket,
+                    '{}');
+     }
+
     webSocket.onmessage = function (evt) {
         console.log('Received from web socket: ' + evt.data);
-        
-        // TODO (Steve): Handle heartbeat response properly
-        // not just static text
+
         type = JSON.parse(evt.data).type;
-        if(type == 'heartbeat_response') {
-          //do nothing for now
+        if (type == 'heartbeat_response') {
           return;
+        }
+
+        if (type == 'init_finished') {
+          clientID = JSON.parse(evt.data).clientID;
+          heartbeatTimer = setInterval(sendHeartbeat, 5000);
+          if (notes) {
+            notesTimer = setInterval(sendNotes, 5000);
+          }
+            return;
+
         }
 
         if (type == 'open_response') {
           clientID = JSON.parse(evt.data).clientID;
-          heartbeatTimer = setInterval(sendHeartbeat, 5000);
-          if (notes){
-            notesTimer = setInterval(sendNotes, 5000);
-          }
-            return;
+          initInterview(clientID);
         }
     };
 
-      webSocket.onclose = function(){
+    webSocket.onclose = function(){
         clearInterval(heartbeatTimer);
         clearInterval(notesTimer);
-      }
+    }
+
   </script>
 </body>
 </html>
