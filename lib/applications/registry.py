@@ -18,8 +18,8 @@ class ApplicationRegistry(object):
         2. Apps Registered - The interview now has some applications registered
                              to it, but they haven't been instantiated yet.
 
-        3. Apps Instatiated - All apps registered to the interview are now
-                              instantiated and can be freely used.
+        3. Apps Instantiated - All apps registered to the interview are now
+                               instantiated and can be freely used.
 
     """
 
@@ -73,13 +73,11 @@ class ApplicationRegistry(object):
 
         interview_apps = self.apps_for_interview(interview_id)
         for app_name in interview_apps:
-            # Don't re-instantiate apps for any interview, doing so can cause
-            # them to lose state. Since the interview initializer is called
+            # Under no circumstance should we re-instatiate apps, doing so can
+            # make them to lose state. Since the interview initializer is called
             # everytime a client connects, we move this logic into the registry
             # so the initializer can be left stateless
             if self.interviews[interview_id][app_name] is not None:
-                log.info("%s has already been instantiated for %s" % (app_name,
-                    interview_id))
                 continue
 
             log.info("Instantiating %s for interview %s" % (app_name,
