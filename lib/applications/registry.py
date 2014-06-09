@@ -73,6 +73,15 @@ class ApplicationRegistry(object):
 
         interview_apps = self.apps_for_interview(interview_id)
         for app_name in interview_apps:
+            # Don't re-instantiate apps for any interview, doing so can cause
+            # them to lose state. Since the interview initializer is called
+            # everytime a client connects, we move this logic into the registry
+            # so the initializer can be left stateless
+            if self.interviews[interview_id][app_name] is not None:
+                log.info("%s has already been instantiated for %s" % (app_name,
+                    interview_id)
+                continue
+
             log.info("Instantiating %s for interview %s" % (app_name,
                      interview_id))
             self._create_app_instance(interview_id, app_name)
