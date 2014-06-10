@@ -15,7 +15,7 @@ class NotesApplication(BaseApplication):
         interview_id = message['interviewID']
         client_id = message['clientID']
         redis = redis_client.get_redis_instance()
-        redis.hset("notes", client_id, message['data'])
+        redis.hset("notes", client_id, message['data']['note'])
         log.debug(redis.hget("notes", client_id))
 
 

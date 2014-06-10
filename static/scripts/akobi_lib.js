@@ -1,15 +1,5 @@
 function isValidJSON(data){
-  if (jQuery.isEmptyObject(data)) {
-    return true;
-  }
-
-	try {
-    JSON.parse(data);
-  } catch (e) {
-    return false;
-  }
-
-  return true;
+  return $.isPlainObject(data);
 }
 
 function throwException(message) {
@@ -50,5 +40,6 @@ WebSocket.prototype.send = function(msg) {
   }
 
   msg.datetime = new Date();
+  console.log(msg);
   this.sendToServer(JSON.stringify(msg));
 }
