@@ -1,4 +1,4 @@
-functi/n isValidJSON(data){
+function isValidJSON(data){
   return $.isPlainObject(data);
 }
 
