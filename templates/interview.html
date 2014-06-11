@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>Tornado WebSocket Sample</title>
   <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
-  <script src="http://54.186.180.211/static/scripts/akobi_lib.js"></script>
+  <script src="http://akobi.info/static/scripts/akobi_lib.js"></script>
 </head>
 <h1>{{ applications }}</h1>
 <body>
@@ -16,28 +16,39 @@
   <script>
 
     function sendHeartbeat(){
-        sendMessage("heartbeat", clientID, interviewID, webSocket, '{}');
+        webSocket.send({
+          type        : 'heartbeat',
+          clientID    : clientID,
+          interviewID : interviewID
+        });
     }
 
     function sendNotes(){
-        sendMessage("notes", clientID, interviewID, webSocket,
-            JSON.stringify(notes.value));
+        webSocket.send({
+          type        : 'notes',
+          clientID    : clientID,
+          interviewID : interviewID,
+          data        : {
+            note: notes.val()
+          }
+        });
     }
 
     var interviewID = window.location.pathname.split('/')[2];
+    var host = window.location.host;
     var webSocket = new WebSocket(
-        'ws://localhost:8888/i/' + interviewID + '/socket');
+        'ws://' + host + '/i/' + interviewID + '/socket');
     var clientID = '';
-    var notes = document.querySelector('#notes');
     var heartbeatTimer = null;
+    var notes = $('#notes');
     var notesTimer = null;
 
     function initInterview(clientID) {
-        sendMessage('init_interview',
-                    clientID,
-                    interviewID,
-                    webSocket,
-                    '{}');
+        webSocket.send({
+          type        : 'init_interview',
+          clientID    : clientID,
+          interviewID : interviewID
+        });
      }
 
     webSocket.onmessage = function (evt) {
@@ -55,7 +66,6 @@
             notesTimer = setInterval(sendNotes, 5000);
           }
             return;
-
         }
 
         if (type == 'open_response') {
