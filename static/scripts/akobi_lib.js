@@ -1,4 +1,4 @@
-function isValidJSON(data){
+functi/n isValidJSON(data){
   return $.isPlainObject(data);
 }
 
@@ -35,11 +35,10 @@ WebSocket.prototype.send = function(msg) {
     msg.data = {};
   } else {
     if (!isValidJSON(msg.data)) {
-      throwException("malformed data being sent");
+      throwException("Malformed data being sent");
     }
   }
 
   msg.datetime = new Date();
-  console.log(msg);
   this.sendToServer(JSON.stringify(msg));
 }
