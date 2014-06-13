@@ -10,8 +10,8 @@ from akobi.lib.applications.heartbeat import HeartbeatApplication
 from akobi.lib.initializer import Initializer
 from akobi.lib.interviews import ongoing_interviews
 from akobi.lib.applications import notes
-from akobi.lib.event_handlers.registry import registry
-from akobi.lib.event_handlers import heartbeat, collabedit
+from akobi.lib.applications.registry import registry
+from akobi.lib.applications import heartbeat, collabedit
 
 
 class InterviewHandler(WebSocketHandler):
@@ -51,6 +51,7 @@ class InterviewHandler(WebSocketHandler):
             '''
             registry.register_to_interview(self.interview_id, "Heartbeat")
             registry.register_to_interview(self.interview_id, "Notes")
+            registry.register_to_interview(self.interview_id, "Collabedit")
 
             Initializer.initialize(message['interviewID'], self)
 
