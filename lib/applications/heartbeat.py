@@ -11,6 +11,8 @@ from akobi.lib.redis_client import redis_client
 
 class HeartbeatApplication(BaseApplication):
 
+    _essential = True
+
     def handle_message(self, message, interviews, *args, **kwargs):
         log.debug("Got Heartbeat")
         interview_id = message['interviewID']
