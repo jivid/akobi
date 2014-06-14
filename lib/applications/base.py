@@ -13,3 +13,10 @@ class BaseApplication(object):
         application is registered.
         """
         pass
+
+    def on_socket_close(self, *args, **kwargs):
+        """
+        Override this no-op if you need your application to perform
+        clean up or take action when a websocket is closed
+        """
+        pass

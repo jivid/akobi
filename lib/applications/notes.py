@@ -18,5 +18,7 @@ class NotesApplication(BaseApplication):
         redis.hset("notes", client_id, message['data']['note'])
         log.debug(redis.hget("notes", client_id))
 
+    def on_socket_close(self, *args, **kwargs):
+        log.info("on_socket_close for notes application called.")
 
 registry.register("Notes", NotesApplication)
