@@ -31,10 +31,8 @@ def handle_message_as_callback(application, *args, **kwargs):
 
 # Adds method to the bottom of the event queue every timeout seconds.
 def register_timeout(timeout, method, *args, **kwargs):
-    if not isinstance(application, BaseApplication):
-            raise RuntimeError(
-                "Application passed to timeout must subclass "
-                + "BaseApplication")
+    if not timeout > 0:
+            raise RuntimeError("Method timeout must be greater than 0.")
     IOLoop.instance().add_timeout(timeout, method)
 
 
