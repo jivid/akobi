@@ -17,4 +17,8 @@ define(function() {
     });
 
     require(['common', 'heartbeat']);
+
+    require(['notes'], function(notes) {
+        new notes.NoteView();
+    });
 });

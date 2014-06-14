@@ -6,13 +6,12 @@ define(["util"], function(util) {
         WebSocket.prototype.sendToServer = WebSocket.prototype.send;
 
         WebSocket.prototype.send = function(msg) {
-            console.log("In socket.js sending: " + JSON.stringify(msg));
             util.validateMessageContents(msg);
 
             if (msg.data === undefined) {
                 msg.data = {};
             } else {
-                if (!isValidJSON(msg.data)) {
+                if (!util.isValidJSON(msg.data)) {
                     util.throwException("Malformed data being sent");
                 }
             }

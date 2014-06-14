@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Tornado WebSocket Sample</title>
-  <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
+  <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"/></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"/></script>
   <script data-main="http://127.0.0.1:8000/static/js/main" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
@@ -12,7 +12,7 @@
 <h1>{{ applications }}</h1>
 <body>
   {% if applications["Notes"][0] == "on" %}
-    <textarea id="notes" rows="4" cols="50">
+    <textarea id="notebox" rows="4" cols="50">
     Enter your interview notes here. They will be emailed to you at the end of the interview.
     </textarea>
   {% end %}

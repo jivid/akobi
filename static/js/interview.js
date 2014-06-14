@@ -35,7 +35,6 @@ define(['socket'], function(socket) {
         },
 
         processMessage: function(msg) {
-            console.log("Got message: " + JSON.stringify(msg));
             EventBus.trigger(msg.type, msg);
         },
 
