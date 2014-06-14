@@ -23,12 +23,19 @@ def handle_message_as_callback(application, *args, **kwargs):
             raise RuntimeError(
                 "Application passed to async_handle must subclass "
                 + "BaseApplication")
-
     if not hasattr(application, "handle_message"):
         raise AttributeError("%s doesn't have a handle() method" %
                              handler.__class__.__name__)
-
     function_as_callback(application.handle_message, *args, **kwargs)
+
+
+# Adds method to the bottom of the event queue every timeout seconds.
+def register_timeout(timeout, method, *args, **kwargs):
+    if not isinstance(application, BaseApplication):
+            raise RuntimeError(
+                "Application passed to timeout must subclass "
+                + "BaseApplication")
+    IOLoop.instance().add_timeout(timeout, method)
 
 
 # Every arg after interview_id should be in the form <key>="<value>"
