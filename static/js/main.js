@@ -16,9 +16,8 @@ define(function() {
         window.interview = interview;
     });
 
-    require(['common', 'heartbeat']);
-
-    require(['notes'], function(notes) {
-        new notes.NoteView();
-    });
+    // TODO: Move these requires to happen after receiving the list of
+    //       applications for this interview so we're not running
+    //       unnecessary code
+    require(['common', 'heartbeat', 'notes']);
 });

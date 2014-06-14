@@ -51,8 +51,5 @@ define(function() {
         }
     });
 
-    return {
-        NoteView: NoteView
-    }
-
+    new NoteView();
 });
