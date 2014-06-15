@@ -36,10 +36,6 @@ define(['socket'], function(socket) {
 
         processMessage: function(msg) {
             EventBus.trigger(msg.type, msg);
-        },
-
-        initClient: function(id) {
-
         }
     });
 
