@@ -1,7 +1,6 @@
 define(["util"], function(util) {
     Socket = function() {
         _.extend(this, Backbone.Events);
-        var _this = this;
 
         WebSocket.prototype.sendToServer = WebSocket.prototype.send;
 

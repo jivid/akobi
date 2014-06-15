@@ -15,7 +15,6 @@ define(['socket'], function(socket) {
             this.socket = new socket.Socket();
             this.startTime = new Date();
             this.id = window.location.pathname.split('/')[2];
-            var _this = this;
 
             this.socket.on("open", $.proxy(function(msg) {
                 this.socket.send({

@@ -17,6 +17,7 @@ define(function() {
                     note: this.contents
                 }
             });
+            countMe("note_sync");
         }
     });
 
