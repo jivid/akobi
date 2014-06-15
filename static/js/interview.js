@@ -1,10 +1,5 @@
 define(['socket'], function(socket) {
     var Client = Backbone.Model.extend({
-        defaults: {
-            id: 'someClientID',
-            email: 'me@example.com',
-        },
-
         initialize: function(obj) {
             this.id = obj.id;
         }
