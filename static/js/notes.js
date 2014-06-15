@@ -24,28 +24,44 @@ define(function() {
         el: $('#notebox').parent(),
 
         events: {
-            "focus #notebox"  : "startCapture",
-            "focusout #notebox" : "stopCapture"
+            "focusin #notebox"  : "startShortCapture",
+            "focusout #notebox" : "stopShortCapture"
         },
 
         initialize: function() {
             this.model = new Note();
-            console.log(this.$el);
+
+            /* Set up a simple note capture every 15 seconds so we don't
+               accidentally losing any data */
+            this.longCapture = setInterval(
+                $.proxy(this.captureAndSync, this), 15000
+            );
+            EventBus.on("socket_closed", function() {
+                clearInterval(this.longCapture);
+            });
         },
 
-        /* Capture the state of the textbox every 50ms. We're not maintaining
+        saveNoteState: function() {
+            this.model.contents = this.$el.children('#notebox').val();
+        },
+
+        captureAndSync: function() {
+            this.saveNoteState();
+            this.model.sync();
+        },
+
+        /* Capture the state of the textbox every second. We're not maintaining
            any history, just a dump of the entire contents. */
-        startCapture: function() {
-            var _this = this;
-            this.capture = setInterval(function() {
-                _this.model.contents = _this.$el.children('#notebox').val();
-            }, 50);
+        startShortCapture: function() {
+            this.shortCapture = setInterval(
+                $.proxy(this.saveNoteState, this), 1000
+            );
         },
 
         /* Stop the capture and send up the latest state to the server */
-        stopCapture: function() {
-            if (!this.capture === undefined) {
-                clearInterval(this.capture);
+        stopShortCapture: function() {
+            if (!(this.shortCapture === undefined)) {
+                clearInterval(this.shortCapture);
             }
             this.model.sync();
         }
