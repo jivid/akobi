@@ -11,10 +11,10 @@ define(['socket'], function(socket) {
             this.startTime = new Date();
             this.id = window.location.pathname.split('/')[2];
 
-            this.socket.on("open", $.proxy(function(msg) {
+            this.socket.on("open", $.proxy(function() {
                 this.socket.send({
                     type : 'init_interview',
-                    clientID : "SomeID",
+                    clientID : "",
                     interviewID : this.id
                 });
             }, this));
