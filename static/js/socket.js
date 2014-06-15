@@ -25,26 +25,26 @@ define(["util"], function(util) {
         this.socketAddress = "ws://" + this.host + "/i/" + this.hash + "/socket";
         this.socket = new WebSocket(this.socketAddress);
 
-        this.socket.onopen = function(e) {
-            _this.trigger("open", e);
-        };
+        this.socket.onopen = $.proxy(function(e) {
+            this.trigger("open", e);
+        }, this);
 
-        this.socket.onerror = function(e) {
-            _this.trigger("error", e);
-        };
+        this.socket.onerror = $.proxy(function(e) {
+            this.trigger("error", e);
+        }, this);
 
-        this.socket.onmessage = function(e) {
-            _this.trigger("message", JSON.parse(e.data));
-        };
+        this.socket.onmessage = $.proxy(function(e) {
+            this.trigger("message", JSON.parse(e.data));
+        }, this);
 
         this.socket.onclose = function(e) {
             EventBus.trigger("socket_closed");
             _.debounce(EventBus.off(), 500);
         };
 
-        this.send = function(msg) {
-            _this.socket.send(msg);
-        };
+        this.send = $.proxy(function(msg) {
+            this.socket.send(msg);
+        }, this);
     };
 
     return {

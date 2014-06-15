@@ -17,21 +17,21 @@ define(['socket'], function(socket) {
             this.id = window.location.pathname.split('/')[2];
             var _this = this;
 
-            this.socket.on("open", function(msg) {
-                _this.socket.send({
+            this.socket.on("open", $.proxy(function(msg) {
+                this.socket.send({
                     type : 'init_interview',
                     clientID : "SomeID",
-                    interviewID : _this.id
+                    interviewID : this.id
                 });
-            });
+            }, this));
 
-            this.socket.on("message", function(msg) {
+            this.socket.on("message", $.proxy(function(msg) {
                 if (msg.type == "open_response") {
-                    _this.client = new Client({id: msg.clientID});
+                    this.client = new Client({id: msg.clientID});
                 } else {
-                    _this.processMessage(msg);
+                    this.processMessage(msg);
                 }
-            });
+            }, this));
         },
 
         processMessage: function(msg) {
