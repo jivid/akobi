@@ -3,14 +3,17 @@
 <head>
   <meta charset="utf-8">
   <title>Tornado WebSocket Sample</title>
-  <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
-  <script src="http://akobi.info/static/scripts/akobi_lib.js"></script>
-  <script src="http://akobi.info/static/scripts/diff_match_patch.js"></script>
+  <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"/></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"/></script>
+  <script src="http://akobi.info/static/js/ext/diff_match_patch.js"></script>
+  <script data-main="http://127.0.0.1:8000/static/js/main" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
+
 </head>
 <h1>{{ applications }}</h1>
 <body>
   {% if "Notes" in applications %}
-    <textarea id="notes" rows="4" cols="50">
+    <textarea id="notebox" rows="4" cols="50">
     Enter your interview notes here. They will be emailed to you at the end of the interview.
     </textarea>
   {% end %}
@@ -19,141 +22,6 @@
     This is a collaborative editor.
     </textarea>
   {% end %}
-  <script>
-    function get_diff(){
-      var text1 = $("#collabedit").val();
-
-      console.log("");
-      console.log("text1: " + text1)
-      console.log("text1Shadow: " + text1Shadow)
-      diff =  diffObj.diff_main(text1Shadow, text1);
-      // Save the current text to diff agaisnt in future.
-      text1Shadow = text1;
-
-      console.log("");
-      console.log("got_diff");
-      console.log("Diff: " + diff);
-      console.log("text1shadow: " + text1Shadow);
-      console.log("text1: " + text1);
-      return diff;
-    }
-
-
-    function apply_diff(diff){
-      // Generate the patches.
-      var patch = diffObj.patch_make(text1Shadow, diff);
-
-      // Patch the shadow then the main text.
-      text1Shadow = diffObj.patch_apply(patch, text1Shadow)[0];
-      $("#collabedit").val(diffObj.patch_apply(patch, $("#collabedit").val())[0]);
-
-      console.log("applied diff: " + patch);
-      console.log("text1shadow: " + text1Shadow);
-      console.log("text1: " + $("#collabedit").val());
-    }
-
-    function sendHeartbeat(){
-        webSocket.send({
-          type        : 'heartbeat',
-          clientID    : clientID,
-          interviewID : interviewID
-        });
-    }
-
-    function sendNotes(){
-        webSocket.send({
-          type        : 'notes',
-          clientID    : clientID,
-          interviewID : interviewID,
-          data        : {
-            note: notes.val()
-          }
-        });
-    }
-
-    var interviewID = window.location.pathname.split('/')[2];
-    var host = window.location.host;
-    var webSocket = new WebSocket(
-        'ws://' + host + '/i/' + interviewID + '/socket');
-    var clientID = '';
-    var heartbeatTimer = null;
-    var notes = $('#notes');
-    var notesTimer = null;
-    var diffObj = new diff_match_patch();
-  	var text1Shadow = "This is a collaborative editor.";
-
-    function initInterview(clientID) {
-        webSocket.send({
-          type        : 'init_interview',
-          clientID    : clientID,
-          interviewID : interviewID
-        });
-     }
-
-    webSocket.onmessage = function (evt) {
-        console.log('Received from web socket: ' + evt.data);
-
-        type = JSON.parse(evt.data).type;
-        if (type == 'heartbeat_response') {
-          return;
-        }
-
-        if (type == 'init_finished') {
-          clientID = JSON.parse(evt.data).clientID;
-          heartbeatTimer = setInterval(sendHeartbeat, 5000);
-          if (notes) {
-            notesTimer = setInterval(sendNotes, 5000);
-          }
-            return;
-        }
-        if (type == 'collabedit'){
-            msg = JSON.parse(evt.data);
-            msg = msg.data;
-            switch (msg.type){
-            case 1:
-              to_send = {
-                datetime: "",
-                type: "collabedit",
-                clientID: "",
-                interviewID: interviewID,
-                data: {
-                  type: 2,
-                  data: get_diff()
-                }
-              }
-              console.log("sending msg: " + JSON.stringify(to_send));
-              webSocket.send(to_send);
-              break;
-            case 3:
-              console.log("applying diff: " + JSON.stringify(msg.data));
-              apply_diff(msg.data);
-              ack = {
-                datetime: "",
-                type : "collabedit",
-                clientID: "",
-                interviewID: interviewID,
-                data : {
-                  type : 4,
-                  data : {}
-                }
-              }
-              webSocket.send(ack);
-              break;
-          }
-        }
-
-        if (type == 'open_response') {
-          clientID = JSON.parse(evt.data).clientID;
-          initInterview(clientID);
-        }
-    };
-
-    webSocket.onclose = function(){
-        clearInterval(heartbeatTimer);
-        clearInterval(notesTimer);
-    }
-
-  </script>
 </body>
 </html>
 

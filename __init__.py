@@ -21,7 +21,7 @@ root_logger.addHandler(file_handler)
 
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(log_formatter)
-console_handler.setLevel(logging.INFO)
+console_handler.setLevel(logging.DEBUG)
 
 root_logger.addHandler(console_handler)
 

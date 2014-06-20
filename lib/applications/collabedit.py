@@ -1,10 +1,11 @@
-import json
+import time
 
 from tornado.ioloop import IOLoop
 from akobi.lib.applications.registry import registry
 from akobi.lib.applications.base import BaseApplication
 from akobi import log
 from akobi.lib import utils
+
 
 
 class CollabEditHandler(BaseApplication):
@@ -73,7 +74,8 @@ class CollabEditHandler(BaseApplication):
                 self._invalid_message_error(CollabEditHandler.RECEIVED_DIFF,
                                             message["type"])
             self.state = CollabEditHandler.INITIAL
-            IOLoop.instance().add_timeout(.1, self._start_synchronization_loop)
+            IOLoop.instance().add_timeout(time.time() + 5,
+                                          self._start_synchronization_loop)
 
         else:
             log.error(
