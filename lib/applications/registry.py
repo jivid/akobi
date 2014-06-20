@@ -51,7 +51,6 @@ class ApplicationRegistry(object):
         self.available[name] = application
 
     def register_to_interview(self, interview_id, app_name):
-
         if interview_id not in self.interviews:
             self._add_interview(interview_id)
 
@@ -63,8 +62,8 @@ class ApplicationRegistry(object):
         log.debug("Setting %s in %s to none." % (app_name, interview_id))
         self.interviews[interview_id][app_name] = None
 
-    def get_non_essential_apps(self):
-        if all(app is None for app in self.__non_essential_apps):
+    def non_essential_apps(self):
+        if not self.__non_essential_apps:
             for key in self.available:
                 if (self.available[key]._essential is False):
                     self.__non_essential_apps.append(self.available[key])
