@@ -23,6 +23,8 @@ class ApplicationRegistry(object):
 
     """
 
+    _non_essential_apps = []
+
     __shared_state = {
         "available": {},
         "interviews": {},
@@ -53,12 +55,19 @@ class ApplicationRegistry(object):
             self._add_interview(interview_id)
 
         if app_name in self.interviews[interview_id]:
-            log.debug("Application %s already registered to %s." % (app_name,
-                interview_id))
+            log.debug("Application %s already registered to %s." %
+                      (app_name, interview_id))
             return
 
         log.debug("Setting %s in %s to none." % (app_name, interview_id))
         self.interviews[interview_id][app_name] = None
+
+    def non_essential_apps(self):
+        if not self._non_essential_apps:
+            for key in self.available:
+                if not self.available[key]._essential:
+                    self._non_essential_apps.append(self.available[key])
+        return self._non_essential_apps
 
     def apps_for_interview(self, interview_id):
         return self.interviews[interview_id]\
@@ -74,9 +83,9 @@ class ApplicationRegistry(object):
         interview_apps = self.apps_for_interview(interview_id)
         for app_name in interview_apps:
             # Under no circumstance should we re-instatiate apps, doing so can
-            # make them to lose state. Since the interview initializer is called
-            # everytime a client connects, we move this logic into the registry
-            # so the initializer can be left stateless
+            # make them to lose state. Since the interview initializer is
+            # called everytime a client connects, we move this logic into
+            # the registry so the initializer can be left stateless
             if self.interviews[interview_id][app_name] is not None:
                 continue
 
