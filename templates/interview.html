@@ -3,83 +3,19 @@
 <head>
   <meta charset="utf-8">
   <title>Tornado WebSocket Sample</title>
-  <script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
-  <script src="http://akobi.info/static/scripts/akobi_lib.js"></script>
+  <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"/></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"/></script>
+  <script data-main="http://127.0.0.1:8000/static/js/main" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
+
 </head>
 <h1>{{ applications }}</h1>
 <body>
   {% if applications["Notes"][0] == "on" %}
-    <textarea id="notes" rows="4" cols="50">
+    <textarea id="notebox" rows="4" cols="50">
     Enter your interview notes here. They will be emailed to you at the end of the interview.
     </textarea>
   {% end %}
-  <script>
-
-    function sendHeartbeat(){
-        webSocket.send({
-          type        : 'heartbeat',
-          clientID    : clientID,
-          interviewID : interviewID
-        });
-    }
-
-    function sendNotes(){
-        webSocket.send({
-          type        : 'notes',
-          clientID    : clientID,
-          interviewID : interviewID,
-          data        : {
-            note: notes.val()
-          }
-        });
-    }
-
-    var interviewID = window.location.pathname.split('/')[2];
-    var host = window.location.host;
-    var webSocket = new WebSocket(
-        'ws://' + host + '/i/' + interviewID + '/socket');
-    var clientID = '';
-    var heartbeatTimer = null;
-    var notes = $('#notes');
-    var notesTimer = null;
-
-    function initInterview(clientID) {
-        webSocket.send({
-          type        : 'init_interview',
-          clientID    : clientID,
-          interviewID : interviewID
-        });
-     }
-
-    webSocket.onmessage = function (evt) {
-        console.log('Received from web socket: ' + evt.data);
-
-        type = JSON.parse(evt.data).type;
-        if (type == 'heartbeat_response') {
-          return;
-        }
-
-        if (type == 'init_finished') {
-          clientID = JSON.parse(evt.data).clientID;
-          heartbeatTimer = setInterval(sendHeartbeat, 5000);
-          if (notes) {
-            notesTimer = setInterval(sendNotes, 5000);
-          }
-            return;
-        }
-
-        if (type == 'open_response') {
-          clientID = JSON.parse(evt.data).clientID;
-          initInterview(clientID);
-        }
-    };
-
-    webSocket.onclose = function(){
-        clearInterval(heartbeatTimer);
-        clearInterval(notesTimer);
-    }
-
-  </script>
 </body>
 </html>
 
