@@ -14,7 +14,7 @@ class BaseApplication(object):
         """
         pass
 
-    def on_socket_close(self, *args, **kwargs):
+    def on_client_leave(self, *args, **kwargs):
         """
         Override this no-op if you need your application to perform
         clean up or take action when a websocket is closed.

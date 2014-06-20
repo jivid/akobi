@@ -65,5 +65,5 @@ class InterviewHandler(WebSocketHandler):
     def on_close(self):
         live_apps = registry.apps_for_interview(self.interview_id)
         for app_name in live_apps:
-            live_apps[app_name].on_socket_close()
-        log.debug("Web socket connection closed.")
+            live_apps[app_name].on_client_leave()
+        log.info("Web socket connection closed.")
