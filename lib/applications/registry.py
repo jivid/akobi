@@ -23,7 +23,7 @@ class ApplicationRegistry(object):
 
     """
 
-    __non_essential_apps = []
+    _non_essential_apps = []
 
     __shared_state = {
         "available": {},
@@ -63,11 +63,11 @@ class ApplicationRegistry(object):
         self.interviews[interview_id][app_name] = None
 
     def non_essential_apps(self):
-        if not self.__non_essential_apps:
+        if not self._non_essential_apps:
             for key in self.available:
                 if (self.available[key]._essential is False):
-                    self.__non_essential_apps.append(self.available[key])
-        return self.__non_essential_apps
+                    self._non_essential_apps.append(self.available[key])
+        return self._non_essential_apps
 
     def apps_for_interview(self, interview_id):
         return self.interviews[interview_id]\
