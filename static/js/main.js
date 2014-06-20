@@ -9,7 +9,7 @@ define(function() {
 
     require(['interview'], function(interview) {
         require.config({
-            baseUrl: 'http://127.0.0.1:8000/static/js'
+            baseUrl: 'http://akobi.info/static/js'
         });
 
         var interview = new interview.Interview();
