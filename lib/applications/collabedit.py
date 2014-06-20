@@ -74,7 +74,7 @@ class CollabEditHandler(BaseApplication):
                 self._invalid_message_error(CollabEditHandler.RECEIVED_DIFF,
                                             message["type"])
             self.state = CollabEditHandler.INITIAL
-            IOLoop.instance().add_timeout(time.time() + 5,
+            IOLoop.instance().add_timeout(time.time() + .1,
                                           self._start_synchronization_loop)
 
         else:
