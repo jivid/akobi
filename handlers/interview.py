@@ -7,9 +7,10 @@ from akobi import log
 from akobi.lib import utils
 from akobi.lib.applications.registry import registry
 from akobi.lib.applications.heartbeat import HeartbeatApplication
+from akobi.lib.applications import notes
 from akobi.lib.initializer import Initializer
 from akobi.lib.interviews import ongoing_interviews
-from akobi.lib.applications import notes
+from akobi.lib.utils import function_as_callback
 
 
 class InterviewHandler(WebSocketHandler):
@@ -65,5 +66,5 @@ class InterviewHandler(WebSocketHandler):
     def on_close(self):
         live_apps = registry.apps_for_interview(self.interview_id)
         for app_name in live_apps:
-            live_apps[app_name].on_client_leave()
+            function_as_callback(live_apps[app_name].on_client_leave)
         log.info("Web socket connection closed.")
