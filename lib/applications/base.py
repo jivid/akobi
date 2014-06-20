@@ -2,6 +2,12 @@ class BaseApplication(object):
     """
     Base class that all applications will inherit from.
     """
+
+   # All apps are non-essential by default. Set this member to
+   # true in subclass that implements an essential app.
+
+    essential = False
+
     def handle_message(self, *args, **kwargs):
         raise NotImplementedError
 
@@ -11,5 +17,12 @@ class BaseApplication(object):
         initialization before you can begin handling client messages.
         Called every time a new client joins an interview in which your
         application is registered.
+        """
+        pass
+
+    def on_client_leave(self, *args, **kwargs):
+        """
+        Override this no-op if you need your application to perform
+        clean up or take action when a websocket is closed.
         """
         pass

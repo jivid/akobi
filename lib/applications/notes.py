@@ -18,5 +18,7 @@ class NotesApplication(BaseApplication):
         redis.hset("notes", client_id, message['data']['note'])
         log.debug(redis.hget("notes", client_id))
 
+    def on_client_leave(self, *args, **kwargs):
+        log.info("on_client_leave for notes application called.")
 
 registry.register("Notes", NotesApplication)
