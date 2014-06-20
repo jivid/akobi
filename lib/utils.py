@@ -17,17 +17,19 @@ def function_as_callback(function, *args, **kwargs):
     IOLoop.instance().add_callback(function, *args, **kwargs)
 
 
+def register_timeout(timeout, method, *args, **kwargs):
+    IOLoop.instance().add_timeout(timeout, method, *args, **kwargs)
+
+
 # Adds the application msg handler to the bottom of the event queue.
 def handle_message_as_callback(application, *args, **kwargs):
     if not isinstance(application, BaseApplication):
             raise RuntimeError(
                 "Application passed to async_handle must subclass "
                 + "BaseApplication")
-
     if not hasattr(application, "handle_message"):
         raise AttributeError("%s doesn't have a handle() method" %
                              handler.__class__.__name__)
-
     function_as_callback(application.handle_message, *args, **kwargs)
 
 
