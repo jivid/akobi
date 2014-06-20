@@ -9,12 +9,12 @@
 </head>
 <h1>{{ applications }}</h1>
 <body>
-  {% if applications["Notes"][0] == "on" %}
+  {% if "Notes" in applications %}
     <textarea id="notes" rows="4" cols="50">
     Enter your interview notes here. They will be emailed to you at the end of the interview.
     </textarea>
   {% end %}
-  {% if applications["Collabedit"][0] == "on" %}
+  {% if "Collabedit" in applications %}
     <textarea id="collabedit" rows="4" cols="50">
     This is a collaborative editor.
     </textarea>
@@ -80,7 +80,7 @@
     var notes = $('#notes');
     var notesTimer = null;
     var diffObj = new diff_match_patch();
-  	var text1Shadow = "";
+  	var text1Shadow = "This is a collaborative editor.";
 
     function initInterview(clientID) {
         webSocket.send({
