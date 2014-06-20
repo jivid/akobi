@@ -1,11 +1,12 @@
 define(function() {
     var Note = Backbone.Model.extend({
-        initialize: function() {
-            this.contents = "Enter your notes here";
+
+        defaults: {
+            contents : "Enter your notes here"
         },
 
         clear: function() {
-            this.contents = "";
+            this.set({'contents' : ""});
         },
 
         sync: function() {
@@ -14,7 +15,7 @@ define(function() {
                 clientID: interview.client.id,
                 interviewID: interview.id,
                 data: {
-                    note: this.contents
+                    note: this.get('contents')
                 }
             });
             countMe("note_sync");
@@ -43,7 +44,7 @@ define(function() {
         },
 
         saveNoteState: function() {
-            this.model.contents = this.$el.children('#notebox').val();
+            this.model.set({'contents' : this.$el.children('#notebox').val()});
         },
 
         captureAndSync: function() {

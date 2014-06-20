@@ -6,6 +6,7 @@ from akobi.lib.applications.registry import registry
 applications = registry.available.keys()
 applications.remove("Heartbeat")
 
+
 class InterviewHandler(RequestHandler):
     def get(self, *args, **kwargs):
         self.render(
@@ -24,9 +25,9 @@ class SetupHandler(RequestHandler):
         application_state = {}
 
         for application in applications:
-            if (self.get_query_argument(application)):
+            if self.get_query_argument(application, None):
                 application_state[application] = self.get_query_argument(
-                                                                application)
+                    application)
 
         # TODO: We should probably do this more like a product serial than
         # just a random id.
@@ -34,5 +35,5 @@ class SetupHandler(RequestHandler):
 
         self.render(
             '../templates/setup_complete.html',
-            interview_id = interview_id,
-            application_state = application_state)
+            interview_id=interview_id,
+            application_state=application_state)
