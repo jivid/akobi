@@ -1,4 +1,10 @@
 define(function() {
+
+    var ASK_DIFF = 1;
+    var RECEIVED_DIFF = 2;
+    var APPLY_DIFF = 3;
+    var ACK = 4;
+
     var diffObj = new diff_match_patch();
 
     var CollabEditText = Backbone.Model.extend({
@@ -18,7 +24,7 @@ define(function() {
             ('contents'));
 
             // Save the current text to diff agaisnt in future.
-            this.set({'shadow': this.get('contents')})
+            this.set({'shadow': this.get('contents')});
 
             return diff;
         },
@@ -29,7 +35,7 @@ define(function() {
                 clientID: interview.client.id,
                 interviewID: interview.id,
                 data: {
-                    type: 2,
+                    type: RECEIVED_DIFF,
                     data: this.getDiff()
                 }
             });
@@ -40,17 +46,15 @@ define(function() {
             var patch = diffObj.patch_make(this.get('shadow'), diff);
 
             // Patch the shadow then the main text.
-            this.set({'shadow' : diffObj.patch_apply(patch, this.get('shadow'))
-            [0]});
-            this.set({'contents': diffObj.patch_apply(patch, this.get
-            ('contents'))[0]});
+            this.set({'shadow' : diffObj.patch_apply(patch, this.get('shadow'))[0]});
+            this.set({'contents': diffObj.patch_apply(patch, this.get('contents'))[0]});
 
             interview.socket.send({
                 type: 'collabedit',
                 clientID: interview.client.id,
                 interviewID: interview.id,
                 data: {
-                    type: 4,
+                    type: ACK,
                     data: {}
                 }
             });
@@ -72,24 +76,23 @@ define(function() {
 
             this.model.on('change:contents', function(event){
                 this.$el.children('#collabedit').val(event.attributes.contents);
-            }, this)
+            }, this);
         },
 
         capture: function() {
-            this.model.set({'contents' : this.$el.children('#collabedit').val
-            ()});
+            this.model.set({'contents' : this.$el.children('#collabedit').val()});
         },
 
     });
 
-    collabEditView = new CollabEditView();
+    var collabEditView = new CollabEditView();
 
     EventBus.on("collabedit", function(msg) {
         switch (msg.data.type){
-            case 1:
+            case ASK_DIFF:
                 collabEditView.model.sendDiff();
                 break;
-            case 3:
+            case APPLY_DIFF:
                 collabEditView.model.applyDiff(msg.data.data);
                 break;
         }

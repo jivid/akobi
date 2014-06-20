@@ -1,10 +1,9 @@
 import time
 
-from tornado.ioloop import IOLoop
 from akobi.lib.applications.registry import registry
 from akobi.lib.applications.base import BaseApplication
-from akobi import log
 from akobi.lib import utils
+from akobi import log
 
 
 
@@ -39,43 +38,43 @@ class CollabEditHandler(BaseApplication):
             log.error("More than two people tried to connect to collab edit.")
 
     def _invalid_message_error(expected, actual, self):
-        log.error(" Collabedit was expecting to receive a message of type"
+        log.error("Collabedit was expecting to receive a message of type"
                   "%s but instead got a message of type %s." % (
                   expected, actual))
 
     def handle_message(self, message, *args, **kwargs):
 
         # Collab Edit specific message data is in the data field. 
-        message = message["data"]
+        message = message['data']
 
         if self.state == CollabEditHandler.DIFF_WAIT_CL1:
-            if message["type"] != CollabEditHandler.RECEIVED_DIFF:
+            if message['type'] != CollabEditHandler.RECEIVED_DIFF:
                 self._invalid_message_error(CollabEditHandler.RECEIVED_DIFF,
                                             message["type"])
             CollabEditHandler._send_diff(message["data"], self.sockets[1])
             self.state += 1
 
         elif self.state == CollabEditHandler.ACK_WAIT_CL1:
-            if message["type"] != CollabEditHandler.ACK:
+            if message['type'] != CollabEditHandler.ACK:
                 self._invalid_message_error(CollabEditHandler.RECEIVED_DIFF,
                                             message["type"])
             CollabEditHandler._ask_diff(self.sockets[1])
             self.state += 1
 
         elif self.state == CollabEditHandler.DIFF_WAIT_CL2:
-            if message["type"] != CollabEditHandler.RECEIVED_DIFF:
+            if message['type'] != CollabEditHandler.RECEIVED_DIFF:
                 self._invalid_message_error(CollabEditHandler.RECEIVED_DIFF,
                                             message["type"])
             CollabEditHandler._send_diff(message["data"], self.sockets[0])
             self.state += 1
 
         elif self.state == CollabEditHandler.ACK_WAIT_CL2:
-            if message["type"] != CollabEditHandler.ACK:
+            if message['type'] != CollabEditHandler.ACK:
                 self._invalid_message_error(CollabEditHandler.RECEIVED_DIFF,
                                             message["type"])
             self.state = CollabEditHandler.INITIAL
-            IOLoop.instance().add_timeout(time.time() + .1,
-                                          self._start_synchronization_loop)
+            utils.register_timeout(
+                time.time() + .1, self._start_synchronization_loop)
 
         else:
             log.error(
@@ -85,7 +84,9 @@ class CollabEditHandler(BaseApplication):
     @staticmethod
     def _ask_diff(socket):
         data = {"type": CollabEditHandler.ASK_DIFF, "data": None}
-        message = utils.create_message("collabedit", "", "", **data)
+        message = utils.create_message("collabedit", socket.client_id,
+                                       socket.interview_id,
+                                       **data)
         socket.write_message(message)
 
     @staticmethod

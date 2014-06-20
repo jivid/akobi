@@ -2,11 +2,11 @@ define(function() {
     var Note = Backbone.Model.extend({
 
         defaults: {
-            contents = "Enter your notes here";
+            contents : "Enter your notes here"
         },
 
         clear: function() {
-            this.set({'contents : ""});
+            this.set({'contents' : ""});
         },
 
         sync: function() {
