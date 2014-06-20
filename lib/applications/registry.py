@@ -65,7 +65,7 @@ class ApplicationRegistry(object):
     def non_essential_apps(self):
         if not self._non_essential_apps:
             for key in self.available:
-                if (self.available[key]._essential is False):
+                if not self.available[key]._essential:
                     self._non_essential_apps.append(self.available[key])
         return self._non_essential_apps
 

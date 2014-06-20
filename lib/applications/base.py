@@ -3,11 +3,10 @@ class BaseApplication(object):
     Base class that all applications will inherit from.
     """
 
-    '''
-    All apps are non-essential by default. Set this member to
-    true in subclass that implements an essential app.
-    '''
-    _essential = False
+   # All apps are non-essential by default. Set this member to
+   # true in subclass that implements an essential app.
+
+    essential = False
 
     def handle_message(self, *args, **kwargs):
         raise NotImplementedError
