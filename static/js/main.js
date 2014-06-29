@@ -7,11 +7,20 @@ define(function() {
     window.EventBus = {};
     _.extend(EventBus, Backbone.Events);
 
-    require(['interview'], function(interview) {
-        require.config({
-            baseUrl: 'http://akobi.info/static/js'
-        });
+    require.config({
+        baseUrl: '/static/js',
+        paths: {
+            JSXTransformer: 'ext/JSXTransformer',
+            jsx: 'ext/jsx'
+        },
+        shim: {
+            JSXTransformer: {
+                exports: 'JSXTransformer'
+            }
+        }
+    });
 
+    require(['interview'], function(interview) {
         var interview = new interview.Interview();
         window.interview = interview;
     });

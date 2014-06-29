@@ -1,4 +1,4 @@
-define(function() {
+require(["jsx!others"], function(others) {
     var sendHeartbeat = function() {
         interview.socket.send({
             type: 'heartbeat',
