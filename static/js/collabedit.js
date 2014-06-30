@@ -61,8 +61,17 @@ define(function() {
         }
     });
 
+    var CollabEditBox = React.createClass({
+        render: function() {
+            return (
+                <textarea id="collabedit" rows={this.props.rows} cols={this.props.cols}>
+                    {this.props.value}
+                </textarea>
+            );
+        }
+    });
+
     var CollabEditView = Backbone.View.extend({
-        el: $('#collabedit').parent(),
 
         initialize: function() {
             this.model = new CollabEditText();
@@ -77,6 +86,15 @@ define(function() {
             this.model.on('change:contents', function(event){
                 this.$el.children('#collabedit').val(event.attributes.contents);
             }, this);
+
+            this.render();
+        },
+
+        render: function() {
+            React.renderComponent(
+                <CollabEditBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
+            );
+            $('body').append(this.$el);
         },
 
         capture: function() {
