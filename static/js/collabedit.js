@@ -1,4 +1,4 @@
-define(["jsx!others"], function(others) {
+define(function() {
 
     var ASK_DIFF = 1;
     var RECEIVED_DIFF = 2;
@@ -77,18 +77,11 @@ define(["jsx!others"], function(others) {
             this.model.on('change:contents', function(event){
                 this.$el.children('#collabedit').val(event.attributes.contents);
             }, this);
-
-            this.render();
         },
 
         capture: function() {
             this.model.set({'contents' : this.$el.children('#collabedit').val()});
         },
-
-        render: function() {
-            console.log(others.Collabedit)
-        }
-
     });
 
     var collabEditView = new CollabEditView();

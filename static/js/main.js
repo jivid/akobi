@@ -25,8 +25,20 @@ define(function() {
         window.interview = interview;
     });
 
-    // TODO: Move these requires to happen after receiving the list of
-    //       applications for this interview so we're not running
-    //       unnecessary code
-    require(['common', 'heartbeat', 'notes', 'collabedit']);
+    var getAppsEnabled = function() {
+        params = location.search.replace('?', '');
+        params = params.split('&');
+        apps = [];
+        _.each(params, function(param) {
+            apps.push(param.split('=')[0]);
+        });
+        return apps;
+    };
+
+    var toLoad = _.map(getAppsEnabled(), function(app) {
+        return "jsx!" + app.toLowerCase();
+    });
+
+    require(toLoad);
+    require(['common', 'heartbeat']);
 });

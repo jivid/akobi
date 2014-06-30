@@ -22,8 +22,17 @@ define(function() {
         }
     });
 
+    var NoteBox = React.createClass({
+        render: function() {
+            return (
+                <textarea id="notebox" rows={this.props.rows} cols={this.props.cols}>
+                    {this.props.value}
+                </textarea>
+            );
+        }
+    });
+
     var NoteView = Backbone.View.extend({
-        el: $('#notebox').parent(),
 
         events: {
             "focusin #notebox"  : "startShortCapture",
@@ -41,6 +50,15 @@ define(function() {
             EventBus.on("socket_closed", function() {
                 clearInterval(this.longCapture);
             });
+
+            this.render();
+        },
+
+        render: function() {
+            React.renderComponent(
+                <NoteBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
+            );
+            $('body').append(this.$el);
         },
 
         saveNoteState: function() {

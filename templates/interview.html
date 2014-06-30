@@ -14,11 +14,6 @@
 </head>
 <h1>{{ applications }}</h1>
 <body>
-  {% if "Notes" in applications %}
-    <textarea id="notebox" rows="4" cols="50">
-    Enter your interview notes here. They will be emailed to you at the end of the interview.
-    </textarea>
-  {% end %}
   {% if "Collabedit" in applications %}
     <textarea id="collabedit" rows="4" cols="50">
     This is a collaborative editor.
