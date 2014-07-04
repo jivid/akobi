@@ -1,11 +1,11 @@
-define(function() {
+define(['ext/diff_match_patch'], function(DiffMatchPatch) {
 
     var ASK_DIFF = 1;
     var RECEIVED_DIFF = 2;
     var APPLY_DIFF = 3;
     var ACK = 4;
 
-    var diffObj = new diff_match_patch();
+    var diffObj = new DiffMatchPatch.diff_match_patch();
 
     var CollabEditText = Backbone.Model.extend({
 
@@ -39,6 +39,7 @@ define(function() {
                     data: this.getDiff()
                 }
             });
+            console.log("Diff succesfully sent");
         },
 
         applyDiff: function(diff){
@@ -102,14 +103,19 @@ define(function() {
         },
     });
 
+    console.log("Creating view");
     var collabEditView = new CollabEditView();
 
+    console.log("Setting up trigger listener");
     EventBus.on("collabedit", function(msg) {
+        console.log("Got collabedit message");
         switch (msg.data.type){
             case ASK_DIFF:
+                console.log("Sending diff");
                 collabEditView.model.sendDiff();
                 break;
             case APPLY_DIFF:
+                console.log("Got diff: " + msg.data.data);
                 collabEditView.model.applyDiff(msg.data.data);
                 break;
         }

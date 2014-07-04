@@ -1,0 +1,12 @@
+<!-- Create a simple CodeMirror instance -->
+<textarea id="#editor" style="border: 1px black"> </textarea>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.3.0/codemirror.css">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.3.0/codemirror.js"></script>
+<script>
+  var editor = CodeMirror.fromTextArea(
+  document.getElementById('#editor'),
+  {
+    lineNumbers: true,
+    mode: "text/html"
+  });
+</script>

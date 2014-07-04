@@ -11,11 +11,15 @@ define(function() {
         baseUrl: '/static/js',
         paths: {
             JSXTransformer: 'ext/JSXTransformer',
+            DiffMatchPatch: 'ext/diff_match_patch',
             jsx: 'ext/jsx'
         },
         shim: {
             JSXTransformer: {
                 exports: 'JSXTransformer'
+            },
+            DiffMatchPatch: {
+                exports: 'DiffMatchPatch'
             }
         }
     });
