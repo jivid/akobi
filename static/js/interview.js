@@ -21,7 +21,16 @@ define(['socket'], function(socket) {
 
             this.socket.on("message", $.proxy(function(msg) {
                 if (msg.type == "open_response") {
+                    console.log("Received open_response");
                     this.client = new Client({id: msg.clientID});
+                } else if (msg.type == "init_finished") {
+                    require('common');
+                    var applications = msg.data.applications;
+                    applications.forEach(function(app) {
+                        console.info("Requesting JavaScript for: "
+                            + app.toLowerCase());
+                        require(app.toLowerCase());
+                    });
                 } else {
                     this.processMessage(msg);
                 }
