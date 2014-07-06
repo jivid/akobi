@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Akobi Bitches!!!!!</title>
-</head>
-<body>	{% import urllib %}
+{% block title %} Setup Complete {% end %}
+
+{% block content %}
+  {% import urllib %}
 	{% set query_string = "?" + urllib.urlencode(application_state) %}
   	Interview url is:
   	<a href="/i/{{interview_id}}{{query_string}}">url</a>
-  </h2>
-</body>
-</html>
+{% end %}

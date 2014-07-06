@@ -31,6 +31,7 @@ define(['socket'], function(socket) {
         processMessage: function(msg) {
             console.log("Interview got msg with type " + msg.type);
             EventBus.trigger(msg.type, msg);
+            console.log("Put msg with type " + msg.type + " on the bus");
         }
     });
 

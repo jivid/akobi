@@ -108,7 +108,7 @@ define(['ext/diff_match_patch'], function(DiffMatchPatch) {
 
     console.log("Setting up trigger listener");
     EventBus.on("collabedit", function(msg) {
-        console.log("Got collabedit message");
+        console.log("Got collabedit message of type " + msg.data.type);
         switch (msg.data.type){
             case ASK_DIFF:
                 console.log("Sending diff");

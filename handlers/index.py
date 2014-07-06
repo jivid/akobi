@@ -9,13 +9,12 @@ applications.remove("Heartbeat")
 
 class InterviewHandler(RequestHandler):
     def get(self, *args, **kwargs):
-        self.render(
-            '../templates/interview.html', applications=self.request.arguments)
+        self.render('interview.html', applications=self.request.arguments)
 
 
 class IndexHandler(RequestHandler):
     def get(self, *args, **kwargs):
-        self.render('../templates/index.html', applications=applications)
+        self.render('index.html', applications=applications)
 
 
 class SetupHandler(RequestHandler):
@@ -34,6 +33,6 @@ class SetupHandler(RequestHandler):
         interview_id = make_random_string(length=30)
 
         self.render(
-            '../templates/setup_complete.html',
+            'setup_complete.html',
             interview_id=interview_id,
             application_state=application_state)
