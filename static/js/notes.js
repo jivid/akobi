@@ -26,7 +26,7 @@ define(function() {
         render: function() {
             classString = "akobi-container";
             return (
-                <textarea className={classString} rows={this.props.rows} cols={this.props.cols}>
+                <textarea id="notebox" className={classString} rows={this.props.rows} cols={this.props.cols}>
                     {this.props.value}
                 </textarea>
             );
@@ -63,6 +63,7 @@ define(function() {
         },
 
         saveNoteState: function() {
+            console.log("The note has: " + this.$el.children('#notebox').val());
             this.model.set({'contents' : this.$el.children('#notebox').val()});
         },
 

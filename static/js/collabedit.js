@@ -68,6 +68,8 @@ define(['ext/diff_match_patch'], function(DiffMatchPatch) {
             return (
                 <div className={classString}>
                     <div id="collabedit">
+                    def func():
+                        pass
                     </div>
                 </div>
             );
@@ -87,7 +89,9 @@ define(['ext/diff_match_patch'], function(DiffMatchPatch) {
             });
 
             this.model.on('change:contents', function(event){
-                this.$el.children('#collabedit').val(event.attributes.contents);
+                cursor = this.editor.getCursorPosition();
+                this.editor.session.setValue(event.attributes.contents, 1);
+                this.editor.moveCursorToPosition(cursor);
             }, this);
 
             this.render();
@@ -98,14 +102,14 @@ define(['ext/diff_match_patch'], function(DiffMatchPatch) {
                 <CollabEditBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
             );
             $('body').append(this.$el);
-            var editor = ace.edit("collabedit");
-            editor.setOption("wrap", 80);
-            editor.setTheme("ace/theme/monokai");
-            editor.getSession().setMode("ace/mode/python");
+            this.editor = ace.edit("collabedit");
+            this.editor.setOption("wrap", 80);
+            this.editor.setTheme("ace/theme/monokai");
+            this.editor.getSession().setMode("ace/mode/python");
         },
 
         capture: function() {
-            this.model.set({'contents' : this.$el.children('#collabedit').val()});
+            this.model.set({'contents' : this.editor.session.doc.getValue()});
         },
     });
 
