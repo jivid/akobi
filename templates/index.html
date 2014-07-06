@@ -5,7 +5,7 @@
   <h2>(1) Choose your Modules</h2>
   <form action="/setup_complete" method="get">
     {% for application in applications %}
-    <input type="checkbox" name="{{ application }}">{{ application }}</input>
+    <input type="checkbox" class="checkbox" name="{{ application }}">{{ application }}</input>
     <br/>
     {% end %}
     <h2>(2) Profit</h2>

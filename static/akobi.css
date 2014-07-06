@@ -6214,3 +6214,6 @@ h6 {
   line-height: 1.1;
   color: inherit;
 }
+.navbar {
+  border-radius: 0px;
+}

@@ -24,17 +24,12 @@ define(function() {
 
     var NoteBox = React.createClass({
         render: function() {
+            classString = "akobi-container";
             return (
-                <div>
-                    <div ref="notebox" id="notebox">
-                        {this.props.value}
-                    </div>
-                </div>
+                <textarea className={classString} rows={this.props.rows} cols={this.props.cols}>
+                    {this.props.value}
+                </textarea>
             );
-        },
-
-        componentDidMount: function() {
-            var box = this.refs.notebox.getDOMNode();
         }
     });
 
@@ -65,9 +60,6 @@ define(function() {
                 <NoteBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
             );
             $('body').append(this.$el);
-            var editor = ace.edit("notebox");
-            editor.setOption("wrap", 80);
-            window.editor = editor
         },
 
         saveNoteState: function() {
