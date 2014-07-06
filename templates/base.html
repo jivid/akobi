@@ -2,10 +2,15 @@
 <html>
   <head>
     <link rel="stylesheet" href="/static/akobi.css">
-    <title>{% block title %}{% end %}</title>
+    <title>{% block title %}Akobi{% end %}</title>
+    {% block headextras%}{% end %}
   </head>
 
   <body>
+    {% block navbar %}
+        
+    {% end %}
+
     {% block content %}{% end %}
   </body>
 </html>

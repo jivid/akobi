@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Tornado WebSocket Sample</title>
+{% extends "base.html" %}
+
+{% block title %} Interview {% end %}
+
+{% block headextras %}
   <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"/></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"/></script>
@@ -21,9 +21,8 @@
         height: 700px;
     }
   </style>
-</head>
-<h1>{{ applications }}</h1>
-<body>
-</body>
-</html>
+{% end %}
 
+{% block content %}
+<h1>{{ applications }}</h1>
+{% end %}
