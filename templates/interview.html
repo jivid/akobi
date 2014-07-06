@@ -8,7 +8,7 @@
   <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"/></script>
   <script src="http://akobi.info/static/js/ext/diff_match_patch.js"></script>
   <script
-          data-main="http://akobi.info/static/js/main"
+          data-main="/static/js/main"
           src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
 </head>
 <h1>{{ applications }}</h1>
@@ -22,6 +22,12 @@
     <textarea id="collabedit" rows="4" cols="50">
     This is a collaborative editor.
     </textarea>
+  {% end %}
+  {% if "Video" in applications %}
+  <video id="local_video" width="200" height="200" autoplay="true"
+         muted="true"></video>
+   <video id="remote_video" width="400" height="400" autoplay="true"
+         muted="true"></video>
   {% end %}
 </body>
 </html>
