@@ -23,14 +23,12 @@ define(['socket'], function(socket) {
                 if (msg.type == "open_response") {
                     this.client = new Client({id: msg.clientID});
                 } else if (msg.type == "init_finished") {
-                    require('common');
-
                     /*
                      * Build a list of applications to be "required"
                      * based on what apps were added to the interview at
                      * creation time.
                      */
-                    var requireApps = [];
+                    var requireApps = ['common'];
                     var apps = msg.data.applications;
                     apps.forEach(function(app) {
                         console.log("Adding " + app.toLowerCase()
