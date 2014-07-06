@@ -21,16 +21,23 @@ define(['socket'], function(socket) {
 
             this.socket.on("message", $.proxy(function(msg) {
                 if (msg.type == "open_response") {
-                    console.log("Received open_response");
                     this.client = new Client({id: msg.clientID});
                 } else if (msg.type == "init_finished") {
                     require('common');
-                    var applications = msg.data.applications;
-                    applications.forEach(function(app) {
-                        console.info("Requesting JavaScript for: "
-                            + app.toLowerCase());
-                        require(app.toLowerCase());
+
+                    /*
+                     * Build a list of applications to be "required"
+                     * based on what apps were added to the interview at
+                     * creation time.
+                     */
+                    var requireApps = [];
+                    var apps = msg.data.applications;
+                    apps.forEach(function(app) {
+                        console.log("Adding " + app.toLowerCase()
+                            + " to list of apps to be \"required\"");
+                        requireApps.push(app.toLowerCase());
                     });
+                    require(requireApps);
                 } else {
                     this.processMessage(msg);
                 }
