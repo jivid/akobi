@@ -75,7 +75,7 @@ class CollabEditHandler(BaseApplication):
                                             message["type"])
             self.state = CollabEditHandler.INITIAL
             utils.register_timeout(
-                time.time() + .1, self._start_synchronization_loop)
+                time.time() + .025, self._start_synchronization_loop)
 
         else:
             log.error(

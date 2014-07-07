@@ -82,7 +82,7 @@ define(['ext/diff_match_patch'], function(DiffMatchPatch) {
             this.model = new CollabEditText();
 
             this.captureInterval = setInterval(
-                $.proxy(this.capture, this), 1000
+                $.proxy(this.capture, this), 250
             );
             EventBus.on("socket_closed", function() {
                 clearInterval(this.captureInterval);
