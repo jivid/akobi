@@ -6217,3 +6217,14 @@ h6 {
 .navbar {
   border-radius: 0px;
 }
+.akobi-container {
+  float: left;
+}
+#notebox {
+  width: 600px;
+  height: 250px;
+}
+#collabedit {
+  width: 600px;
+  height: 600px;
+}

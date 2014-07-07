@@ -26,14 +26,15 @@ define(function() {
         render: function() {
             classString = "akobi-container";
             return (
-                <textarea id="notebox" className={classString} rows={this.props.rows} cols={this.props.cols}>
+                <div id="notebox" className={classString}>
                     {this.props.value}
-                </textarea>
+                </div>
             );
         }
     });
 
     var NoteView = Backbone.View.extend({
+        className: "app-container",
 
         events: {
             "focusin #notebox"  : "startShortCapture",
@@ -60,11 +61,13 @@ define(function() {
                 <NoteBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
             );
             $('body').append(this.$el);
+            this.editor = ace.edit('notebox');
+            this.editor.setShowPrintMargin(false);
         },
 
         saveNoteState: function() {
-            console.log("The note has: " + this.$el.children('#notebox').val());
-            this.model.set({'contents' : this.$el.children('#notebox').val()});
+            var contents = this.editor.session.getValue();
+            this.model.set({'contents' : contents});
         },
 
         captureAndSync: function() {

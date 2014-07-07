@@ -104,8 +104,8 @@ define(['ext/diff_match_patch'], function(DiffMatchPatch) {
             $('body').append(this.$el);
             this.editor = ace.edit("collabedit");
             this.editor.setOption("wrap", 80);
-            this.editor.setTheme("ace/theme/monokai");
-            this.editor.getSession().setMode("ace/mode/python");
+            this.editor.setTheme("ace/theme/eclipse");
+            this.editor.getSession().setMode("ace/mode/java");
         },
 
         capture: function() {

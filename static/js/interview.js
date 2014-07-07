@@ -33,7 +33,7 @@ define(['socket'], function(socket) {
                     apps.forEach(function(app) {
                         console.log("Adding " + app.toLowerCase()
                             + " to list of apps to be \"required\"");
-                        requireApps.push(app.toLowerCase());
+                        requireApps.push("jsx!" + app.toLowerCase());
                     });
                     require(requireApps);
                 } else {
