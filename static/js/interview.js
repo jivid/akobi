@@ -22,20 +22,6 @@ define(['socket'], function(socket) {
             this.socket.on("message", $.proxy(function(msg) {
                 if (msg.type == "open_response") {
                     this.client = new Client({id: msg.clientID});
-                } else if (msg.type == "init_finished") {
-                    /*
-                     * Build a list of applications to be "required"
-                     * based on what apps were added to the interview at
-                     * creation time.
-                     */
-                    var requireApps = ['common'];
-                    var apps = msg.data.applications;
-                    apps.forEach(function(app) {
-                        console.log("Adding " + app.toLowerCase()
-                            + " to list of apps to be \"required\"");
-                        requireApps.push(app.toLowerCase());
-                    });
-                    require(requireApps);
                 } else {
                     this.processMessage(msg);
                 }
