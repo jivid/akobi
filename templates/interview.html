@@ -23,6 +23,11 @@
     This is a collaborative editor.
     </textarea>
   {% end %}
+  {% if "Video" in applications %}
+  <video id="local_video" width="200" height="200" autoplay="true"
+         muted="true"></video>
+   <video id="remote_video" width="400" height="400" autoplay="true"></video>
+  {% end %}
 </body>
 </html>
 

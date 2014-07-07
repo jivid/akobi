@@ -9,6 +9,7 @@ app = Application([
     (r'/', index.IndexHandler),
     (r'/static/(.*)', StaticFileHandler, {'path': './static/'}),
     (r'/setup_complete', index.SetupHandler),
+    (r'/static/(.*)', StaticFileHandler, {'path': './static/'}),
     (r'/i/(\w+)', index.InterviewHandler),
     (r'/i/(\w+)/socket', interview.InterviewHandler),
     ], **settings)

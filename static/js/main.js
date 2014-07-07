@@ -19,5 +19,5 @@ define(function() {
     // TODO: Move these requires to happen after receiving the list of
     //       applications for this interview so we're not running
     //       unnecessary code
-    require(['common', 'heartbeat', 'notes', 'collabedit']);
+    require(['common', 'heartbeat', 'notes', 'collabedit', 'video']);
 });
