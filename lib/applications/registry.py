@@ -69,10 +69,6 @@ class ApplicationRegistry(object):
                     self._non_essential_apps.append(self.available[key])
         return self._non_essential_apps
 
-    def app_names_for_interview(self, interview_id):
-        return self.interviews[interview_id].keys()\
-            if interview_id in self.interviews else None
-
     def apps_for_interview(self, interview_id):
         return self.interviews[interview_id]\
             if interview_id in self.interviews else None
