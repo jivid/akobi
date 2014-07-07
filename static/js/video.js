@@ -1,4 +1,4 @@
-define(["videoadapter"], function(videoAdapter) {
+define(["ext/videoadapter", "util"], function(videoAdapter, util) {
 
     var SET_CALLER = 1;
     var SIGNALLING = 2;
@@ -18,7 +18,7 @@ define(["videoadapter"], function(videoAdapter) {
     var pc;
 
     var errorCallback = function(error){
-        console.log(error.toString());
+        util.throwException(error);
     }
 
     var waitForPC = function(callback, arg){

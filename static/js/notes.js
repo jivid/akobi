@@ -44,7 +44,6 @@ define(function() {
         },
 
         saveNoteState: function() {
-            console.log(this.$el.children('#notebox').val());
             this.model.set({'contents' : this.$el.children('#notebox').val()});
         },
 
