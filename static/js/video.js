@@ -7,20 +7,9 @@ define(["videoadapter"], function(videoAdapter) {
       'iceServers': [
         {
           'url': 'stun:stun.l.google.com:19302'
-        },
-        {
-          'url': 'turn:192.158.29.39:3478?transport=udp',
-          'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-          'username': '28224511:1379330808'
-        },
-        {
-          'url': 'turn:192.158.29.39:3478?transport=tcp',
-          'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-          'username': '28224511:1379330808'
         }
       ]
     }
-
 
     var localVideo;
     var remoteVideo;
@@ -47,7 +36,6 @@ define(["videoadapter"], function(videoAdapter) {
     }
 
     var respondToOffer = function(offer){
-        console.log(offer);
         pc.setRemoteDescription(new RTCSessionDescription(offer), function(){
              pc.createAnswer(setLocalAndSend, errorCallback)
         }, errorCallback);
@@ -71,7 +59,6 @@ define(["videoadapter"], function(videoAdapter) {
     }
 
     EventBus.on("video", function(msg) {
-        console.log(msg.data);
         switch (msg.data.type){
             case SET_CALLER:
                 if(msg.data.data.isCaller){
@@ -129,7 +116,6 @@ define(["videoadapter"], function(videoAdapter) {
                 });
             }
            }
-
         }, this), errorCallback);
 
 });
