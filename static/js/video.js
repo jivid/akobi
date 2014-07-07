@@ -98,7 +98,7 @@ define(["videoadapter"], function(videoAdapter) {
     });
 
     videoAdapter.getUserMedia(
-        {video: true, audio : false}, $.proxy(function(localMediaStream){
+        {video: true, audio : true}, $.proxy(function(localMediaStream){
            localStream = localMediaStream;
            localVideo= $('#local_video');
            remoteVideo= $('#remote_video');
