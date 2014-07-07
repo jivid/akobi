@@ -34,7 +34,7 @@ class CollabEditHandler(BaseApplication):
         if len(self.sockets) < 2:
             self.sockets.append(socket)
             if len(self.sockets) == 2:
-                time.sleep(1)
+                time.sleep(2)
                 log.debug(
                     "Two people connected to interview starting collabEdit "
                     "synchronization.")
