@@ -11,7 +11,6 @@
   <script
           data-main="/static/js/main"
           src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
-
   <style type="text/css" media="screen">
     .akobi-container {
         float: left;
@@ -29,5 +28,11 @@
 {% end %}
 
 {% block content %}
-<h1>{{ applications }}</h1>
+    <h1>{{ applications }}</h1>
+
+    {% if "Video" in applications %}
+        <video id="local_video" width="200" height="200" autoplay="true"
+                muted="true"></video>
+        <video id="remote_video" width="400" height="400" autoplay="true"></video>
+    {% end %}
 {% end %}
