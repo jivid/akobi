@@ -1,9 +1,11 @@
 define(function() {
-
     var ASK_DIFF = 1;
     var RECEIVED_DIFF = 2;
     var APPLY_DIFF = 3;
     var ACK = 4;
+    var ASK_SHADOW = 5;
+    var RECEIVED_SHADOW = 6;
+    var APPLY_SHADOW = 7;
 
     var diffObj = new diff_match_patch();
 
@@ -37,6 +39,32 @@ define(function() {
                 data: {
                     type: RECEIVED_DIFF,
                     data: this.getDiff()
+                }
+            });
+        },
+
+        sendShadow: function() {
+            interview.socket.send({
+                type: 'collabedit',
+                clientID: interview.client.id,
+                interviewID: interview.id,
+                data: {
+                    type: RECEIVED_SHADOW,
+                    data: this.get('shadow')
+                }
+            });
+        },
+
+        applyShadow: function(shadow){
+            this.set({'shadow': shadow});
+
+            interview.socket.send({
+                type: 'collabedit',
+                clientID: interview.client.id,
+                interviewID: interview.id,
+                data: {
+                    type: ACK,
+                    data: {}
                 }
             });
         },
@@ -88,12 +116,19 @@ define(function() {
     var collabEditView = new CollabEditView();
 
     EventBus.on("collabedit", function(msg) {
+        console.debug("collabedit got message" + JSON.stringify(msg));
         switch (msg.data.type){
             case ASK_DIFF:
                 collabEditView.model.sendDiff();
                 break;
             case APPLY_DIFF:
                 collabEditView.model.applyDiff(msg.data.data);
+                break;
+            case ASK_SHADOW:
+                collabEditView.model.sendShadow();
+                break;
+            case APPLY_SHADOW:
+                collabEditView.model.applyShadow(msg.data.data);
                 break;
         }
     });
