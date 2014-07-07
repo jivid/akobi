@@ -56,12 +56,14 @@ class InterviewHandler(WebSocketHandler):
             Initializer.initialize(message['interviewID'], self)
 
             self.write_message(utils.create_message("init_finished",
-                               self.client_id, self.interview_id))
+                               self.client_id, self.interview_id,
+                               applications = registry.app_names_for_interview(
+                               self.interview_id)))
             return
 
         application = registry.find(message['interviewID'],
                                     utils.message_type_to_application_name(
-                                    message["type"]))
+                                    message['type']))
 
         application.handle_message(message, ongoing_interviews)
 
