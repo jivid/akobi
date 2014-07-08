@@ -1,4 +1,5 @@
-define(['ext/diff_match_patch'], function(DiffMatchPatch) {
+/** @jsx React.DOM **/
+define(['common', 'ext/diff_match_patch'], function(common, DiffMatchPatch) {
 
     var ASK_DIFF = 1;
     var RECEIVED_DIFF = 2;
@@ -39,7 +40,6 @@ define(['ext/diff_match_patch'], function(DiffMatchPatch) {
                     data: this.getDiff()
                 }
             });
-            console.log("Diff succesfully sent");
         },
 
         applyDiff: function(diff){
@@ -64,19 +64,16 @@ define(['ext/diff_match_patch'], function(DiffMatchPatch) {
 
     var CollabEditBox = React.createClass({
         render: function() {
-            var classString = "akobi-container";
             return (
-                <div className={classString}>
-                    <div id="collabedit">
-                    def func():
-                        pass
-                    </div>
+                <div id="collabedit">
+                    # Welcome to the Akobi Collaborative Code Editor! Currently, we only
+                    support Python syntax highlighting, but support for more languages will be added soon!
                 </div>
             );
         }
     });
 
-    var CollabEditView = Backbone.View.extend({
+    var CollabEditView = common.AkobiApplicationView.extend({
 
         initialize: function() {
             this.model = new CollabEditText();
@@ -101,11 +98,11 @@ define(['ext/diff_match_patch'], function(DiffMatchPatch) {
             React.renderComponent(
                 <CollabEditBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
             );
-            $('body').append(this.$el);
+            $('#app-space').append(this.$el);
             this.editor = ace.edit("collabedit");
             this.editor.setOption("wrap", 80);
-            this.editor.setTheme("ace/theme/eclipse");
-            this.editor.getSession().setMode("ace/mode/java");
+            this.editor.setTheme("ace/theme/monokai");
+            this.editor.getSession().setMode("ace/mode/python");
         },
 
         capture: function() {
@@ -113,12 +110,9 @@ define(['ext/diff_match_patch'], function(DiffMatchPatch) {
         },
     });
 
-    console.log("Creating view");
     var collabEditView = new CollabEditView();
 
-    console.log("Setting up trigger listener");
     EventBus.on("collabedit", function(msg) {
-        console.log("Got collabedit message of type " + msg.data.type);
         switch (msg.data.type){
             case ASK_DIFF:
                 console.log("Sending diff");

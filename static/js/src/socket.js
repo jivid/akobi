@@ -33,7 +33,6 @@ define(["util"], function(util) {
         }, this);
 
         this.socket.onmessage = $.proxy(function(e) {
-            console.log("From Socket, got message of type: " + JSON.parse(e.data).type);
             this.trigger("message", JSON.parse(e.data));
         }, this);
 

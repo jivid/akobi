@@ -8,7 +8,7 @@ define(function() {
     _.extend(EventBus, Backbone.Events);
 
     require.config({
-        baseUrl: '/static/js',
+        baseUrl: '/static/js/build',
         paths: {
             JSXTransformer: 'ext/JSXTransformer',
             DiffMatchPatch: 'ext/diff_match_patch',
@@ -28,4 +28,21 @@ define(function() {
         var interview = new interview.Interview();
         window.interview = interview;
     });
+
+    var getAppsEnabled = function() {
+        params = location.search.replace('?', '');
+        params = params.split('&');
+        apps = [];
+        _.each(params, function(param) {
+            apps.push(param.split('=')[0]);
+        });
+        return apps;
+    };
+
+    var toLoad = _.map(getAppsEnabled(), function(app) {
+        return "jsx!" + app.toLowerCase();
+    });
+
+    require(toLoad);
+    require(['common', 'heartbeat']);
 });

@@ -2,33 +2,19 @@
 
 {% block title %} Interview {% end %}
 
-{% block headextras %}
+{% block scripts%}
   <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"/></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"/></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.10.0/react.min.js"/></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.10.0/react-with-addons.min.js"/></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"/></script>
   <script
-          data-main="/static/js/main"
+          data-main="/static/js/build/main"
           src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
-  <style type="text/css" media="screen">
-    .akobi-container {
-        float: left;
-    }
-    #notebox {
-        width: 600px;
-        height: 250px;
-    }
-
-    #collabedit{
-        width: 800px;
-        height: 500px;
-    }
-  </style>
 {% end %}
 
 {% block content %}
-    <h1>{{ applications }}</h1>
+    <div id="app-space"></div>
 
     {% if "Video" in applications %}
         <video id="local_video" width="200" height="200" autoplay="true"

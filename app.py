@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 from tornado.httpserver import HTTPServer
@@ -15,7 +16,6 @@ settings = {
 
 app = Application([
     (r'/', index.IndexHandler),
-    (r'/static/(.*)', StaticFileHandler, {'path': './static/'}),
     (r'/setup_complete', index.SetupHandler),
     (r'/static/(.*)', StaticFileHandler, {'path': './static/'}),
     (r'/i/(\w+)', index.InterviewHandler),
@@ -23,15 +23,15 @@ app = Application([
     ], **settings)
 
 
-def assets_built():
-    return os.path.exists("static/akobi.css")
+def build_assets():
+    cmd = ['fab', 'build_assets']
+    subprocess.call(cmd)
 
 def main():
-    if not assets_built():
-        print "Akobi CSS isn't built!"
-        print "Run 'fab build_assets' before starting the app"
-        sys.exit(1)
+    print "Building assets"
+    build_assets()
 
+    print "Running server"
     http_server = HTTPServer(app)
     http_server.listen(8888)
     IOLoop.instance().start()

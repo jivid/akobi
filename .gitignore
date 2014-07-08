@@ -2,3 +2,5 @@
 *.pyc
 *.log
 .idea/*
+static/js/build/
+static/css/build/

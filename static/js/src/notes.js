@@ -1,4 +1,5 @@
-define(function() {
+/** @jsx React.DOM **/
+define(['common'], function(common) {
     var Note = Backbone.Model.extend({
 
         defaults: {
@@ -24,18 +25,19 @@ define(function() {
 
     var NoteBox = React.createClass({
         render: function() {
-            classString = "akobi-container";
+            var classes = React.addons.classSet({
+                'app': true,
+                'shadow': true
+            });
             return (
-                <div id="notebox" className={classString}>
+                <div id="notebox" className={classes}>
                     {this.props.value}
                 </div>
             );
         }
     });
 
-    var NoteView = Backbone.View.extend({
-        className: "app-container",
-
+    var NoteView = common.AkobiApplicationView.extend({
         events: {
             "focusin #notebox"  : "startShortCapture",
             "focusout #notebox" : "stopShortCapture"
@@ -60,9 +62,8 @@ define(function() {
             React.renderComponent(
                 <NoteBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
             );
-            $('body').append(this.$el);
+            $('#app-space').append(this.$el);
             this.editor = ace.edit('notebox');
-            this.editor.setShowPrintMargin(false);
         },
 
         saveNoteState: function() {

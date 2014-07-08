@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/static/akobi.css">
+    <link rel="stylesheet" href="/static/css/build/akobi.css">
     <title>{% block title %}Akobi{% end %}</title>
-    {% block headextras%}{% end %}
+    {% block stylesheets %}{% end %}
+    {% block scripts %}{% end %}
   </head>
 
   <body>
     {% block navbar %}
         <nav class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">Akobi</a>
             </div>
