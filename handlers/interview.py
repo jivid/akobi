@@ -19,6 +19,7 @@ class InterviewHandler(WebSocketHandler):
         super(InterviewHandler, self).__init__(*args, **kwargs)
         self.client_id = None
         self.interview_id = None
+        self.interview_initialized = False
 
     def open(self, interview_id):
         log.debug(
@@ -54,11 +55,12 @@ class InterviewHandler(WebSocketHandler):
 
             Initializer.initialize(message['interviewID'], self)
 
+            self.interview_initialized = True
             self.write_message(utils.create_message("init_finished",
                                self.client_id, self.interview_id))
             return
         elif message['type'] == "auth":
-            interview_id = message['interview_id']
+            interview_id = message['interviewID']
             email = message['data']['email']
 
             log.debug("Attempting authentication on email %s for interview %s"
@@ -74,26 +76,28 @@ class InterviewHandler(WebSocketHandler):
             if email == interviewer_email:
                 self.write_message(utils.create_message("auth_response",
                                                         interview_id,
-                                                        message['client_id'],
+                                                        message['clientID'],
                                                         success=1,
                                                         role='interviewer'))
             elif email == interviewee_email:
                 self.write_message(utils.create_message("auth_response",
                                                         interview_id,
-                                                        message['client_id'],
+                                                        message['clientID'],
                                                         success=1,
                                                         role='interviewee'))
             else:
                 self.write_message(utils.create_message("auth_response",
                                                         interview_id,
-                                                        message['client_id'],
+                                                        message['clientID'],
                                                         success=0))
+            return
 
-        application = registry.find(message['interviewID'],
-                                    utils.message_type_to_application_name(
-                                    message["type"]))
+        if self.interview_initialized is True:
+            application = registry.find(message['interviewID'],
+                                        utils.message_type_to_application_name(
+                                        message["type"]))
 
-        application.handle_message(message, ongoing_interviews)
+            application.handle_message(message, ongoing_interviews)
 
     def on_close(self):
         live_apps = registry.apps_for_interview(self.interview_id)

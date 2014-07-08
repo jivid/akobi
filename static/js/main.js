@@ -12,28 +12,12 @@ define(function() {
             baseUrl: '/static/js'
         });
 
-        login_button = document.getElementById("login")
-        login_button.
+        var interview = new interview.Interview();
+        window.interview = interview;
     });
 
     // TODO: Move these requires to happen after receiving the list of
     //       applications for this interview so we're not running
     //       unnecessary code
-    require(['common', 'heartbeat', 'notes', 'collabedit']);
-
-    EventBus.on("auth_response", function() {
-        if (msg.data.success == 1) {
-            console.log(msg.data.role);
-            loginSuccess();
-        } else {
-            
-        }
-    });
-
-    function
-
-    function loginSuccess() {
-        var interview = new interview.Interview();
-        window.interview = interview;
-    }
+    require(['common', 'auth', 'heartbeat', 'notes', 'collabedit']);
 });
