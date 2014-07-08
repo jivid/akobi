@@ -5,7 +5,7 @@ from tornado.websocket import WebSocketHandler
 from akobi import log
 
 from akobi.lib import utils
-from akobi.lib.applications import heartbeat, collabedit, notes
+from akobi.lib.applications import heartbeat, collabedit, notes, video
 from akobi.lib.applications.registry import registry
 from akobi.lib.initializer import Initializer
 from akobi.lib.interviews import ongoing_interviews
@@ -52,6 +52,7 @@ class InterviewHandler(WebSocketHandler):
             registry.register_to_interview(self.interview_id, "Heartbeat")
             registry.register_to_interview(self.interview_id, "Notes")
             registry.register_to_interview(self.interview_id, "Collabedit")
+            registry.register_to_interview(self.interview_id, "Video")
 
             Initializer.initialize(message['interviewID'], self)
 
