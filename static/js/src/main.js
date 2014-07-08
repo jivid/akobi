@@ -40,7 +40,7 @@ define(function() {
     };
 
     var toLoad = _.map(getAppsEnabled(), function(app) {
-        return "jsx!" + app.toLowerCase();
+        return app.toLowerCase();
     });
 
     require(toLoad);

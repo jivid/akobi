@@ -33,7 +33,7 @@ class CollabEditHandler(BaseApplication):
                     "Two people connected to interview starting collabEdit "
                     "synchronization.")
                 self.state = CollabEditHandler.INITIAL
-                time.sleep(3)
+                #time.sleep(3)
                 self._start_synchronization_loop()
         else:
             log.error("More than two people tried to connect to collab edit.")
