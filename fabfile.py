@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from fabric.api import local, env
 
@@ -12,11 +13,18 @@ def prepare_build_dirs():
             os.makedirs(path)
 
 
+def clean_dirs():
+    for d in ['js', 'css']:
+        path = os.path.join(STATIC_PATH, d, 'build')
+        if os.path.exists(path) and os.path.isdir(path):
+            shutil.rmtree(path)
+
+
 def build_css():
     less_file = os.path.join(STATIC_PATH, 'less', 'akobi.less')
     css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi.css')
 
-    local("lessc %s > %s" % (less_file, css_file))
+    local("lessc --compress %s > %s" % (less_file, css_file))
 
 
 def transform_jsx():
@@ -25,9 +33,6 @@ def transform_jsx():
     js_ext = os.path.join(js_dir, 'ext')
     js_build = os.path.join(js_dir, 'build')
     js_build_ext = os.path.join(js_build, 'ext')
-
-    # remove existing sources
-    local("rm -rf %s/*" % (js_build))
 
     # transform JSX
     local("jsx %s %s" % (js_src, js_build))
@@ -38,6 +43,9 @@ def transform_jsx():
 
 
 def build_assets():
+    print "Cleaning up old files"
+    clean_dirs()
+
     print "Preparing for build"
     prepare_build_dirs()
 
