@@ -24,7 +24,7 @@ app = Application([
 
 
 def build_assets():
-    cmd = ['fab', 'build_assets']
+    cmd = ['fab', 'local', 'build']
     subprocess.call(cmd)
 
 def main():
