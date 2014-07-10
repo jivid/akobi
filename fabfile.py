@@ -1,10 +1,16 @@
 import os
 import shutil
 
-from fabric.api import local, env
+from fabric.operations import local as lrun
+from fabric.api import run, task
+from fabric.state import env
 
 PROJECT_ROOT = os.path.dirname(__file__)
 STATIC_PATH = os.path.join(PROJECT_ROOT, 'static')
+
+@task
+def local():
+    env.run = lrun
 
 def prepare_build_dirs():
     for d in ['js', 'css']:
@@ -24,7 +30,7 @@ def build_css():
     less_file = os.path.join(STATIC_PATH, 'less', 'akobi.less')
     css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi.css')
 
-    local("lessc --compress %s > %s" % (less_file, css_file))
+    env.run("lessc --compress %s > %s" % (less_file, css_file))
 
 
 def transform_jsx():
@@ -35,14 +41,15 @@ def transform_jsx():
     js_build_ext = os.path.join(js_build, 'ext')
 
     # transform JSX
-    local("jsx %s %s" % (js_src, js_build))
+    env.run("jsx %s %s" % (js_src, js_build))
 
     # copy external libs
     os.makedirs(js_build_ext)
-    local("cp -Rf %s %s" % (js_ext, js_build))
+    env.run("cp -Rf %s %s" % (js_ext, js_build))
 
 
-def build_assets():
+@task
+def build():
     print "Cleaning up old files"
     clean_dirs()
 
