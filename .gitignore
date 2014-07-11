@@ -3,3 +3,4 @@
 *.log
 *.rdb
 .idea/*
+dump.rdb

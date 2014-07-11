@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Tornado WebSocket Sample</title>
+  <title>Akobi Interview</title>
   <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"/></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"/></script>
@@ -10,6 +10,7 @@
   <script
           data-main="/static/js/main"
           src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
+   <link rel="stylesheet" type="text/css" href="/static/css/interview.css">
 </head>
 <h1>{{ applications }}</h1>
 <body>
@@ -28,6 +29,15 @@
          muted="true"></video>
    <video id="remote_video" width="400" height="400" autoplay="true"></video>
   {% end %}
+    <div id= "overlay"></div>
+    <div id="login_dialog" class="modal">
+        <div>
+            <label id="error_label"></label>
+            <br/>
+            <input id="email_text" type="text" autocomplete="on" placeholder="Email"/>
+            <br/>
+            <button id="login_button">Submit</button>
+        </div>
+    </div>
 </body>
 </html>
-

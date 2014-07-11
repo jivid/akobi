@@ -32,8 +32,8 @@ class VideoApplication(BaseApplication):
             if socket.client_id != message['clientID']:
                 socket.write_message(message)
 
-    def on_client_leave(self, *args, **kwargs):
-        log.info("on_client_leave for video application called.")
+    def on_client_leave(self, socket, *args, **kwargs):
+        self.sockets.remove(socket)
 
 
 registry.register("Video", VideoApplication)

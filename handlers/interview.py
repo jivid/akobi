@@ -1,5 +1,4 @@
 import json
-import uuid
 
 from tornado.websocket import WebSocketHandler
 
@@ -9,8 +8,7 @@ from akobi.lib.applications import heartbeat, collabedit, notes, video
 from akobi.lib.applications.registry import registry
 from akobi.lib.initializer import Initializer
 from akobi.lib.interviews import ongoing_interviews
-from akobi.lib.initializer import Initializer
-from akobi.lib.interviews import ongoing_interviews
+from akobi.lib.redis_client import redis_client
 from akobi.lib.utils import function_as_callback
 
 
@@ -20,6 +18,7 @@ class InterviewHandler(WebSocketHandler):
         super(InterviewHandler, self).__init__(*args, **kwargs)
         self.client_id = None
         self.interview_id = None
+        self.interview_initialized = False
 
     def open(self, interview_id):
         log.debug(
@@ -56,15 +55,49 @@ class InterviewHandler(WebSocketHandler):
 
             Initializer.initialize(message['interviewID'], self)
 
+            self.interview_initialized = True
             self.write_message(utils.create_message("init_finished",
                                self.client_id, self.interview_id))
             return
+        elif message['type'] == "auth":
+            interview_id = message['interviewID']
+            email = message['data']['email']
 
-        application = registry.find(message['interviewID'],
-                                    utils.message_type_to_application_name(
-                                    message["type"]))
+            log.debug("Attempting authentication on email %s for interview %s"
+                      % (email, interview_id))
 
-        application.handle_message(message, ongoing_interviews)
+            redis = redis_client.get_redis_instance()
+
+            interviewer_email = redis.hget("interview:%s" % interview_id,
+                                           "interviewer_email")
+            interviewee_email = redis.hget("interview:%s" % interview_id,
+                                           "interviewee_email")
+
+            if email == interviewer_email:
+                self.write_message(utils.create_message("auth_response",
+                                                        interview_id,
+                                                        message['clientID'],
+                                                        success=1,
+                                                        role='interviewer'))
+            elif email == interviewee_email:
+                self.write_message(utils.create_message("auth_response",
+                                                        interview_id,
+                                                        message['clientID'],
+                                                        success=1,
+                                                        role='interviewee'))
+            else:
+                self.write_message(utils.create_message("auth_response",
+                                                        interview_id,
+                                                        message['clientID'],
+                                                        success=0))
+            return
+
+        if self.interview_initialized is True:
+            application = registry.find(message['interviewID'],
+                                        utils.message_type_to_application_name(
+                                        message["type"]))
+
+            application.handle_message(message, ongoing_interviews)
 
     def on_close(self):
         live_apps = registry.apps_for_interview(self.interview_id)
