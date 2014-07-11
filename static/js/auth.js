@@ -7,7 +7,7 @@ define(function() {
             clientID: '',
             interviewID: interview.id,
             data: {
-                email: email_text
+                email: email
             }
         });
     };
