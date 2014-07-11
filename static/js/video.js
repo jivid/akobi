@@ -17,17 +17,28 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
     var remoteStream;
     var pc;
 
+
     var errorCallback = function(error){
         util.throwException(error);
     }
 
-    var waitForPC = function(callback, arg){
+    var waitForPC = function(callback){
         if(pc == undefined){
             setTimeout(function(){
-                waitForPC(callback, arg);
+                waitForPC(callback);
             }, 1000);
         }else{
-            callback(arg);
+            callback();
+        }
+    }
+
+    var waitForMediaStream = function(callback){
+        if(localStream == undefined){
+            setTimeout(function(){
+                waitForMediaStream(callback);
+            }, 1000);
+        }else{
+            callback();
         }
     }
 
@@ -46,7 +57,7 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
     }
 
     var setLocalAndSend = function(sessionDescription){
-        pc.setLocalDescription(sessionDescription);
+        pc.setLocalDescription(sessionDescription, function(){}, errorCallback);
         interview.socket.send({
             type: 'video',
             clientID: interview.client.id,
@@ -62,46 +73,45 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
         switch (msg.data.type){
             case SET_CALLER:
                 if(msg.data.data.isCaller){
-                    waitForPC(createOffer);
+                    initialize(createOffer);
                 }
                 break;
             case SIGNALLING:
                 if (msg.data.data.sessionDescription){
                     if (msg.data.data.sessionDescription.type == "offer"){
-                        waitForPC(respondToOffer, msg.data.data.sessionDescription);
+                        initialize(function(){
+                            respondToOffer(msg.data.data.sessionDescription);
+                        });
                     } else if (msg.data.data.sessionDescription.type == "answer"){
                         pc.setRemoteDescription(new RTCSessionDescription
-                        (msg.data.data.sessionDescription));
+                        (msg.data.data.sessionDescription), function(){},
+                        errorCallback);
                     }
                 }
                 else if (msg.data.data.type == "candidate"){
                     var candidate = new RTCIceCandidate({sdpMLineIndex : msg
                     .data.data.label, candidate : msg.data.data.candidate,
                     sdpMid : msg.data.data.id});
-                    waitForPC(addIceCandidate, candidate);
+                    waitForPC(function(){
+                        addIceCandidate(candidate);
+                    });
                 }
                 break;
         }
     });
 
-    videoAdapter.getUserMedia(
-        {video: true, audio : true}, $.proxy(function(localMediaStream){
-           localStream = localMediaStream;
-           localVideo= $('#local_video');
-           remoteVideo= $('#remote_video');
-           localVideo.attr("src", window.URL
-                .createObjectURL(localMediaStream));
-           pc = new videoAdapter.RTCPeerConnection(pc_config);
+    var createPC = function(){
+        pc = new videoAdapter.RTCPeerConnection(pc_config);
+        pc.addStream(localStream);
 
-           pc.addStream(localStream);
 
-           pc.onaddstream = function(event){
-                remoteVideo.attr("src", window.URL.createObjectURL(event
-                .stream));
-                remoteStream = event.stream
-           };
+        pc.onaddstream = function(event){
+            remoteVideo.attr("src", window.URL.createObjectURL(event
+            .stream));
+            remoteStream = event.stream
+        };
 
-           pc.onicecandidate = function(event){
+        pc.onicecandidate = function(event){
             if (event.candidate){
                 interview.socket.send({
                     type: 'video',
@@ -112,11 +122,29 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
                         data: { type : "candidate", label : event.candidate
                         .sdpMLineIndex, id: event.candidate.sdpMid, candidate
                          : event.candidate.candidate}
-                    }
+                        }
                 });
             }
-           }
-        }, this), errorCallback);
+        }
+    }
 
+    var getLocalStream = function(){
+        videoAdapter.getUserMedia( {video: true, audio : true}, function
+        (localMediaStream){
+            localStream = localMediaStream;
+            localVideo= $('#local_video');
+            remoteVideo= $('#remote_video');
+            localVideo.attr("src", window.URL.createObjectURL(localMediaStream));
+        }, errorCallback);
+    }
+
+    var initialize = function(callback){
+        waitForMediaStream(function(){
+                createPC();
+                callback();
+        });
+    }
+
+    getLocalStream();
 });
 
