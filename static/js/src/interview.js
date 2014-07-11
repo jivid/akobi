@@ -18,6 +18,15 @@ define(['socket', 'auth'], function(socket, auth) {
             this.socket.on("message", $.proxy(function(msg) {
                 if (msg.type == "open_response") {
                     this.client = new Client({id: msg.clientID});
+                } else if (msg.type == "auth_response") {
+                    console.log(msg);
+                    if (!(msg.data.success == 1)) {
+                        $('#error_label').text("Email address is invalid for this interview");
+                        return;
+                    }
+
+                    auth.loginSuccess();
+                    this.loadApplications();
                 } else {
                     this.processMessage(msg);
                 }
@@ -26,10 +35,27 @@ define(['socket', 'auth'], function(socket, auth) {
 
         processMessage: function(msg) {
             EventBus.trigger(msg.type, msg);
+        },
+
+        loadApplications: function() {
+            var getAppsEnabled = function() {
+                params = location.search.replace('?', '');
+                params = params.split('&');
+                apps = [];
+                _.each(params, function(param) {
+                    apps.push(param.split('=')[0]);
+                });
+                return apps;
+            };
+
+            var toLoad = _.map(getAppsEnabled(), function(app) {
+                return app.toLowerCase();
+            });
+
+            require(toLoad);
+            require(['common', 'heartbeat']);
         }
     });
-
-
 
     return {
         Interview: Interview

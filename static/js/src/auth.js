@@ -24,18 +24,11 @@ define(function() {
     };
 
     var authenticate = function() {
-        EventBus.on("auth_response", function(msg) {
-            if (msg.data.success == 1) {
-                loginSuccess();
-            } else {
-                $('#error_label').text("Email address is invalid for this interview");
-            }
-        });
-
         $('#login_button').on('click', attemptLogin);
     };
 
     return {
-        authenticate: authenticate
+        authenticate: authenticate,
+        loginSuccess: loginSuccess
     };
 });
