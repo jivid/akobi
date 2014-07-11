@@ -21,3 +21,38 @@
     height: @box-rect-big-long-height;
 }
 
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0096d2;
+    opacity: 1;
+}
+
+.modal {
+     visibility: true;
+     position: absolute;
+     left: 0px;
+     top: 0px;
+     width: 100%;
+     height: 100%;
+     text-align: center;
+     z-index: 1000;
+}
+
+.modal div {
+     width: 300px;
+     margin: 100px auto;
+     background-color: #fff;
+     border: 1px solid #000;
+     padding: 15px;
+     text-align: center;
+}
+
+#error_label {
+    color: red;
+    font-size: 12px;
+}
+

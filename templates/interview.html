@@ -14,17 +14,18 @@
 {% end %}
 
 {% block content %}
-    <div id= "overlay"></div>
-    <div id="login_dialog" class="modal">
-        <div>
-            <label id="error_label"></label>
-            <br/>
-            <input id="email_text" type="text" autocomplete="on" placeholder="Email"/>
-            <br/>
-            <button id="login_button">Submit</button>
+    <div id="app-space">
+        <div id= "overlay"></div>
+        <div id="login_dialog" class="modal">
+            <div>
+                <label id="error_label"></label>
+                <br/>
+                <input id="email_text" type="text" autocomplete="on" placeholder="Email"/>
+                <br/>
+                <button id="login_button">Submit</button>
+            </div>
         </div>
     </div>
-    <div id="app-space"></div>
 
     {% if "Video" in applications %}
         <video id="local_video" width="200" height="200" autoplay="true"
