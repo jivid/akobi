@@ -16,7 +16,9 @@ define(["util"], function(util) {
             }
 
             msg.datetime = new Date();
-            this.sendToServer(JSON.stringify(msg));
+            if (this.readyState == this.OPEN) {
+                this.sendToServer(JSON.stringify(msg));
+            }
         }
 
         this.hash = window.location.pathname.split('/')[2];
