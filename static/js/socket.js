@@ -16,7 +16,7 @@ define(["util"], function(util) {
             }
 
             msg.datetime = new Date();
-            if (this.readyState == this.OPEN){
+            if (this.readyState == this.OPEN) {
                 this.sendToServer(JSON.stringify(msg));
             }
         }

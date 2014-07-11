@@ -55,7 +55,7 @@ define(function() {
             });
         },
 
-        applyShadow: function(shadow){
+        applyShadow: function(shadow) {
             this.set({'shadow': shadow});
 
             interview.socket.send({
@@ -116,7 +116,6 @@ define(function() {
     var collabEditView = new CollabEditView();
 
     EventBus.on("collabedit", function(msg) {
-        console.debug("collabedit got message" + JSON.stringify(msg));
         switch (msg.data.type){
             case ASK_DIFF:
                 collabEditView.model.sendDiff();
