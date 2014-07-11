@@ -1,4 +1,4 @@
-define(['socket'], function(socket) {
+define(['socket', 'auth'], function(socket, auth) {
     var Client = Backbone.Model.extend({
         initialize: function(obj) {
             this.id = obj.id;
@@ -12,11 +12,7 @@ define(['socket'], function(socket) {
             this.id = window.location.pathname.split('/')[2];
 
             this.socket.on("open", $.proxy(function() {
-                this.socket.send({
-                    type : 'init_interview',
-                    clientID : "",
-                    interviewID : this.id
-                });
+                auth.authenticate();
             }, this));
 
             this.socket.on("message", $.proxy(function(msg) {
@@ -32,6 +28,8 @@ define(['socket'], function(socket) {
             EventBus.trigger(msg.type, msg);
         }
     });
+
+
 
     return {
         Interview: Interview
