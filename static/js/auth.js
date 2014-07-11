@@ -1,49 +1,41 @@
 define(function() {
+    var attemptLogin = function() {
+        var email = $('#email_text').val();
 
-    var Authentication = Backbone.Model.extend({
+        interview.socket.send({
+            type: 'auth',
+            clientID: '',
+            interviewID: interview.id,
+            data: {
+                email: email_text
+            }
+        });
+    };
 
-        initialize: function() {
+    var loginSuccess = function() {
+        $('#login_dialog').attr('visibility', 'hidden');
+        $('#overlay').attr('visibility', 'hidden');
 
-            document.getElementById("login_button").onclick = this.attemptLogin;
+        interview.socket.send({
+            type : 'init_interview',
+            clientID : "",
+            interviewID : interview.id
+        });
+    };
 
-            EventBus.on("auth_response", function(msg) {
-                if (msg.data.success == 1) {
-                    console.debug(msg.data.role);
-                    interview.authentication.loginSuccess();
-                } else {
-                    console.debug("Login Error");
-                    document.getElementById("error_label").innerHTML = "Email address is invalid for this interview";
-                }
-            });
-        },
+    var authenticate = function() {
+        EventBus.on("auth_response", function(msg) {
+            if (msg.data.success == 1) {
+                loginSuccess();
+            } else {
+                $('#error_label').text("Email address is invalid for this interview");
+            }
+        });
 
-        attemptLogin: function() {
-            var email_text = document.getElementById("email_text").value;
-
-            interview.socket.send({
-                type: 'auth',
-                clientID: '',
-                interviewID: interview.id,
-                data: {
-                    email: email_text
-                }
-            });
-        },
-
-        loginSuccess: function() {
-            console.debug("Login Success");
-            document.getElementById("login_dialog").style.visibility = "hidden"
-            document.getElementById("overlay").style.visibility = "hidden"
-
-            interview.socket.send({
-                    type : 'init_interview',
-                    clientID : "",
-                    interviewID : interview.id
-                });
-        }
-    });
+        $('#login_button').on('click', attemptLogin());
+    };
 
     return {
-        Authentication: Authentication
+        authenticate: authenticate
     };
 });

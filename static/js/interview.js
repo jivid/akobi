@@ -12,7 +12,7 @@ define(['socket', 'auth'], function(socket, auth) {
             this.id = window.location.pathname.split('/')[2];
 
             this.socket.on("open", $.proxy(function() {
-                this.authentication = new auth.Authentication();
+                auth.authenticate();
             }, this));
 
             this.socket.on("message", $.proxy(function(msg) {
