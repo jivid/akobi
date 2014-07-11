@@ -7,3 +7,4 @@ static/css/build/
 build/
 dist/
 *.egg-info/
+dump.rdb

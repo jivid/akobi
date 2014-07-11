@@ -13,8 +13,8 @@ define(function() {
     };
 
     var loginSuccess = function() {
-        $('#login_dialog').attr('visibility', 'hidden');
-        $('#overlay').attr('visibility', 'hidden');
+        $('#login_dialog').remove();
+        $('#overlay').remove();
 
         interview.socket.send({
             type : 'init_interview',
@@ -32,7 +32,7 @@ define(function() {
             }
         });
 
-        $('#login_button').on('click', attemptLogin());
+        $('#login_button').on('click', attemptLogin);
     };
 
     return {
