@@ -3,14 +3,13 @@ import json
 from tornado.websocket import WebSocketHandler
 
 from akobi import log
-
 from akobi.lib import utils
 from akobi.lib.applications import heartbeat, collabedit, notes, video
 from akobi.lib.applications.registry import registry
 from akobi.lib.initializer import Initializer
 from akobi.lib.interviews import ongoing_interviews
-from akobi.lib.utils import function_as_callback
 from akobi.lib.redis_client import redis_client
+from akobi.lib.utils import function_as_callback
 
 
 class InterviewHandler(WebSocketHandler):

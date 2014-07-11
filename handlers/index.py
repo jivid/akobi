@@ -1,10 +1,9 @@
 from tornado.web import RequestHandler
 
 from akobi import log
-
-from akobi.lib.utils import make_random_string
 from akobi.lib.applications.registry import registry
 from akobi.lib.redis_client import redis_client
+from akobi.lib.utils import make_random_string
 
 
 applications = registry.available.keys()
@@ -25,28 +24,25 @@ class IndexHandler(RequestHandler):
 class SetupHandler(RequestHandler):
     def get(self, *args, **kwargs):
 
-        # HTML checkboxes pass nothing if they are unchecked.1
+        # HTML checkboxes pass nothing if they are unchecked
         application_state = {}
-        interviewer_email = self.get_query_argument('interviewer_email',
-                                                    default="off")
-        interviewee_email = self.get_query_argument('interviewee_email',
-                                                    default="off")
+        interviewer = self.get_query_argument('interviewer_email')
+        interviewee = self.get_query_argument('interviewee_email')
 
         for application in applications:
             if self.get_query_argument(application, None):
                 application_state[application] = self.get_query_argument(
                     application)
 
-        redis = redis_client.get_redis_instance()
-
         # TODO: We should probably do this more like a product serial than
         # just a random id.
         interview_id = make_random_string(length=30)
 
-        redis.hset("interview:%s" % interview_id, "interviewer_email",
-                   interviewer_email)
-        redis.hset("interview:%s" % interview_id, "interviewee_email",
-                   interviewee_email)
+        redis = redis_client.get_redis_instance()
+        interview_key = "interview:%s" % (interview_id)
+        redis.hset(interview_key, "interviewer_email", interviewer)
+        redis.hset(interview_key, "interviewee_email", interviewee)
+
         self.render(
             '../templates/setup_complete.html',
             interview_id=interview_id,
