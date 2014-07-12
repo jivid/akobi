@@ -127,6 +127,7 @@ define(['common', 'ext/diff_match_patch'], function(common, DiffMatchPatch) {
             React.renderComponent(
                 <CollabEditBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
             );
+            this.$el.addClass('container-med pull-right')
             $('#app-space').append(this.$el);
             this.editor = ace.edit("collabedit");
             this.editor.setOption("wrap", 80);

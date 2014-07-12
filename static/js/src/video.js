@@ -99,14 +99,14 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
                 console.log("Setting local stream");
                 console.log(localMediaStream);
                 localStream = localMediaStream;
-                localVideo = $('#local_video');
+                localVideo = $('#local-video');
                 localVideo.attr("src", window.URL.createObjectURL(localMediaStream));
                 pc = new videoAdapter.RTCPeerConnection(pc_config);
 
                 console.log("Adding local stream");
                 pc.addStream(localStream);
 
-                remoteVideo = $('#remote_video');
+                remoteVideo = $('#remote-video');
                 pc.onaddstream = function(event){
                     remoteVideo.attr("src", window.URL.createObjectURL(event.stream));
                     remoteStream = event.stream
@@ -133,9 +133,9 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
     var VideoSpace = React.createClass({
         render: function() {
             return (
-                <div>
-                    <video id="local_video" width="200" height="200" autoPlay="true" muted="true"></video>
-                    <video id="remote_video" width="400" height="400" autoPlay="true"></video>
+                <div id="video-container">
+                    <video id="local-video" autoPlay="true" muted="true"></video>
+                    <video id="remote-video" autoPlay="true"></video>
                 </div>
             )
         }
@@ -149,6 +149,7 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
 
         render: function() {
             React.renderComponent(<VideoSpace />, this.$el.get(0));
+            this.$el.addClass("container-med pull-left");
             $('#app-space').append(this.$el);
         }
     });

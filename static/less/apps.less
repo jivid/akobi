@@ -1,9 +1,10 @@
-.app-space {
-    display: inline-block;
+#app-space {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .app-container {
-    float: left;
     padding: 15px;
 }
 
@@ -19,6 +20,7 @@
 #collabedit{
     width: @box-rect-big-long-width;
     height: @box-rect-big-long-height;
+    float: right;
 }
 
 #overlay {
@@ -58,4 +60,19 @@
 
 video {
     background: @black;
+}
+
+#video-container {
+    position: relative;
+}
+
+#local-video {
+    position: absolute;
+    width: 25%;
+}
+
+#remote-video {
+    height: 0;
+    width: 100%;
+    padding-top: 70%;
 }
