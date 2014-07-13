@@ -93,8 +93,12 @@ define(['common', 'ext/diff_match_patch'], function(common, DiffMatchPatch) {
 
     var CollabEditBox = React.createClass({
         render: function() {
+            var classes = React.addons.classSet({
+                'app': true,
+                'container-full': true,
+            });
             return (
-                <div id="collabedit">
+                <div id="collabedit" className={classes}>
                     # Welcome to the Akobi Collaborative Code Editor! Currently, we only
                     support Python syntax highlighting, but support for more languages will be added soon!
                 </div>
@@ -128,7 +132,7 @@ define(['common', 'ext/diff_match_patch'], function(common, DiffMatchPatch) {
                 <CollabEditBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
             );
             this.$el.addClass('container-med pull-right')
-            $('#app-space').append(this.$el);
+            $('#collabedit-space').append(this.$el);
             this.editor = ace.edit("collabedit");
             this.editor.setOption("wrap", 80);
             this.editor.setTheme("ace/theme/monokai");

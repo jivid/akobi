@@ -150,7 +150,7 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
         render: function() {
             React.renderComponent(<VideoSpace />, this.$el.get(0));
             this.$el.addClass("container-med pull-left");
-            $('#app-space').append(this.$el);
+            $('#video-space').append(this.$el);
         }
     });
 

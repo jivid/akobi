@@ -64,7 +64,7 @@ define(['common'], function(common) {
                 <NoteBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
             );
             this.$el.addClass("container-med pull-left");
-            $('#app-space').append(this.$el);
+            $('#notes-space').append(this.$el);
             this.editor = ace.edit('notebox');
         },
 
