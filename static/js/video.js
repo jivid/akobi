@@ -1,4 +1,8 @@
-// README FIRST http://www.html5rocks.com/en/tutorials/webrtc/basics/
+/*
+Peer 2 Peer video is implemented using the WEBRTC standard. Please see
+the below link for information on ICE clients Peer connections etc.
+README FIRST http://www.html5rocks.com/en/tutorials/webrtc/basics/
+*/
 
 define(["ext/videoadapter", "util"], function(videoAdapter, util) {
 
@@ -11,7 +15,7 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
           'url': 'stun:stun.l.google.com:19302'
         }
       ]
-    }
+    };
 
     var localVideo;
     var remoteVideo;
@@ -22,41 +26,41 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
 
     var errorCallback = function(error) {
         util.throwException(error);
-    }
+    };
 
     var waitForPC = function(callback) {
-        if(pc == undefined){
+        if(pc === undefined){
             setTimeout(function(){
                 waitForPC(callback);
-            }, 1000);
+            }, 200);
         }else{
             callback();
         }
-    }
+    };
 
     var waitForMediaStream = function(callback) {
-        if(localStream == undefined){
+        if(localStream === undefined){
             setTimeout(function(){
                 waitForMediaStream(callback);
-            }, 1000);
+            }, 200);
         }else{
             callback();
         }
-    }
+    };
 
     var createOffer = function() {
         pc.createOffer(setLocalAndSend, errorCallback);
-    }
+    };
 
     var respondToOffer = function(offer) {
         pc.setRemoteDescription(new RTCSessionDescription(offer), function(){
-             pc.createAnswer(setLocalAndSend, errorCallback)
+             pc.createAnswer(setLocalAndSend, errorCallback);
         }, errorCallback);
-    }
+    };
 
     var addIceCandidate = function(candidate) {
         pc.addIceCandidate(candidate);
-    }
+    };
 
     var setLocalAndSend = function(sessionDescription) {
         pc.setLocalDescription(sessionDescription, function(){}, errorCallback);
@@ -69,7 +73,7 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
                 data: { sessionDescription : sessionDescription}
             }
         });
-    }
+    };
 
     EventBus.on("video", function(msg) {
         switch (msg.data.type){
@@ -80,17 +84,18 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
                 break;
             case SIGNALLING:
                 if (msg.data.data.sessionDescription){
-                    if (msg.data.data.sessionDescription.type == "offer"){
-                        initialize(function(){
+                    if (msg.data.data.sessionDescription.type == "offer") {
+                        initialize(function() {
                             respondToOffer(msg.data.data.sessionDescription);
                         });
-                    } else if (msg.data.data.sessionDescription.type == "answer"){
+                    } else if (msg.data.data.sessionDescription.type ==
+                    "answer") {
                         pc.setRemoteDescription(new RTCSessionDescription
                         (msg.data.data.sessionDescription), function(){},
                         errorCallback);
                     }
                 }
-                else if (msg.data.data.type == "candidate"){
+                else if (msg.data.data.type == "candidate") {
                     var candidate = new RTCIceCandidate({sdpMLineIndex : msg
                     .data.data.label, candidate : msg.data.data.candidate,
                     sdpMid : msg.data.data.id});
@@ -110,7 +115,7 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
         pc.onaddstream = function(event) {
             remoteVideo.attr("src", window.URL.createObjectURL(event
             .stream));
-            remoteStream = event.stream
+            remoteStream = event.stream;
         };
 
         pc.onicecandidate = function(event) {
@@ -127,8 +132,8 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
                         }
                 });
             }
-        }
-    }
+        };
+    };
 
     var getLocalStream = function() {
         videoAdapter.getUserMedia( {video: true, audio : true}, function
@@ -138,15 +143,14 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
             remoteVideo= $('#remote_video');
             localVideo.attr("src", window.URL.createObjectURL(localMediaStream));
         }, errorCallback);
-    }
+    };
 
     var initialize = function(callback) {
         waitForMediaStream(function() {
                 createPC();
                 callback();
         });
-    }
+    };
 
     getLocalStream();
 });
-
