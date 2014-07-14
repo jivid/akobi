@@ -1,3 +1,5 @@
+// README FIRST http://www.html5rocks.com/en/tutorials/webrtc/basics/
+
 define(["ext/videoadapter", "util"], function(videoAdapter, util) {
 
     var SET_CALLER = 1;
@@ -18,11 +20,11 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
     var pc;
 
 
-    var errorCallback = function(error){
+    var errorCallback = function(error) {
         util.throwException(error);
     }
 
-    var waitForPC = function(callback){
+    var waitForPC = function(callback) {
         if(pc == undefined){
             setTimeout(function(){
                 waitForPC(callback);
@@ -32,7 +34,7 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
         }
     }
 
-    var waitForMediaStream = function(callback){
+    var waitForMediaStream = function(callback) {
         if(localStream == undefined){
             setTimeout(function(){
                 waitForMediaStream(callback);
@@ -42,21 +44,21 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
         }
     }
 
-    var createOffer = function(){
+    var createOffer = function() {
         pc.createOffer(setLocalAndSend, errorCallback);
     }
 
-    var respondToOffer = function(offer){
+    var respondToOffer = function(offer) {
         pc.setRemoteDescription(new RTCSessionDescription(offer), function(){
              pc.createAnswer(setLocalAndSend, errorCallback)
         }, errorCallback);
     }
 
-    var addIceCandidate = function(candidate){
+    var addIceCandidate = function(candidate) {
         pc.addIceCandidate(candidate);
     }
 
-    var setLocalAndSend = function(sessionDescription){
+    var setLocalAndSend = function(sessionDescription) {
         pc.setLocalDescription(sessionDescription, function(){}, errorCallback);
         interview.socket.send({
             type: 'video',
@@ -100,18 +102,18 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
         }
     });
 
-    var createPC = function(){
+    var createPC = function() {
         pc = new videoAdapter.RTCPeerConnection(pc_config);
         pc.addStream(localStream);
 
 
-        pc.onaddstream = function(event){
+        pc.onaddstream = function(event) {
             remoteVideo.attr("src", window.URL.createObjectURL(event
             .stream));
             remoteStream = event.stream
         };
 
-        pc.onicecandidate = function(event){
+        pc.onicecandidate = function(event) {
             if (event.candidate){
                 interview.socket.send({
                     type: 'video',
@@ -128,7 +130,7 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
         }
     }
 
-    var getLocalStream = function(){
+    var getLocalStream = function() {
         videoAdapter.getUserMedia( {video: true, audio : true}, function
         (localMediaStream){
             localStream = localMediaStream;
@@ -138,8 +140,8 @@ define(["ext/videoadapter", "util"], function(videoAdapter, util) {
         }, errorCallback);
     }
 
-    var initialize = function(callback){
-        waitForMediaStream(function(){
+    var initialize = function(callback) {
+        waitForMediaStream(function() {
                 createPC();
                 callback();
         });
