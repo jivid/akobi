@@ -20,13 +20,13 @@ class VideoApplication(BaseApplication):
                     "data": {"isCaller": True}}
 
             message = utils.create_message("video", "", "", **data)
-            self.sockets[0].write_message(message)
+            self.sockets[1].write_message(message)
 
             data = {"type": VideoApplication.SET_CALLER,
                     "data": {"isCaller": False}}
 
             message = utils.create_message("video", "", "", **data)
-            self.sockets[1].write_message(message)
+            self.sockets[0].write_message(message)
 
     def handle_message(self, message, interviews, *args, **kwargs):
         for socket in self.sockets:
