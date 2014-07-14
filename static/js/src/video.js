@@ -1,16 +1,23 @@
 /** @jsx React.DOM **/
+/*
+Peer 2 Peer video is implemented using the WEBRTC standard. Please see
+the below link for information on ICE clients Peer connections etc.
+README FIRST http://www.html5rocks.com/en/tutorials/webrtc/basics/
+*/
+
 define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, util) {
+
     var setupVideo = function() {
         var SET_CALLER = 1;
         var SIGNALLING = 2;
 
         var pc_config = {
-            'iceServers': [
-                {
-                    'url': 'stun:stun.l.google.com:19302'
-                }
-            ]
-        }
+        'iceServers': [
+            {
+            'url': 'stun:stun.l.google.com:19302'
+            }
+        ]
+        };
 
         var localVideo;
         var remoteVideo;
@@ -18,36 +25,47 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
         var remoteStream;
         var pc;
 
-        var errorCallback = function(error){
+
+        var errorCallback = function(error) {
             util.throwException(error);
-        }
+        };
 
-        var waitForPC = function(callback, arg){
-            if(pc == undefined){
+        var waitForPC = function(callback) {
+            if(pc === undefined){
                 setTimeout(function(){
-                    waitForPC(callback, arg);
-                }, 1000);
+                    waitForPC(callback);
+                }, 200);
             }else{
-                callback(arg);
+                callback();
             }
-        }
+        };
 
-        var createOffer = function(){
+        var waitForMediaStream = function(callback) {
+            if(localStream === undefined){
+                setTimeout(function(){
+                    waitForMediaStream(callback);
+                }, 200);
+            }else{
+                callback();
+            }
+        };
+
+        var createOffer = function() {
             pc.createOffer(setLocalAndSend, errorCallback);
-        }
+        };
 
-        var respondToOffer = function(offer){
+        var respondToOffer = function(offer) {
             pc.setRemoteDescription(new RTCSessionDescription(offer), function(){
-                pc.createAnswer(setLocalAndSend, errorCallback)
+                pc.createAnswer(setLocalAndSend, errorCallback);
             }, errorCallback);
-        }
+        };
 
-        var addIceCandidate = function(candidate){
+        var addIceCandidate = function(candidate) {
             pc.addIceCandidate(candidate);
-        }
+        };
 
-        var setLocalAndSend = function(sessionDescription){
-            pc.setLocalDescription(sessionDescription);
+        var setLocalAndSend = function(sessionDescription) {
+            pc.setLocalDescription(sessionDescription, function(){}, errorCallback);
             interview.socket.send({
                 type: 'video',
                 clientID: interview.client.id,
@@ -57,74 +75,86 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
                     data: { sessionDescription : sessionDescription}
                 }
             });
-        }
+        };
 
         EventBus.on("video", function(msg) {
             switch (msg.data.type){
                 case SET_CALLER:
                     if(msg.data.data.isCaller){
-                        waitForPC(createOffer);
+                        initialize(createOffer);
                     }
                     break;
                 case SIGNALLING:
                     if (msg.data.data.sessionDescription){
-                        if (msg.data.data.sessionDescription.type == "offer"){
-                            waitForPC(respondToOffer, msg.data.data.sessionDescription);
-                        } else if (msg.data.data.sessionDescription.type == "answer"){
+                        if (msg.data.data.sessionDescription.type == "offer") {
+                            initialize(function() {
+                                respondToOffer(msg.data.data.sessionDescription);
+                            });
+                        } else if (msg.data.data.sessionDescription.type ==
+                        "answer") {
                             pc.setRemoteDescription(new RTCSessionDescription
-                            (msg.data.data.sessionDescription));
+                            (msg.data.data.sessionDescription), function(){},
+                            errorCallback);
                         }
                     }
-                    else if (msg.data.data.type == "candidate"){
-                        var candidate = new RTCIceCandidate({
-                            sdpMLineIndex: msg.data.data.label,
-                            candidate: msg.data.data.candidate,
-                            sdpMid: msg.data.data.id
+                    else if (msg.data.data.type == "candidate") {
+                        var candidate = new RTCIceCandidate({sdpMLineIndex : msg
+                        .data.data.label, candidate : msg.data.data.candidate,
+                        sdpMid : msg.data.data.id});
+                        waitForPC(function(){
+                            addIceCandidate(candidate);
                         });
-                        console.log(candidate);
-                        waitForPC(addIceCandidate, candidate);
                     }
                     break;
             }
         });
 
-        window.videoAdapter = videoAdapter;
-        videoAdapter.getUserMedia(
-            {video: true, audio : true}, $.proxy(function(localMediaStream) {
-                localStream = localMediaStream;
-                localVideo = $('#local-video');
-                localVideo.attr("src", window.URL.createObjectURL(localMediaStream));
-                pc = new videoAdapter.RTCPeerConnection(pc_config);
+        var createPC = function() {
+            pc = new videoAdapter.RTCPeerConnection(pc_config);
+            pc.addStream(localStream);
 
-                pc.addStream(localStream);
+            pc.onaddstream = function(event) {
+                console.log("Adding remote stream");
+                console.log(remoteVideo);
+                remoteVideo.attr("src", window.URL.createObjectURL(event.stream));
+                remoteStream = event.stream;
+            };
 
-                remoteVideo = $('#remote-video2');
-                pc.onaddstream = function(event) {
-                    console.log("Adding remote stream");
-                    console.log(remoteVideo);
-                    remoteVideo.attr("src", window.URL.createObjectURL(event.stream));
-                    remoteStream = event.stream
-                };
-
-                pc.onicecandidate = function(event) {
-                    if (event.candidate) {
-                        interview.socket.send({
-                            type: 'video',
-                            clientID: interview.client.id,
-                            interviewID: interview.id,
-                            data: {
-                                type: SIGNALLING,
-                                data: {
-                                    type : "candidate",
-                                    label : event.candidate.sdpMLineIndex,
-                                    id: event.candidate.sdpMid,
-                                    candidate: event.candidate.candidate
-                                }
+            pc.onicecandidate = function(event) {
+                if (event.candidate){
+                    interview.socket.send({
+                        type: 'video',
+                        clientID: interview.client.id,
+                        interviewID: interview.id,
+                        data: {
+                            type: SIGNALLING,
+                            data: { type : "candidate", label : event.candidate
+                            .sdpMLineIndex, id: event.candidate.sdpMid, candidate
+                            : event.candidate.candidate}
                             }
-                        });
-                    }
+                    });
                 }
-            }, this), errorCallback);
+            };
+        };
+
+        var getLocalStream = function() {
+            videoAdapter.getUserMedia( {video: true, audio : true}, function
+            (localMediaStream){
+                localStream = localMediaStream;
+                localVideo= $('#local-video');
+                remoteVideo= $('#remote-video2');
+                localVideo.attr("src", window.URL.createObjectURL(localMediaStream));
+            }, errorCallback);
+        };
+
+        var initialize = function(callback) {
+            waitForMediaStream(function() {
+                createPC();
+                callback();
+            });
+        };
+
+        getLocalStream();
     };
 
     var VideoSpace = React.createClass({
@@ -151,7 +181,5 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
         }
     });
 
-    window.setupVideo = setupVideo;
     new VideoView();
 });
-

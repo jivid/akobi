@@ -24,7 +24,7 @@ class VideoApplication(BaseApplication):
             }
             message = utils.create_message("video", socket.client_id,
                                            socket.interview_id, **data)
-            self.sockets[0].write_message(message)
+            self.sockets[1].write_message(message)
 
             data = {
                 "type": VideoApplication.SET_CALLER,
@@ -34,10 +34,9 @@ class VideoApplication(BaseApplication):
             }
             message = utils.create_message("video", socket.client_id,
                                            socket.interview_id, **data)
-            self.sockets[1].write_message(message)
+            self.sockets[0].write_message(message)
 
     def handle_message(self, message, interviews, *args, **kwargs):
-        log.info("video got message" + str(message))
         for socket in self.sockets:
             if socket.client_id != message['clientID']:
                 socket.write_message(message)

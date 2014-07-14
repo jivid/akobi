@@ -149,11 +149,9 @@ define(['common', 'ext/diff_match_patch'], function(common, DiffMatchPatch) {
     EventBus.on("collabedit", function(msg) {
         switch (msg.data.type){
             case ASK_DIFF:
-                console.log("Sending diff");
                 collabEditView.model.sendDiff();
                 break;
             case APPLY_DIFF:
-                console.log("Got diff: " + msg.data.data);
                 collabEditView.model.applyDiff(msg.data.data);
                 break;
             case ASK_SHADOW:

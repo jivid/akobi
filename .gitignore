@@ -1,10 +1,10 @@
 .DS_Store
 *.pyc
 *.log
+*.rdb
 .idea/*
 static/js/build/
 static/css/build/
 build/
 dist/
 *.egg-info/
-dump.rdb

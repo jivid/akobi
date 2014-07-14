@@ -57,7 +57,10 @@ class InterviewHandler(WebSocketHandler):
 
             self.interview_initialized = True
             self.write_message(utils.create_message("init_finished",
-                               self.client_id, self.interview_id))
+                               self.client_id, self.interview_id,
+                               applications =
+                               registry.app_names_for_interview(
+                               self.interview_id)))
             return
         elif message['type'] == "auth":
             interview_id = message['interviewID']
