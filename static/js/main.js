@@ -15,9 +15,4 @@ define(function() {
         var interview = new interview.Interview();
         window.interview = interview;
     });
-
-    // TODO: Move these requires to happen after receiving the list of
-    //       applications for this interview so we're not running
-    //       unnecessary code
-    require(['common', 'heartbeat', 'notes', 'collabedit', 'video']);
 });

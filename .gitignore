@@ -1,5 +1,5 @@
 .DS_Store
 *.pyc
 *.log
+*.rdb
 .idea/*
-dump.rdb

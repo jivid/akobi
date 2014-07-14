@@ -6,7 +6,6 @@ from akobi.lib import utils
 from akobi import log
 
 
-
 class CollabEditHandler(BaseApplication):
     # Define states
     PRE_INTERVIEW = 0
@@ -52,12 +51,10 @@ class CollabEditHandler(BaseApplication):
     def _invalid_message_error(self, expected, actual):
         log.error("Collabedit was expecting to receive a message of type "
                   "%s but instead got a message of type %s. while in state "
-                  "%s" % (
-                  expected, actual, self.state))
+                  "%s" % (expected, actual, self.state))
 
     def handle_message(self, message, *args, **kwargs):
-
-        # Collab Edit specific message data is in the data field. 
+        # Collab Edit specific message data is in the data field.
         message = message['data']
 
         if len(self.sockets) < 2:

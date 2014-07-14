@@ -73,6 +73,10 @@ class ApplicationRegistry(object):
         return self.interviews[interview_id]\
             if interview_id in self.interviews else None
 
+    def app_names_for_interview(self, interview_id):
+        return self.interviews[interview_id].keys()\
+            if interview_id in self.interviews else None
+
     def _add_interview(self, interview_id):
         self.interviews[interview_id] = {}
 
