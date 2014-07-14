@@ -39,7 +39,9 @@ class SetupHandler(RequestHandler):
 
         redis = redis_client.get_redis_instance()
         interview_key = "interview:%s" % (interview_id)
+        log.info("Setting interviewer email")
         redis.hset(interview_key, "interviewer_email", interviewer)
+        log.info("Setting interviewee email")
         redis.hset(interview_key, "interviewee_email", interviewee)
 
         self.render(

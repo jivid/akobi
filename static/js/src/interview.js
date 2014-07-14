@@ -34,7 +34,13 @@ define(['socket', 'auth'], function(socket, auth) {
         },
 
         processMessage: function(msg) {
-            EventBus.trigger(msg.type, msg);
+            if (msg.type == 'collabedit' && msg.data.type == 5) {
+                setTimeout(function() {
+                    EventBus.trigger(msg.type, msg);
+                }, 500);
+            } else {
+                EventBus.trigger(msg.type, msg);
+            }
         },
 
         loadApplications: function() {

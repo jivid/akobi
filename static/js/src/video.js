@@ -1,6 +1,5 @@
 /** @jsx React.DOM **/
 define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, util) {
-
     var setupVideo = function() {
         var SET_CALLER = 1;
         var SIGNALLING = 2;
@@ -8,7 +7,7 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
         var pc_config = {
             'iceServers': [
                 {
-                'url': 'stun:stun.l.google.com:19302'
+                    'url': 'stun:stun.l.google.com:19302'
                 }
             ]
         }
@@ -61,10 +60,8 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
         }
 
         EventBus.on("video", function(msg) {
-            console.log("Video message");
             switch (msg.data.type){
                 case SET_CALLER:
-                    console.log("Setting caller");
                     if(msg.data.data.isCaller){
                         waitForPC(createOffer);
                     }
@@ -72,21 +69,19 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
                 case SIGNALLING:
                     if (msg.data.data.sessionDescription){
                         if (msg.data.data.sessionDescription.type == "offer"){
-                            console.log("responding to offer");
                             waitForPC(respondToOffer, msg.data.data.sessionDescription);
                         } else if (msg.data.data.sessionDescription.type == "answer"){
-                            console.log("answer");
                             pc.setRemoteDescription(new RTCSessionDescription
                             (msg.data.data.sessionDescription));
                         }
                     }
                     else if (msg.data.data.type == "candidate"){
-                        console.log("New candidate");
                         var candidate = new RTCIceCandidate({
                             sdpMLineIndex: msg.data.data.label,
                             candidate: msg.data.data.candidate,
                             sdpMid: msg.data.data.id
                         });
+                        console.log(candidate);
                         waitForPC(addIceCandidate, candidate);
                     }
                     break;
@@ -96,33 +91,35 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
         window.videoAdapter = videoAdapter;
         videoAdapter.getUserMedia(
             {video: true, audio : true}, $.proxy(function(localMediaStream) {
-                console.log("Setting local stream");
-                console.log(localMediaStream);
                 localStream = localMediaStream;
                 localVideo = $('#local-video');
                 localVideo.attr("src", window.URL.createObjectURL(localMediaStream));
                 pc = new videoAdapter.RTCPeerConnection(pc_config);
 
-                console.log("Adding local stream");
                 pc.addStream(localStream);
 
-                remoteVideo = $('#remote-video');
-                pc.onaddstream = function(event){
+                remoteVideo = $('#remote-video2');
+                pc.onaddstream = function(event) {
+                    console.log("Adding remote stream");
+                    console.log(remoteVideo);
                     remoteVideo.attr("src", window.URL.createObjectURL(event.stream));
                     remoteStream = event.stream
                 };
 
-                pc.onicecandidate = function(event){
-                    if (event.candidate){
+                pc.onicecandidate = function(event) {
+                    if (event.candidate) {
                         interview.socket.send({
                             type: 'video',
                             clientID: interview.client.id,
                             interviewID: interview.id,
                             data: {
                                 type: SIGNALLING,
-                                data: { type : "candidate", label : event.candidate
-                                .sdpMLineIndex, id: event.candidate.sdpMid, candidate
-                                : event.candidate.candidate}
+                                data: {
+                                    type : "candidate",
+                                    label : event.candidate.sdpMLineIndex,
+                                    id: event.candidate.sdpMid,
+                                    candidate: event.candidate.candidate
+                                }
                             }
                         });
                     }
@@ -135,7 +132,7 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
             return (
                 <div id="video-container">
                     <video id="local-video" autoPlay="true" muted="true"></video>
-                    <video id="remote-video" autoPlay="true"></video>
+                    <video id="remote-video2" autoPlay="true"></video>
                 </div>
             )
         }
