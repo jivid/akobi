@@ -45,22 +45,9 @@ class InterviewHandler(WebSocketHandler):
             log.debug("Initializing interview for client %s on interview %s"
                       % (self.client_id, self.interview_id))
 
-            '''
-            TODO: Register application to interview on selection screen.
-            '''
-            registry.register_to_interview(self.interview_id, "Heartbeat")
-            registry.register_to_interview(self.interview_id, "Notes")
-            registry.register_to_interview(self.interview_id, "Collabedit")
-            registry.register_to_interview(self.interview_id, "Video")
-
             Initializer.initialize(message['interviewID'], self)
 
             self.interview_initialized = True
-            self.write_message(utils.create_message("init_finished",
-                               self.client_id, self.interview_id,
-                               applications =
-                               registry.app_names_for_interview(
-                               self.interview_id)))
             return
         elif message['type'] == "auth":
             interview_id = message['interviewID']
@@ -76,18 +63,29 @@ class InterviewHandler(WebSocketHandler):
             interviewee_email = redis.hget("interview:%s" % interview_id,
                                            "interviewee_email")
 
+            '''
+            TODO: Register application to interview on selection screen.
+            '''
+            registry.register_to_interview(self.interview_id, "Heartbeat")
+            registry.register_to_interview(self.interview_id, "Notes")
+            registry.register_to_interview(self.interview_id, "Collabedit")
+            registry.register_to_interview(self.interview_id, "Video")
+
             if email == interviewer_email:
-                self.write_message(utils.create_message("auth_response",
-                                                        interview_id,
-                                                        message['clientID'],
-                                                        success=1,
-                                                        role='interviewer'))
+                self.write_message(
+                    utils.create_message("auth_response", interview_id,
+                                         message['clientID'], applications =
+                                         registry.app_names_for_interview(
+                                             self.interview_id),
+                                         success=1, role='interviewer'))
+
             elif email == interviewee_email:
-                self.write_message(utils.create_message("auth_response",
-                                                        interview_id,
-                                                        message['clientID'],
-                                                        success=1,
-                                                        role='interviewee'))
+                self.write_message(
+                    utils.create_message("auth_response", interview_id,
+                                         message['clientID'], applications =
+                                         registry.app_names_for_interview(
+                                             self.interview_id),
+                                         success=1, role='interviewee'))
             else:
                 self.write_message(utils.create_message("auth_response",
                                                         interview_id,
