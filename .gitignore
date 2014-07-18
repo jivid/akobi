@@ -3,3 +3,8 @@
 *.log
 *.rdb
 .idea/*
+static/js/build/
+static/css/build/
+build/
+dist/
+*.egg-info/

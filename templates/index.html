@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Akobi</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
   <h1>Create your interview</h1>
   <h2>(1) Choose your Modules</h2>
   <form action="/setup_complete" method="get">
     {% for application in applications %}
-    <input type="checkbox" name="{{ application }}">{{ application }}</input>
+    <input type="checkbox" class="checkbox" name="{{ application }}">{{ application }}</input>
     <br/>
     {% end %}
     <h2>(2) Enter email of interviewer:</h2>
@@ -19,7 +15,4 @@
     <h2>(4) Profit</h2>
     <input type="submit" value="Profit">
   </form>
-
-</body>
-</html>
-
+{% end %}
