@@ -142,7 +142,7 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
             (localMediaStream){
                 localStream = localMediaStream;
                 localVideo= $('#local-video');
-                remoteVideo= $('#remote-video2');
+                remoteVideo= $('#remote-video');
                 localVideo.attr("src", window.URL.createObjectURL(localMediaStream));
             }, errorCallback);
         };
@@ -162,7 +162,7 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
             return (
                 <div id="video-container">
                     <video id="local-video" autoPlay="true" muted="true"></video>
-                    <video id="remote-video2" autoPlay="true"></video>
+                    <video id="remote-video" autoPlay="true"></video>
                 </div>
             )
         }
