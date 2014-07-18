@@ -128,10 +128,13 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
                         interviewID: interview.id,
                         data: {
                             type: SIGNALLING,
-                            data: { type : "candidate", label : event.candidate
-                            .sdpMLineIndex, id: event.candidate.sdpMid, candidate
-                            : event.candidate.candidate}
+                            data: {
+                                type: "candidate",
+                                label : event.candidate.sdpMLineIndex,
+                                id: event.candidate.sdpMid,
+                                candidate: event.candidate.candidate
                             }
+                        }
                     });
                 }
             };

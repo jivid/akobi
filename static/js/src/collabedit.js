@@ -120,7 +120,7 @@ define(['common', 'ext/diff_match_patch'], function(common, DiffMatchPatch) {
 
             this.model.on('change:contents', function(event){
                 cursor = this.editor.getCursorPosition();
-                this.editor.session.setValue(event.attributes.contents, 1);
+                this.editor.session.setValue(event.attributes.contents);
                 this.editor.moveCursorToPosition(cursor);
             }, this);
 
@@ -129,7 +129,7 @@ define(['common', 'ext/diff_match_patch'], function(common, DiffMatchPatch) {
 
         render: function() {
             React.renderComponent(
-                <CollabEditBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
+                <CollabEditBox value={this.model.get('contents')} />, this.$el.get(0)
             );
             this.$el.addClass('container-med pull-right')
             $('#collabedit-space').append(this.$el);

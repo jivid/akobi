@@ -47,25 +47,6 @@ define(['socket', 'auth'], function(socket, auth) {
             setTimeout(function() {
                 EventBus.trigger(msg.type, msg);
             }, 500);
-        },
-
-        loadApplications: function() {
-            var getAppsEnabled = function() {
-                params = location.search.replace('?', '');
-                params = params.split('&');
-                apps = [];
-                _.each(params, function(param) {
-                    apps.push(param.split('=')[0]);
-                });
-                return apps;
-            };
-
-            var toLoad = _.map(getAppsEnabled(), function(app) {
-                return app.toLowerCase();
-            });
-
-            require(toLoad);
-            require(['common', 'heartbeat']);
         }
     });
 

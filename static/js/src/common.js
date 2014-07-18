@@ -4,10 +4,6 @@ define(function() {
         className: 'app-container'
     });
 
-    EventBus.on("init_finished", function(e) {
-        return;
-    });
-
     return {
         AkobiApplicationView: AkobiApplicationView
     }
