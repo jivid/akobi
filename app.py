@@ -1,10 +1,9 @@
 import os
 import subprocess
-import sys
 
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-from tornado.web import Application, StaticFileHandler, RequestHandler
+from tornado.web import Application, StaticFileHandler
 
 from akobi.handlers import interview, index
 
@@ -26,6 +25,7 @@ app = Application([
 def build_assets():
     cmd = ['fab', 'local', 'build']
     subprocess.call(cmd)
+
 
 def main():
     print "Building assets"

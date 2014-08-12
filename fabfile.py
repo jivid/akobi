@@ -8,9 +8,11 @@ from fabric.state import env
 PROJECT_ROOT = os.path.dirname(__file__)
 STATIC_PATH = os.path.join(PROJECT_ROOT, 'static')
 
+
 @task
 def local():
     env.run = lrun
+
 
 def prepare_build_dirs():
     for d in ['js', 'css']:

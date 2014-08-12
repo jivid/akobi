@@ -35,7 +35,7 @@ class SetupHandler(RequestHandler):
 
         # TODO: We should probably do this more like a product serial than
         # just a random id.
-        interview_id = make_random_string(length=30)
+        interview_id = make_random_string()
 
         redis = redis_client.get_redis_instance()
         interview_key = "interview:%s" % (interview_id)
@@ -47,4 +47,5 @@ class SetupHandler(RequestHandler):
         self.render(
             'setup_complete.html',
             interview_id=interview_id,
-            application_state=application_state)
+            application_state=application_state
+        )
