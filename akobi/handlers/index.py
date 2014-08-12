@@ -47,5 +47,4 @@ class SetupHandler(RequestHandler):
         self.render(
             'setup_complete.html',
             interview_id=interview_id,
-            application_state=application_state
-        )
+            application_state=application_state)
