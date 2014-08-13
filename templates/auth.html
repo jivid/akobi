@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="auth-container container-full bg-teal">
+    <h1 class="title text-centered">Akobi</h1>
+    <p class="text-centered">A better interview experience</p>
+    <div class="auth-box container-centered">
+        <div class="container-full auth-box-header">
+            <p class="text-centered">START YOUR INTERVIEW</p>
+        </div>
+        <div class="container-full auth-box-content">
+            <div class="auth-field">
+                <p class="field-name">NAME</p>
+                <input name="name" type="text" autofocus="true" autocomplete="off" placeholder="eg. John Doe"></input>
+            </div>
+            <div class="auth-field">
+                <p class="field-name">E-MAIL</p>
+                <input name="name" type="email" autocomplete="off" placeholder="eg. me@example.com"></input>
+            </div>
+        </div>
+        <div class="container-full auth-box-footer">
+            <button class="btn btn-sign-in container-full">Continue</button>
+        </div>
+    </div>
+  </div>
+{% end %}
+
