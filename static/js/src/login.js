@@ -38,7 +38,7 @@ $('#sign-in').on('click', function() {
         return false;
     }
 
-    $('.overlay').fadeIn(400, function() {
+    $('.overlay').fadeIn(200, function() {
         $('.spinner').css('display', 'block');
     })
 
@@ -49,14 +49,19 @@ $('#sign-in').on('click', function() {
         data: {
             email: email.val()
         },
+        success: function() {
+            location.replace("/i/" + location.search.split('=')[1])
+        },
         error: function(err) {
             msg = err.responseJSON.error.toUpperCase();
             console.log(msg);
             attachError(msg, emailLabel);
         },
         complete: function() {
-            $('.overlay').css('display', 'none');
-            $('.spinner').css('display', 'none');
+            setTimeout(function() {
+                $('.overlay').css('display', 'none');
+                $('.spinner').css('display', 'none');
+            }, 300);
         }
     });
 });

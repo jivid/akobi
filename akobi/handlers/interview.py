@@ -57,50 +57,21 @@ class InterviewHandler(WebSocketHandler):
             self.interview_initialized = True
             return
 
-        elif msg['type'] == "auth":
-            interview_id = msg['interviewID']
-            if not interview_id == self.interview_id:
-                log.error("Incorrect interview ID passed. Expected %s got %s"
-                          % (self.interview_id, interview_id))
-                return
+        # TODO: Register application to interview on selection screen
+        registry.register_to_interview(self.interview_id, "Heartbeat")
+        registry.register_to_interview(self.interview_id, "Notes")
+        registry.register_to_interview(self.interview_id, "Collabedit")
+        registry.register_to_interview(self.interview_id, "Video")
 
-            email = msg['data']['email']
-            log.debug("Attempting auth on email %s for interview %s"
-                      % (email, interview_id))
+        apps = registry.app_names_for_interview(self.interview_id)
+        message['data']['applications'] = apps
 
-            redis = redis_client.get_redis_instance()
-            interview = "interview:%s" % interview_id
-            interviewer_email = redis.hget(interview, "interviewer_email")
-            interviewee_email = redis.hget(interview, "interviewee_email")
-
-            message = utils.create_message(msg_type="auth_response",
-                                           client=msg['clientID'],
-                                           interview=self.interview_id,
-                                           success=0)
-
-            if not email == interviewer_email or\
-                    not email == interviewee_email:
-                self.write_message(message)
-
-            message['data']['success'] = 1
-
-            # TODO: Register application to interview on selection screen
-            registry.register_to_interview(self.interview_id, "Heartbeat")
-            registry.register_to_interview(self.interview_id, "Notes")
-            registry.register_to_interview(self.interview_id, "Collabedit")
-            registry.register_to_interview(self.interview_id, "Video")
-
-            apps = registry.app_names_for_interview(self.interview_id)
-            message['data']['applications'] = apps
-
-            if email == interviewer_email:
-                message['data']['role'] = "interviewer"
-                self.write_message(message)
-            elif email == interviewee_email:
-                message['data']['role'] = "interviewee"
-                self.write_message(message)
-
-            return
+        if email == interviewer_email:
+            message['data']['role'] = "interviewer"
+            self.write_message(message)
+        elif email == interviewee_email:
+            message['data']['role'] = "interviewee"
+            self.write_message(message)
 
         if self.interview_initialized is True:
             app = utils.message_type_to_application_name(msg['type'])
@@ -109,6 +80,9 @@ class InterviewHandler(WebSocketHandler):
 
     def on_close(self):
         live_apps = registry.apps_for_interview(self.interview_id)
+        if live_apps is None:
+            return
+
         for app_name in live_apps:
             utils.function_as_callback(live_apps[app_name].on_client_leave,
                                        self)

@@ -1,5 +1,3 @@
-import time
-
 from tornado.web import RequestHandler
 
 from akobi import log
@@ -27,12 +25,11 @@ class AuthHandler(RequestHandler):
             self._send_error("Invalid Email")
             return
 
-        time.sleep(2)
         redis = redis_client.get_redis_instance()
-        interview = "interview:%s" % interview
+        interview_key = "interview:%s" % interview
 
-        interviewer = redis.hget(interview, "interviewer_email")
-        interviewee = redis.hget(interview, "interviewee_email")
+        interviewer = redis.hget(interview_key, "interviewer_email")
+        interviewee = redis.hget(interview_key, "interviewee_email")
         if not email == interviewer and not email == interviewee:
             log.error("Email doesn't validate")
             self._send_error("Invalid Email")
