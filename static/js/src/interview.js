@@ -1,4 +1,4 @@
-define(['socket', 'auth'], function(socket, auth) {
+define(['socket'], function(socket) {
     var Client = Backbone.Model.extend({
         initialize: function(obj) {
             this.id = obj.id;
