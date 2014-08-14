@@ -20,11 +20,6 @@ class IndexHandler(RequestHandler):
         self.render('index.html', applications=applications)
 
 
-class TestAuthHandler(RequestHandler):
-    def get(self, *args, **kwargs):
-        self.render('auth.html')
-
-
 class SetupHandler(RequestHandler):
     def get(self, *args, **kwargs):
 

@@ -7,25 +7,64 @@ function clearErrors() {
 }
 
 function attachError(msg, el) {
-    err = $('<span>').addClass('text-error').text(msg);
+    err = $('<span>').addClass('text-error').text(" - " + msg);
     el.append(err);
     el.parent().addClass('field-error');
 }
 
 $('#sign-in').on('click', function() {
     clearErrors();
+
     person = $('input[name="name"]');
+    personLabel = person.siblings('p');
+
     email = $('input[name=email]');
+    emailLabel = email.siblings('p');
+
+    errors = false;
 
     // Ensure we have something to send up to the server
     if (!person.val()) {
-        attachError(" - REQUIRED", person.siblings('p'));
+        attachError("REQUIRED", personLabel);
+        errors = true;
     }
 
     if (!email.val()) {
-        attachError(" - REQUIRED", email.siblings('p'));
+        attachError("REQUIRED", emailLabel);
+        errors = true;
     }
 
+    if (errors) {
+        return false;
+    }
+
+    $('.overlay').fadeIn(400, function() {
+        $('.spinner').css('display', 'block');
+    })
+
     // Check if the email matches
-    // Make AJAX call to server here and proceed appropriately
+    $.ajax({
+        type: 'POST',
+        url: location.pathname + location.search,
+        data: {
+            email: email.val()
+        },
+        error: function(err) {
+            msg = err.responseJSON.error.toUpperCase();
+            console.log(msg);
+            attachError(msg, emailLabel);
+        },
+        complete: function() {
+            $('.overlay').css('display', 'none');
+            $('.spinner').css('display', 'none');
+        }
+    });
+});
+
+$(document).on('keypress', function(event) {
+    if (event.which == 13) {
+        console.log("Enter pressed");
+        event.preventDefault();
+        $('#sign-in').click();
+    }
 });
