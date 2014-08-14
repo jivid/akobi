@@ -12,7 +12,7 @@ define(['socket', 'auth'], function(socket, auth) {
             this.id = window.location.pathname.split('/')[2];
 
             this.socket.on("open", $.proxy(function() {
-                auth.authenticate();
+                this.downloadApps();
             }, this));
 
             this.socket.on("message", $.proxy(function(msg) {
@@ -22,6 +22,32 @@ define(['socket', 'auth'], function(socket, auth) {
                     this.processMessage(msg);
                 }
             }, this));
+        },
+
+        downloadApps: function() {
+            EventBus.on("download_apps", function(msg) {
+                // Build a list of apps to be downloaded
+                var requireApps = ['common'];
+                var apps = msg.data.applications;
+                apps.forEach(function(app) {
+                    requireApps.push(app.toLowerCase());
+                });
+
+                require(requireApps, function(){
+                    // Now all apps are required and we can init the interview
+                    interview.socket.send({
+                        type: 'init_interview',
+                        clientID: '',
+                        interviewID: interview.id
+                    });
+                });
+            });
+
+            this.socket.send({
+                type: 'download_apps',
+                clientID: '',
+                interviewID: this.id
+            });
         },
 
         processMessage: function(msg) {

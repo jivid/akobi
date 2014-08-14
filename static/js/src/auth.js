@@ -1,5 +1,4 @@
 define(function() {
-
     var attemptLogin = function() {
         var email = $('#email_text').val();
 
@@ -17,26 +16,6 @@ define(function() {
         $('#login_dialog').remove();
         $('#overlay').remove();
 
-        /*
-         * Build a list of applications to be "required"
-         * based on what apps were added to the interview at
-         * creation time.
-         */
-        var requireApps = ['common'];
-        var apps = msg.data.applications;
-        apps.forEach(function(app) {
-            requireApps.push(app.toLowerCase());
-        });
-
-        require(requireApps, function(){
-            // At this point all apps are required and we can
-            // send init finished to the server.
-            interview.socket.send({
-                type : 'init_interview',
-                clientID : "",
-                interviewID : interview.id
-            });
-        });
     };
 
     var authenticate = function() {
@@ -47,7 +26,7 @@ define(function() {
             }else{
                 loginSuccess(msg);
             }
-    });
+        });
 
         $('#login_button').on('click', attemptLogin);
     };

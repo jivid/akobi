@@ -29,7 +29,7 @@ class InterviewHandler(WebSocketHandler):
         super(InterviewHandler, self).write_message(msg)
 
     def open(self, interview_id):
-        log.debug("WebSocket opened for interview %s" % interview_id)
+        log.info("WebSocket opened for interview %s" % interview_id)
 
         if interview_id not in ongoing_interviews:
             ongoing_interviews[interview_id] = set()
@@ -57,21 +57,20 @@ class InterviewHandler(WebSocketHandler):
             self.interview_initialized = True
             return
 
-        # TODO: Register application to interview on selection screen
-        registry.register_to_interview(self.interview_id, "Heartbeat")
-        registry.register_to_interview(self.interview_id, "Notes")
-        registry.register_to_interview(self.interview_id, "Collabedit")
-        registry.register_to_interview(self.interview_id, "Video")
+        elif msg['type'] == "download_apps":
+            # TODO: Register application to interview on selection screen
+            registry.register_to_interview(self.interview_id, "Heartbeat")
+            registry.register_to_interview(self.interview_id, "Notes")
+            registry.register_to_interview(self.interview_id, "Collabedit")
+            registry.register_to_interview(self.interview_id, "Video")
 
-        apps = registry.app_names_for_interview(self.interview_id)
-        message['data']['applications'] = apps
-
-        if email == interviewer_email:
-            message['data']['role'] = "interviewer"
+            apps = registry.app_names_for_interview(self.interview_id)
+            message = utils.create_message(msg_type="download_apps",
+                                           client=self.client_id,
+                                           interview=self.interview_id,
+                                           applications=apps)
             self.write_message(message)
-        elif email == interviewee_email:
-            message['data']['role'] = "interviewee"
-            self.write_message(message)
+            return
 
         if self.interview_initialized is True:
             app = utils.message_type_to_application_name(msg['type'])
