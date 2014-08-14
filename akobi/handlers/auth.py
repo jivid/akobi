@@ -2,6 +2,7 @@ from tornado.web import RequestHandler
 
 from akobi import log
 from akobi.lib.redis_client import redis_client
+from akobi.lib.utils import make_random_string
 
 
 class AuthHandler(RequestHandler):
@@ -36,3 +37,4 @@ class AuthHandler(RequestHandler):
             return
 
         log.info("Email validation successful")
+        self.set_cookie('_sid', make_random_string())

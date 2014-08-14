@@ -29,7 +29,7 @@ class InterviewHandler(WebSocketHandler):
         super(InterviewHandler, self).write_message(msg)
 
     def open(self, interview_id):
-        log.info("WebSocket opened for interview %s" % interview_id)
+        log.debug("WebSocket opened for interview %s" % interview_id)
 
         if interview_id not in ongoing_interviews:
             ongoing_interviews[interview_id] = set()
@@ -78,6 +78,7 @@ class InterviewHandler(WebSocketHandler):
             application.handle_message(msg, ongoing_interviews)
 
     def on_close(self):
+        print self.request.headers
         live_apps = registry.apps_for_interview(self.interview_id)
         if live_apps is None:
             return

@@ -11,7 +11,12 @@ applications.remove("Heartbeat")
 
 
 class InterviewHandler(RequestHandler):
-    def get(self, *args, **kwargs):
+    def get(self, interview_id, *args, **kwargs):
+        if not '_sid' in self.cookies:
+            auth_url = "/auth?for=%s" % interview_id
+            self.redirect(auth_url)
+            return
+
         self.render('interview.html', applications=self.request.arguments)
 
 

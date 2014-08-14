@@ -15,6 +15,10 @@ define(['socket'], function(socket) {
                 this.downloadApps();
             }, this));
 
+            this.socket.on("close", function() {
+                document.cookie = encodeURIComponent("_sid") + "=deleted; expires=" + new Date(0).toUTCString();
+            });
+
             this.socket.on("message", $.proxy(function(msg) {
                 if (msg.type == "open_response") {
                     this.client = new Client({id: msg.clientID});
