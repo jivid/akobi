@@ -1,3 +1,5 @@
+import time
+
 from tornado.web import RequestHandler
 
 from akobi import log
@@ -37,4 +39,13 @@ class AuthHandler(RequestHandler):
             return
 
         log.info("Email validation successful")
-        self.set_cookie('_sid', make_random_string())
+        session_id = make_random_string()
+
+        # Store the session ID in redis
+        session_key = "session:%s" % session_id
+        redis.set(session_key, interview)
+        redis.expire(session_key, 60)
+
+        cookie = "%s$%s" % (interview, session_id)
+        expiry = time.time() + 60  # One hour from now
+        self.set_cookie('_sessionid', cookie, expires=expiry)

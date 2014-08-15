@@ -11,12 +11,31 @@ applications.remove("Heartbeat")
 
 
 class InterviewHandler(RequestHandler):
+    def _redirect_to_auth(self, interview_id):
+        auth_url = "/auth?for=%s" % interview_id
+        self.redirect(auth_url)
+
     def get(self, interview_id, *args, **kwargs):
-        if not '_sid' in self.cookies:
-            auth_url = "/auth?for=%s" % interview_id
-            self.redirect(auth_url)
+        if not "_sessionid" in self.cookies:
+            self._redirect_to_auth(interview_id)
             return
 
+        # See if there is a valid, active session for this interview
+        session_cookie = self.get_cookie("_sessionid")
+        if not session_cookie.startswith(interview_id + "$"):
+            self._redirect_to_auth(interview_id)
+            return
+
+        # Verify that we have the same session ID in the db
+        redis = redis_client.get_redis_instance()
+        session_id = session_cookie.split("$")[1]
+        session_key = "session:%s" % session_id
+        interview_val = redis.get(session_key)
+        if not interview_val == interview_id:
+            self._redirect_to_auth(interview_id)
+            return
+
+        # Finally allow the user through to the interview
         self.render('interview.html', applications=self.request.arguments)
 
 

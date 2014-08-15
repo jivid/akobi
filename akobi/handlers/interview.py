@@ -78,7 +78,6 @@ class InterviewHandler(WebSocketHandler):
             application.handle_message(msg, ongoing_interviews)
 
     def on_close(self):
-        print self.request.headers
         live_apps = registry.apps_for_interview(self.interview_id)
         if live_apps is None:
             return
