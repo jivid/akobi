@@ -4,12 +4,14 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 {% end %}
 
+{% block navbar %}{% end %}
+
 {% block content %}
-  <div class="auth-container container-full bg-teal">
+  <div class="bg bg-blue" id="auth-container">
     <h1 class="title text-centered">Akobi</h1>
     <p class="text-centered">A better interview experience</p>
-    <div class="auth-box container-centered">
-        <div class="container-full auth-box-header">
+    <div class="bg-white shadow container-centered" id="auth-box">
+        <div class="container-full auth-box-header rounded-top">
             <p class="text-centered">SIGN IN TO YOUR INTERVIEW</p>
         </div>
         <div class="overlay container-full">
@@ -29,8 +31,8 @@
                 <input name="email" type="email" autocomplete="off" placeholder="eg. me@example.com"></input>
             </div>
         </div>
-        <div class="container-full auth-box-footer">
-            <button id="sign-in" class="btn btn-sign-in container-full">Continue</button>
+        <div class="container-full rounded-bottom" id="auth-box-footer">
+            <button id="sign-in" class="btn btn-blue container-full">Continue</button>
         </div>
     </div>
   </div>
