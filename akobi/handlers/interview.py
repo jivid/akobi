@@ -1,5 +1,6 @@
 import json
 
+from tornado.web import RequestHandler
 from tornado.websocket import WebSocketHandler
 
 # We need to import all the applications in here so that they get regsitered
@@ -12,9 +13,38 @@ from akobi.lib.interviews import ongoing_interviews
 from akobi.lib.redis_client import redis_client
 
 
-class InterviewHandler(WebSocketHandler):
+class InterviewHTTPHandler(RequestHandler):
+    def _redirect_to_auth(self, interview_id):
+        auth_url = "/auth?for=%s" % interview_id
+        self.redirect(auth_url)
+
+    def get(self, interview_id, *args, **kwargs):
+        if not "_sessionid" in self.cookies:
+            self._redirect_to_auth(interview_id)
+            return
+
+        # See if there is a valid, active session for this interview
+        session_cookie = self.get_cookie("_sessionid")
+        if not session_cookie.startswith(interview_id + "$"):
+            self._redirect_to_auth(interview_id)
+            return
+
+        # Verify that we have the same session ID in the db
+        redis = redis_client.get_redis_instance()
+        session_id = session_cookie.split("$")[1]
+        session_key = "session:%s" % session_id
+        interview_val = redis.get(session_key)
+        if not interview_val == interview_id:
+            self._redirect_to_auth(interview_id)
+            return
+
+        # Finally allow the user through to the interview
+        self.render('interview.html', applications=self.request.arguments)
+
+
+class InterviewWebSocketHandler(WebSocketHandler):
     def __init__(self, *args, **kwargs):
-        super(InterviewHandler, self).__init__(*args, **kwargs)
+        super(InterviewWebSocketHandler, self).__init__(*args, **kwargs)
         self.client_id = None
         self.interview_id = None
         self.interview_initialized = False
@@ -26,7 +56,7 @@ class InterviewHandler(WebSocketHandler):
         if type(msg) is dict:
             msg = json.dumps(msg)
 
-        super(InterviewHandler, self).write_message(msg)
+        super(InterviewWebSocketHandler, self).write_message(msg)
 
     def open(self, interview_id):
         log.debug("WebSocket opened for interview %s" % interview_id)

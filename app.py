@@ -16,8 +16,8 @@ settings = {
 app = Application([
     (r'/', index.IndexHandler),
     (r'/auth', auth.AuthHandler),
-    (r'/i/(\w+)', index.InterviewHandler),
-    (r'/i/(\w+)/socket', interview.InterviewHandler),
+    (r'/i/(\w+)', interview.InterviewHTTPHandler),
+    (r'/i/(\w+)/socket', interview.InterviewWebSocketHandler),
     (r'/setup_complete', index.SetupHandler),
     (r'/static/(.*)', StaticFileHandler, {'path': './static/'}),
     ], **settings)
