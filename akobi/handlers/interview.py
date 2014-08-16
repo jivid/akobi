@@ -103,7 +103,7 @@ class InterviewHandler(WebSocketHandler):
             return
 
         if self.interview_initialized is True:
-            app = utils.message_type_to_application_name(msg['type'])
+            app = utils.app_name_from_msg(msg)
             application = registry.find(msg['interviewID'], app)
             application.handle_message(msg, ongoing_interviews)
 

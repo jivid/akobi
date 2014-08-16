@@ -18,8 +18,8 @@ class HeartbeatApplication(BaseApplication):
 
         sockets = interviews[interview_id]
 
-        condition = lambda socket: socket.client_id == client_id
-        if not filter(condition, sockets):
+        expected_client_id = lambda socket: socket.client_id == client_id
+        if not filter(expected_client_id, sockets):
             log.error("No client with id %s in interview with id %s"
                       % (client_id, interview_id))
 

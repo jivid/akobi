@@ -62,8 +62,8 @@ class ApplicationRegistry(object):
     def non_essential_apps(self):
         # Populate the non essential apps if they don't already exist
         if not self._non_essential_apps:
-            condition = lambda app: app.essential
-            self._non_essential_apps = filter(condition, self.available)
+            non_essential = lambda app: not app.essential
+            self._non_essential_apps = filter(non_essential, self.available)
 
         return self._non_essential_apps
 
