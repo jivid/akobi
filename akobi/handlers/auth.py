@@ -17,16 +17,7 @@ class AuthHandler(RequestHandler):
             'error': msg
         })
 
-    def post(self):
-        interview = self.get_query_argument("for", None)
-
-        # Eventually this will handle site-wide auth and serve a page that asks
-        # for email and password. Ideally the only time this would get hit is
-        # when someone's logging in with the purposes of creating a new
-        # interview
-        if interview is None:
-            raise NotImplementedError
-
+    def _do_interview_auth(self, interview):
         email = self.get_body_argument("email", None)
         if email is None:
             log.error("No email sent")
@@ -54,3 +45,15 @@ class AuthHandler(RequestHandler):
         cookie = "%s$%s" % (interview, session_id)
         expiry = time.time() + 3600
         self.set_cookie('_sessionid', cookie, expires=expiry)
+
+    def post(self):
+        interview = self.get_query_argument("for", None)
+
+        # Eventually this will handle site-wide auth and serve a page that asks
+        # for email and password. Ideally the only time this would get hit is
+        # when someone's logging in with the purposes of creating a new
+        # interview
+        if interview is None:
+            raise NotImplementedError
+
+        self._do_interview_auth(interview)
