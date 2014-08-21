@@ -19,6 +19,11 @@ class AuthHandler(RequestHandler):
 
     def post(self):
         interview = self.get_query_argument("for", None)
+
+        # Eventually this will handle site-wide auth and serve a page that asks
+        # for email and password. Ideally the only time this would get hit is
+        # when someone's logging in with the purposes of creating a new
+        # interview
         if interview is None:
             raise NotImplementedError
 
