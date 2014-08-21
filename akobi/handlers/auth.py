@@ -44,8 +44,8 @@ class AuthHandler(RequestHandler):
         # Store the session ID in redis
         session_key = "session:%s" % session_id
         redis.set(session_key, interview)
-        redis.expire(session_key, 60)  # TODO: Change to 3600
+        redis.expire(session_key, 3600)
 
         cookie = "%s$%s" % (interview, session_id)
-        expiry = time.time() + 60  # TODO: Change to 3600
+        expiry = time.time() + 3600
         self.set_cookie('_sessionid', cookie, expires=expiry)
