@@ -2,33 +2,61 @@ import time
 
 from akobi import log
 from akobi.lib import utils
+from akobi.lib.utils.datastructures import AttrDict
 from akobi.lib.applications.base import BaseApplication
 from akobi.lib.applications.registry import registry
 
 
-class CollabEditHandler(BaseApplication):
-    # Define states
-    PRE_INTERVIEW = 0
-    INITIAL = 1
-    SHADOW_WAIT_CL1 = 2
-    SHADOW_ACK_WAIT_CL2 = 3
-    DIFF_WAIT_CL1 = 4
-    ACK_WAIT_CL1 = 5
-    DIFF_WAIT_CL2 = 6
-    ACK_WAIT_CL2 = 7
+# TODO: Write StateMachine class in utils and provide methods to define and
+#       and advance states
+class CollabEditApplication(BaseApplication, StateMachine):
+    states = AttrDict(
+        PRE_INTERVIEW = 0,
+        INITIAL = 1,
+        SHADOW_WAIT_CL1 = 2,
+        SHADOW_ACK_WAIT_CL2 = 3,
+        DIFF_WAIT_CL1 = 4,
+        ACK_WAIT_CL1 = 5,
+        DIFF_WAIT_CL2 = 6,
+        ACK_WAIT_CL2 = 7
+    )
 
-    # Define message types
-    ASK_DIFF = 1
-    RECEIVED_DIFF = 2
-    APPLY_DIFF = 3
-    ACK = 4
-    ASK_SHADOW = 5
-    RECEIVED_SHADOW = 6
-    APPLY_SHADOW = 7
+    msg = AttrDict(
+        ASK_DIFF = 1,
+        RECEIVED_DIFF = 2,
+        APPLY_DIFF = 3,
+        ACK = 4,
+        ASK_SHADOW = 5,
+        RECEIVED_SHADOW = 6,
+        APPLY_SHADOW = 7
+    )
+
+    @state("INITIAL", next="SHADOW_WAIT_CL1")
+    def initial(self):
+        self._send_message(self.sockets[1], self.msg.ASK_SHADOW)
+
+    @state("SHADOW_WAIT_CL1", next="SHADOW_ACK_WAIT_CL2", msg="RECEIVED_SHADOW")
+    def shadow_wait_client1(self):
+        self._send_message(self.sockets[0], self.msg.APPLY_SHADOW, msg_data=
+                            msg_data=message['data'])
+
 
     def __init__(self):
-        self.sockets = []
-        self.state = CollabEditHandler.PRE_INTERVIEW
+        self.sockets = set()
+        self.state = self.states.PRE_INTERVIEW
+
+    def on_join(self, socket, *args, **kwargs):
+        if len(self.sockets) == 2:
+            log.error("More than two people tried to connect to CollabEdit")
+            return
+
+        self.sockets.add(socket)
+        if len(self.sockets) == 2:
+            log.debug("Two people connected to CollabEdit. Starting sync")
+            self.state = self.states.INITIAL
+            self._send_message(self.sockets[1], self.msg.ASK_SHADOW)
+
+class CollabEditHandler(BaseApplication):
 
     def on_join(self, socket, *args, **kwargs):
         if len(self.sockets) == 2:
