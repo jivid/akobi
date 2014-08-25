@@ -2,48 +2,47 @@ import time
 
 from akobi import log
 from akobi.lib import utils
-from akobi.lib.utils.datastructures import AttrDict
+from akobi.lib.utils.datastructures import TwoWayAttrDict
+from akobi.lib.utils.statemachine import state, StateMachine
 from akobi.lib.applications.base import BaseApplication
 from akobi.lib.applications.registry import registry
 
 
-# TODO: Write StateMachine class in utils and provide methods to define and
-#       and advance states
 class CollabEditApplication(BaseApplication, StateMachine):
-    states = AttrDict(
-        PRE_INTERVIEW = 0,
-        INITIAL = 1,
-        SHADOW_WAIT_CL1 = 2,
+    states = TwoWayAttrDict(
+        PRE_INTERVIEW       = 0,
+        INITIAL             = 1,
+        SHADOW_WAIT_CL1     = 2,
         SHADOW_ACK_WAIT_CL2 = 3,
-        DIFF_WAIT_CL1 = 4,
-        ACK_WAIT_CL1 = 5,
-        DIFF_WAIT_CL2 = 6,
-        ACK_WAIT_CL2 = 7
+        DIFF_WAIT_CL1       = 4,
+        ACK_WAIT_CL1        = 5,
+        DIFF_WAIT_CL2       = 6,
+        ACK_WAIT_CL2        = 7
     )
 
-    msg = AttrDict(
-        ASK_DIFF = 1,
-        RECEIVED_DIFF = 2,
-        APPLY_DIFF = 3,
-        ACK = 4,
-        ASK_SHADOW = 5,
+    msgs = TwoWayAttrDict(
+        ASK_DIFF        = 1,
+        RECEIVED_DIFF   = 2,
+        APPLY_DIFF      = 3,
+        ACK             = 4,
+        ASK_SHADOW      = 5,
         RECEIVED_SHADOW = 6,
-        APPLY_SHADOW = 7
+        APPLY_SHADOW    = 7
     )
+
+    initial_state = states.PRE_INTERVIEW
 
     @state("INITIAL", next="SHADOW_WAIT_CL1")
-    def initial(self):
-        self._send_message(self.sockets[1], self.msg.ASK_SHADOW)
+    def initial(self, message):
+        self._send_message(self.sockets[1], self.msgs.ASK_SHADOW)
 
-    @state("SHADOW_WAIT_CL1", next="SHADOW_ACK_WAIT_CL2", msg="RECEIVED_SHADOW")
-    def shadow_wait_client1(self):
-        self._send_message(self.sockets[0], self.msg.APPLY_SHADOW, msg_data=
-                            msg_data=message['data'])
-
+    @state("SHADOW_WAIT_CL1", next="SHADOW_ACK_WAIT_CL2")
+    def received_shadow(self, message):
+        self._send_message(self.sockets[0], self.msgs.APPLY_SHADOW,
+                           msg_data=message['data'])
 
     def __init__(self):
         self.sockets = set()
-        self.state = self.states.PRE_INTERVIEW
 
     def on_join(self, socket, *args, **kwargs):
         if len(self.sockets) == 2:
@@ -53,8 +52,18 @@ class CollabEditApplication(BaseApplication, StateMachine):
         self.sockets.add(socket)
         if len(self.sockets) == 2:
             log.debug("Two people connected to CollabEdit. Starting sync")
-            self.state = self.states.INITIAL
-            self._send_message(self.sockets[1], self.msg.ASK_SHADOW)
+            self.initial()
+
+    def handle_message(self, message, *args, **kwargs):
+        if len(sockets) < 2:
+            return
+
+        message = message['data']
+        self.validate_message(message)
+
+        # Leave it up to the state machine to handle state transitions and
+        # input validation
+        self.advance_state_machine(message)
 
 class CollabEditHandler(BaseApplication):
 
