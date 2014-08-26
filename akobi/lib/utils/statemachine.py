@@ -1,22 +1,24 @@
-def state(name, next, prev=None):
+def state(name, next, prev):
     """ Decorator to signify a state in the machine, the expected state
         previous to it, and the next state to advance to.
     """
     def wrap(fn):
         def wrapped_fn(*args, **kwargs):
-            return(name, next, prev, fn, args, kwargs)
+            return(name, next, prev, fn)
         return wrapped_fn
     return wrap
 
 
 class StateMachine(object):
     """ Mixin providing Finite State Machine functionality for an Akobi
-        Application
+        Application. Currently only provides single state transitions, i.e.
+        each state can only have one previous and next state
     """
     states          = None
     msgs            = None
     initial_state   = None
     current         = None
+    _initialized    = False
     _callback_cache = {}
 
     def _meta_validate(self):
@@ -94,26 +96,34 @@ class StateMachine(object):
             state matches what the user expects before execution and return the
             state to be advanced to
         """
-        state, next, prev, fn, args, kwargs = callback()
-        if not self.current == prev:
-            raise ValueError("Current state doesn't match expected")
+        state, next, prev, fn = callback()
+        if any(s not in self.states for s in [state, next, prev]):
+            return None
 
-        # Set the current state and execute the callback
-        self.current = state
-        fn(*args, **kwargs)
+        if not self.current == prev:
+            return None
+
+        self._advance(state)
+        fn(message)
 
         return next
-        
+
+    def init_state_machine(self):
+        if not self._meta_validate():
+            raise Exception("StateMachine improperly set up")
+            
+        self.current = self.initial_state
+        self._initialized = True
 
     def advance_state_machine(self, message):
         """ Advances the state machine based on a given message and the current
-            state. This method is a no-op if the state machine hasn't been set
+            state. This method does nothing if the state machine hasn't been set
             up properly.
         """
-        if not self._meta_validate() or not self._input_validate():
+        if not self._initialized or not self._input_validate():
             return
 
-        if not self.current is None:
+        if self.current is None:
             self.current = self.initial_state
 
         # Look for a callback to execute for this transition. If there's no
@@ -123,5 +133,8 @@ class StateMachine(object):
             self._advance()
             return
 
-        next_state = self._execute_callback()
+        next_state = self._execute_callback(message)
+        if next_state is None:
+            return
+
         self._advance(next_state)

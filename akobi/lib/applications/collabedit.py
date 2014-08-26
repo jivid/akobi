@@ -32,17 +32,22 @@ class CollabEditApplication(BaseApplication, StateMachine):
 
     initial_state = states.PRE_INTERVIEW
 
-    @state("INITIAL", next="SHADOW_WAIT_CL1")
+    @state("INITIAL", next="SHADOW_WAIT_CL1", prev="ACK_WAIT_CL2")
     def initial(self, message):
         self._send_message(self.sockets[1], self.msgs.ASK_SHADOW)
 
-    @state("SHADOW_WAIT_CL1", next="SHADOW_ACK_WAIT_CL2")
+    @state("SHADOW_WAIT_CL1", next="SHADOW_ACK_WAIT_CL2", prev="INITIAL")
     def received_shadow(self, message):
         self._send_message(self.sockets[0], self.msgs.APPLY_SHADOW,
                            msg_data=message['data'])
 
+    @state("SHADOW_ACK_WAIT_CL2", next="DIFF_WAIT_CL1", prev="SHADOW_WAIT_CL1")
+    def ack(self, message):
+        self._send_message(self.sockets[0], CollabEditHandler.ASK_DIFF)
+
     def __init__(self):
-        self.sockets = set()
+        self.sockets = []
+        self.init_state_machine()
 
     def on_join(self, socket, *args, **kwargs):
         if len(self.sockets) == 2:
@@ -52,7 +57,8 @@ class CollabEditApplication(BaseApplication, StateMachine):
         self.sockets.add(socket)
         if len(self.sockets) == 2:
             log.debug("Two people connected to CollabEdit. Starting sync")
-            self.initial()
+            self._send_message(self.sockets[1], self.msgs.ASK_SHADOW)
+            self._advance(state="SHADOW_WAIT_CL1")
 
     def handle_message(self, message, *args, **kwargs):
         if len(sockets) < 2:
