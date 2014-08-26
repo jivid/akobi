@@ -1,5 +1,3 @@
-from tornado import gen
-
 from akobi import log
 from akobi.lib.applications.registry import registry
 from akobi.lib.interviews import ongoing_interviews
@@ -7,8 +5,7 @@ from akobi.lib.utils import function_as_callback
 
 
 class Initializer(object):
-    """
-    Initialize the interview for a particular client. Called by the
+    """ Initialize the interview for a particular client. Called by the
     WebSocketHandler's on_message method when it receives an init
     message from the client (which happens whenever a new client joins)
     """
@@ -23,9 +20,7 @@ class Initializer(object):
                   client_socket.client_id)
         ongoing_interviews[interview_id].add(client_socket)
 
-        # TODO: Figure out whether or not I want to gen.Tasks here
         cls._instantiate_for_interview(interview_id)
-
         cls.notify_apps_client_joined(interview_id, client_socket)
 
     @staticmethod
@@ -36,9 +31,8 @@ class Initializer(object):
     def notify_apps_client_joined(interview_id, client_socket):
         # Find apps from registry and call their on_joins as callbacks
         apps = registry.apps_for_interview(interview_id)
+        log.debug("Got apps %s for interview %s" % (apps, interview_id))
 
         for app_name in apps:
-            log.debug("Pulled application out of apps_for_interview %s" %
-                      app_name)
             instance = apps[app_name]
             function_as_callback(instance.on_join, client_socket)

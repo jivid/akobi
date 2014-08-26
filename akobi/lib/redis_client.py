@@ -4,17 +4,17 @@ __all__ = ('redis_client',)
 
 
 class RedisClient(object):
-    '''
-    Obtains a connection to Redis. Restricts usage to a single connection pool.
-    Uses the Borg design pattern (bit.ly/1oxVQNI) to maintain connection pool
-    and credentials. Use documented below:
+    """ Obtains a connection to Redis. Restricts usage to a single connection
+    pool. Uses the Borg design pattern (bit.ly/1oxVQNI) to maintain connection
+    pool and credentials. Use documented below:
 
-    from akobi.lib.redis_client import redis_client
+    >>> from akobi.lib.redis_client import redis_client
 
-    redis = redis_client.get_redis_instance()
-    redis.set("Warren", "Smith")
-    print "Get from redis: %s" % str(r.get("Warren"))
-    '''
+    >>> redis = redis_client.get_redis_instance()
+    >>> redis.set("Warren", "Smith")
+    >>> print "Get from redis: %s" % str(r.get("Warren"))
+    ... Get from redis: Smith
+    """
 
     __shared_state = {
         'HOST': 'localhost',

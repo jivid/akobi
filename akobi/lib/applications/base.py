@@ -3,8 +3,8 @@ class BaseApplication(object):
     Base class that all applications will inherit from.
     """
 
-   # All apps are non-essential by default. Set this member to
-   # true in subclass that implements an essential app.
+    # All apps are non-essential by default. Set this member to
+    # true in subclass that implements an essential app.
 
     essential = False
 
@@ -12,8 +12,7 @@ class BaseApplication(object):
         raise NotImplementedError
 
     def on_join(self, *args, **kwargs):
-        """
-        Override this no-op if you need your application to perform some
+        """ Override this no-op if you need your application to perform some
         initialization before you can begin handling client messages.
         Called every time a new client joins an interview in which your
         application is registered.
@@ -21,8 +20,7 @@ class BaseApplication(object):
         pass
 
     def on_client_leave(self, *args, **kwargs):
-        """
-        Override this no-op if you need your application to perform
+        """ Override this no-op if you need your application to perform
         clean up or take action when a websocket is closed.
         """
         pass
