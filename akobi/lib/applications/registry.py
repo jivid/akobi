@@ -60,6 +60,9 @@ class ApplicationRegistry(object):
         self.interviews[interview_id][app_name] = None
 
     def non_essential_apps(self):
+        """ Return a list of non essential applications in the registry. Used
+            to display all apps that can be added to an interview
+        """
         # Populate the non essential apps if they don't already exist
         if not self._non_essential_apps:
             non_essential = lambda app: not app.essential
