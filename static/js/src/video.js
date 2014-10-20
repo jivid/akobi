@@ -116,7 +116,7 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
             pc.onaddstream = function(event) {
                 console.log("Adding remote stream");
                 console.log(remoteVideo);
-                remoteVideo.attr("src", window.URL.createObjectURL(event.stream));
+                this.refs.videoSpace.props.remoteSrc(window.URL.createObjectURL(event.stream));
                 remoteStream = event.stream;
             };
 
@@ -146,7 +146,7 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
                 localStream = localMediaStream;
                 localVideo= $('#local-video');
                 remoteVideo= $('#remote-video');
-                localVideo.attr("src", window.URL.createObjectURL(localMediaStream));
+                this.refs.videoSpace.props.localSrc(window.URL.createObjectURL(localMediaStream));
             }, errorCallback);
         };
 
@@ -161,13 +161,22 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
     };
 
     var VideoSpace = React.createClass({
+        propTypes: {
+            remoteSrc: React.PropTypes.string,
+            localSrc: React.PropTypes.string
+        },
+
         render: function() {
+            var localSrc = this.props.localSrc ? this.props.localSrc : null;
+            var remoteSrc = this.props.remoteSrc ? this.props.remoteSrc : null;
+
             return (
                 <div id="video-container">
-                    <video id="local-video" autoPlay="true" muted="true"></video>
-                    <video id="remote-video" autoPlay="true"></video>
+                    <video id="local-video" autoPlay="true" muted="true"
+                    src={localSrc}/>
+                    <video id="remote-video" autoPlay="true" src={remoteSrc} />
                 </div>
-            )
+            );
         }
     });
 
@@ -179,8 +188,7 @@ define(["common", "ext/videoadapter", "util"], function(common, videoAdapter, ut
 
         render: function() {
             React.renderComponent(<VideoSpace />, this.$el.get(0));
-            this.$el.addClass("container-med pull-left");
-            $('#video-space').append(this.$el);
+            $("#video-space").append(this.$el);
         }
     });
 

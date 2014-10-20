@@ -25,13 +25,8 @@ define(['common'], function(common) {
 
     var NoteBox = React.createClass({
         render: function() {
-            var classes = React.addons.classSet({
-                'app': true,
-                'shadow': true,
-                'container-full': true
-            });
             return (
-                <div id="notebox" className={classes}>
+                <div id="notebox">
                     {this.props.value}
                 </div>
             );
@@ -63,9 +58,12 @@ define(['common'], function(common) {
             React.renderComponent(
                 <NoteBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
             );
-            this.$el.addClass("container-med pull-left");
             $('#notes-space').append(this.$el);
             this.editor = ace.edit('notebox');
+            $( "#notebox" ).resizable();
+            $( "#notebox" ).on( "resize", function( event, ui ) {
+                this.editor = ace.edit("notebox");
+            } );
         },
 
         saveNoteState: function() {
