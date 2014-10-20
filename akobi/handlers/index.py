@@ -10,11 +10,6 @@ applications = registry.available.keys()
 applications.remove("Heartbeat")
 
 
-class InterviewHandler(RequestHandler):
-    def get(self, *args, **kwargs):
-        self.render('interview.html', applications=self.request.arguments)
-
-
 class IndexHandler(RequestHandler):
     def get(self, *args, **kwargs):
         self.render('index.html', applications=applications)

@@ -5,7 +5,7 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application, StaticFileHandler
 
-from akobi.handlers import interview, index
+from akobi.handlers import interview, index, auth
 
 settings = {
     'auto_reload': True,
@@ -15,10 +15,11 @@ settings = {
 
 app = Application([
     (r'/', index.IndexHandler),
+    (r'/auth', auth.AuthHandler),
+    (r'/i/(\w+)', interview.InterviewHTTPHandler),
+    (r'/i/(\w+)/socket', interview.InterviewWebSocketHandler),
     (r'/setup_complete', index.SetupHandler),
     (r'/static/(.*)', StaticFileHandler, {'path': './static/'}),
-    (r'/i/(\w+)', index.InterviewHandler),
-    (r'/i/(\w+)/socket', interview.InterviewHandler),
     ], **settings)
 
 

@@ -1,5 +1,6 @@
 import json
 
+from tornado.web import RequestHandler
 from tornado.websocket import WebSocketHandler
 
 # We need to import all the applications in here so that they get regsitered
@@ -12,9 +13,38 @@ from akobi.lib.interviews import ongoing_interviews
 from akobi.lib.redis_client import redis_client
 
 
-class InterviewHandler(WebSocketHandler):
+class InterviewHTTPHandler(RequestHandler):
+    def _redirect_to_auth(self, interview_id):
+        auth_url = "/auth?for=%s" % interview_id
+        self.redirect(auth_url)
+
+    def get(self, interview_id, *args, **kwargs):
+        if not "_sessionid" in self.cookies:
+            self._redirect_to_auth(interview_id)
+            return
+
+        # See if there is a valid, active session for this interview
+        session_cookie = self.get_cookie("_sessionid")
+        if not session_cookie.startswith(interview_id + "$"):
+            self._redirect_to_auth(interview_id)
+            return
+
+        # Verify that we have the same session ID in the db
+        redis = redis_client.get_redis_instance()
+        session_id = session_cookie.split("$")[1]
+        session_key = "session:%s" % session_id
+        interview_val = redis.get(session_key)
+        if not interview_val == interview_id:
+            self._redirect_to_auth(interview_id)
+            return
+
+        # Finally allow the user through to the interview
+        self.render('interview.html', applications=self.request.arguments)
+
+
+class InterviewWebSocketHandler(WebSocketHandler):
     def __init__(self, *args, **kwargs):
-        super(InterviewHandler, self).__init__(*args, **kwargs)
+        super(InterviewWebSocketHandler, self).__init__(*args, **kwargs)
         self.client_id = None
         self.interview_id = None
         self.interview_initialized = False
@@ -26,7 +56,7 @@ class InterviewHandler(WebSocketHandler):
         if type(msg) is dict:
             msg = json.dumps(msg)
 
-        super(InterviewHandler, self).write_message(msg)
+        super(InterviewWebSocketHandler, self).write_message(msg)
 
     def open(self, interview_id):
         log.debug("WebSocket opened for interview %s" % interview_id)
@@ -57,33 +87,7 @@ class InterviewHandler(WebSocketHandler):
             self.interview_initialized = True
             return
 
-        elif msg['type'] == "auth":
-            interview_id = msg['interviewID']
-            if not interview_id == self.interview_id:
-                log.error("Incorrect interview ID passed. Expected %s got %s"
-                          % (self.interview_id, interview_id))
-                return
-
-            email = msg['data']['email']
-            log.debug("Attempting auth on email %s for interview %s"
-                      % (email, interview_id))
-
-            redis = redis_client.get_redis_instance()
-            interview = "interview:%s" % interview_id
-            interviewer_email = redis.hget(interview, "interviewer_email")
-            interviewee_email = redis.hget(interview, "interviewee_email")
-
-            message = utils.create_message(msg_type="auth_response",
-                                           client=msg['clientID'],
-                                           interview=self.interview_id,
-                                           success=0)
-
-            if not email == interviewer_email or\
-                    not email == interviewee_email:
-                self.write_message(message)
-
-            message['data']['success'] = 1
-
+        elif msg['type'] == "download_apps":
             # TODO: Register application to interview on selection screen
             registry.register_to_interview(self.interview_id, "Heartbeat")
             registry.register_to_interview(self.interview_id, "Notes")
@@ -91,15 +95,11 @@ class InterviewHandler(WebSocketHandler):
             registry.register_to_interview(self.interview_id, "Video")
 
             apps = registry.app_names_for_interview(self.interview_id)
-            message['data']['applications'] = apps
-
-            if email == interviewer_email:
-                message['data']['role'] = "interviewer"
-                self.write_message(message)
-            elif email == interviewee_email:
-                message['data']['role'] = "interviewee"
-                self.write_message(message)
-
+            message = utils.create_message(msg_type="download_apps",
+                                           client=self.client_id,
+                                           interview=self.interview_id,
+                                           applications=apps)
+            self.write_message(message)
             return
 
         if self.interview_initialized is True:
@@ -109,6 +109,9 @@ class InterviewHandler(WebSocketHandler):
 
     def on_close(self):
         live_apps = registry.apps_for_interview(self.interview_id)
+        if live_apps is None:
+            return
+
         for app_name in live_apps:
             utils.function_as_callback(live_apps[app_name].on_client_leave,
                                        self)
