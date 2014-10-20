@@ -1,3 +1,5 @@
+var ENTER_KEY = 13;
+
 function clearErrors() {
     $('.field-error').each(function(i, e){
         $(e).removeClass('field-error');
@@ -54,7 +56,7 @@ $('#sign-in').on('click', function() {
         },
         error: function(err) {
             msg = err.responseJSON.error.toUpperCase();
-            console.log(msg);
+            console.error(msg);
             attachError(msg, emailLabel);
         },
         complete: function() {
@@ -67,8 +69,7 @@ $('#sign-in').on('click', function() {
 });
 
 $(document).on('keypress', function(event) {
-    if (event.which == 13) {
-        console.log("Enter pressed");
+    if (event.which == ENTER_KEY) {
         event.preventDefault();
         $('#sign-in').click();
     }
