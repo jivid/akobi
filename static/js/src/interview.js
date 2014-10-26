@@ -1,13 +1,12 @@
-define(['socket'], function(socket) {
-    var Client = Backbone.Model.extend({
-        initialize: function(obj) {
-            this.id = obj.id;
-        }
-    });
+require("./eventbus")();
 
-    var Interview = Backbone.Model.extend({
-        initialize: function() {
-            this.socket = new socket.Socket();
+var socket = require("./socket");
+var $ = require("jquery");
+
+
+var Interview = {
+    initialize: function() {
+            this.socket = new socket();
             this.startTime = new Date();
             this.id = window.location.pathname.split('/')[2];
 
@@ -17,45 +16,38 @@ define(['socket'], function(socket) {
 
             this.socket.on("message", $.proxy(function(msg) {
                 if (msg.type == "open_response") {
-                    this.client = new Client({id: msg.clientID});
+                    this.client_id = msg.clientID;
                 } else {
                     this.processMessage(msg);
                 }
             }, this));
         },
-
-        downloadApps: function() {
-            EventBus.on("download_apps", function(msg) {
-                // Build a list of apps to be downloaded
-                var requireApps = ['common'];
-                var apps = msg.data.applications;
-                apps.forEach(function(app) {
-                    requireApps.push(app.toLowerCase());
-                });
-
-                require(requireApps, function(){
-                    // Now all apps are required and we can init the interview
-                    interview.socket.send({
-                        type: 'init_interview',
-                        clientID: '',
-                        interviewID: interview.id
-                    });
-                });
-            });
-
-            this.socket.send({
-                type: 'download_apps',
+    downloadApps: function() {
+        var self = this;
+        EventBus.on("download_apps", function(msg) {
+            // Build a list of apps to be downloaded
+            
+            console.log(self);
+            require("./heartbeat")(self);
+            
+            // Now all apps are required and we can init the interview
+            self.socket.send({
+                type: 'init_interview',
                 clientID: '',
-                interviewID: this.id
+                interviewID: self.id
             });
-        },
+        });
 
-        processMessage: function(msg) {
-            EventBus.trigger(msg.type, msg);
-        }
-    });
+        this.socket.send({
+            type: 'download_apps',
+            clientID: '',
+            interviewID: this.id
+        });
+    },
 
-    return {
-        Interview: Interview
-    };
-});
+    processMessage: function(msg) {
+        EventBus.trigger(msg.type, msg);
+    }
+}
+
+module.exports = Interview

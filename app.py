@@ -26,6 +26,7 @@ app = Application([
 def build_assets():
     cmd = ['fab', 'local', 'build']
     subprocess.call(cmd)
+    subprocess.call(['browserify', 'static/js/build/main.js', '--debug', '-o', 'static/js/build/prod.js'])
 
 
 def main():

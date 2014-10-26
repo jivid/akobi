@@ -19,6 +19,7 @@ class InterviewHTTPHandler(RequestHandler):
         self.redirect(auth_url)
 
     def get(self, interview_id, *args, **kwargs):
+        """
         if not "_sessionid" in self.cookies:
             self._redirect_to_auth(interview_id)
             return
@@ -37,7 +38,7 @@ class InterviewHTTPHandler(RequestHandler):
         if not interview_val == interview_id:
             self._redirect_to_auth(interview_id)
             return
-
+        """
         # Finally allow the user through to the interview
         self.render('interview.html', applications=self.request.arguments)
 

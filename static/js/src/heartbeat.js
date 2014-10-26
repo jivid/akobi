@@ -1,19 +1,17 @@
-define(function() {
-    var sendHeartbeat = function() {
+require("./eventbus")();
+
+module.exports = function(interview){
+
+    var send = function(interview) {
         interview.socket.send({
             type: 'heartbeat',
-            clientID: interview.client.id,
+            clientID: interview.client_id,
             interviewID: interview.id
         });
-    };
+    }
 
-    EventBus.on("heartbeat_response", function() {
-        countMe("heartbeat_request_response");
-    });
-
-    var interval = setInterval(sendHeartbeat, 5000);
-
+    var interval = setInterval(send.bind(null, interview), 5000);
     EventBus.on("socket_closed", function() {
         clearInterval(interval);
-    });
-});
+    })
+};

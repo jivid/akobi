@@ -1,54 +1,56 @@
-define(["util"], function(util) {
-    Socket = function() {
-        _.extend(this, Backbone.Events);
+require("./eventbus")();
+var util = require("./util");
+var Backbone = require("backbone");
+var _ = require("underscore");
+var $ = require("jquery");
 
-        WebSocket.prototype.sendToServer = WebSocket.prototype.send;
+function Socket() {
+    _.extend(this, Backbone.Events);
 
-        WebSocket.prototype.send = function(msg) {
-            util.validateMessageContents(msg);
+    WebSocket.prototype.sendToServer = WebSocket.prototype.send;
 
-            if (msg.data === undefined) {
-                msg.data = {};
-            } else {
-                if (!util.isValidJSON(msg.data)) {
-                    util.throwException("Malformed data being sent");
-                }
-            }
+    WebSocket.prototype.send = function(msg) {
+        util.validateMessageContents(msg);
 
-            msg.datetime = new Date();
-            if (this.readyState == this.OPEN) {
-                this.sendToServer(JSON.stringify(msg));
+        if (msg.data === undefined) {
+            msg.data = {};
+        } else {
+            if (!util.isValidJSON(msg.data)) {
+                util.throwException("Malformed data being sent");
             }
         }
 
-        this.hash = window.location.pathname.split('/')[2];
-        this.host = window.location.host;
-        this.socketAddress = "ws://" + this.host + "/i/" + this.hash + "/socket";
-        this.socket = new WebSocket(this.socketAddress);
+        msg.datetime = new Date();
+        if (this.readyState == this.OPEN) {
+            this.sendToServer(JSON.stringify(msg));
+        }
+    }
 
-        this.socket.onopen = $.proxy(function(e) {
-            this.trigger("open", e);
-        }, this);
+    this.hash = window.location.pathname.split('/')[2];
+    this.host = window.location.host;
+    this.socketAddress = "ws://" + this.host + "/i/" + this.hash + "/socket";
+    this.socket = new WebSocket(this.socketAddress);
 
-        this.socket.onerror = $.proxy(function(e) {
-            this.trigger("error", e);
-        }, this);
+    this.socket.onopen = $.proxy(function(e) {
+        this.trigger("open", e);
+    }, this);
 
-        this.socket.onmessage = $.proxy(function(e) {
-            this.trigger("message", JSON.parse(e.data));
-        }, this);
+    this.socket.onerror = $.proxy(function(e) {
+        this.trigger("error", e);
+    }, this);
 
-        this.socket.onclose = function(e) {
-            EventBus.trigger("socket_closed");
-            _.debounce(EventBus.off(), 500);
-        };
+    this.socket.onmessage = $.proxy(function(e) {
+        this.trigger("message", JSON.parse(e.data));
+    }, this);
 
-        this.send = $.proxy(function(msg) {
-            this.socket.send(msg);
-        }, this);
+    this.socket.onclose = function(e) {
+        EventBus.trigger("socket_closed");
+        _.debounce(EventBus.off(), 500);
     };
 
-    return {
-        Socket: Socket
-    };
-});
+    this.send = $.proxy(function(msg) {
+        this.socket.send(msg);
+    }, this);
+};
+
+module.exports = Socket;
