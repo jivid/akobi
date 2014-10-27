@@ -1,8 +1,10 @@
+/** @jsx React.DOM **/
 require("./eventbus")();
 
 var socket = require("./socket");
 var $ = require("jquery");
-
+var React = require("react");
+var VideoSpace = require("./video");
 
 var Interview = {
     initialize: function() {
@@ -27,8 +29,8 @@ var Interview = {
         EventBus.on("download_apps", function(msg) {
             // Build a list of apps to be downloaded
             
-            console.log(self);
             require("./heartbeat")(self);
+            React.renderComponent(<VideoSpace interview={self}/>, $('#video-space').get(0));
             
             // Now all apps are required and we can init the interview
             self.socket.send({

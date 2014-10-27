@@ -43,7 +43,7 @@ def transform_jsx():
     js_build_ext = os.path.join(js_build, 'ext')
 
     # transform JSX
-    env.run("jsx --no-cache-dir %s %s" % (js_src, js_build))
+    env.run("jsx --harmony --no-cache-dir %s %s" % (js_src, js_build))
 
     # copy external libs
     os.makedirs(js_build_ext)

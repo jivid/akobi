@@ -7,4 +7,5 @@ static/js/build/
 static/css/build/
 build/
 dist/
+node_modules/
 *.egg-info/
