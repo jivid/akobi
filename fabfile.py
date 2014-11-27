@@ -63,3 +63,9 @@ def build():
 
     print "Transforming JSX"
     transform_jsx()
+
+@task
+def deps():
+    js_packages = ['react', 'backbone', 'jquery', 'underscore', 'brace']
+    pkgs = ' '.join(js_packages)
+    env.run("npm install --prefix ./static/js/ %s" % pkgs)

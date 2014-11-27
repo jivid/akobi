@@ -30,7 +30,7 @@ def build_assets():
 
 def main():
     print "Building assets"
-    build_assets()
+    # build_assets()
 
     print "Running server"
     http_server = HTTPServer(app)

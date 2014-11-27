@@ -39,7 +39,8 @@ class InterviewHTTPHandler(RequestHandler):
             return
 
         # Finally allow the user through to the interview
-        self.render('interview.html', applications=self.request.arguments)
+        self.render('test.html')
+        # self.render('interview.html', applications=self.request.arguments)
 
 
 class InterviewWebSocketHandler(WebSocketHandler):
