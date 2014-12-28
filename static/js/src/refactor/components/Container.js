@@ -14,6 +14,7 @@ var Container = React.createClass({
     background: React.PropTypes.string,
     centered: React.PropTypes.bool,
     style: React.PropTypes.object,
+    onClick: React.PropTypes.func,
   },
 
   getDefaultProps: function() {
@@ -61,7 +62,10 @@ var Container = React.createClass({
     }
 
     return (
-      <div className={cx(classes)} style={styles}>
+      <div
+        className={cx(classes)}
+        style={styles}
+        onClick={this.props.onClick}>
         {this.props.children}
       </div>
     );

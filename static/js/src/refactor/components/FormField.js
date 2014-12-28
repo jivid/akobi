@@ -9,6 +9,7 @@ var FormField = React.createClass({
   propTypes: {
     autocomplete: React.PropTypes.bool,
     autofocus: React.PropTypes.bool,
+    disabled: React.PropTypes.bool,
     error: React.PropTypes.string,
     name: React.PropTypes.string.isRequired,
     placeholder: React.PropTypes.string,
@@ -20,6 +21,7 @@ var FormField = React.createClass({
     return {
       autocomplete: false,
       autofocus: false,
+      disabled: false,
       type: 'text',
     }
   },
@@ -43,6 +45,7 @@ var FormField = React.createClass({
           name={this.props.name}
           type={this.props.type}
           placeholder={this.props.placeholder}
+          disabled={this.props.disabled}
         />
       </div>
     );

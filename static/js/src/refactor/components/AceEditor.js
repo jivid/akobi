@@ -3,7 +3,7 @@
 var ace = require('brace');
 var Container = require('./Container');
 var React = require('react');
-var Utils = require('../Utils');
+var Utils = require('../lib/Utils');
 
 // Supported Languages
 require('brace/mode/javascript');

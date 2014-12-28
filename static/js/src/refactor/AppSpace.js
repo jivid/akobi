@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
-var AceEditor = require('./lib/components/AceEditor');
-var Container = require('./lib/components/Container');
+var AceEditor = require('./components/AceEditor');
+var Container = require('./components/Container');
 var Interview = require('./Interview');
 var React = require('react');
 

@@ -1,9 +1,11 @@
 /** @jsx React.DOM */
 
 var $ = require('jquery');
-var Container = require('./lib/components/Container');
-var FormField = require('./lib/components/FormField');
+var Container = require('./components/Container');
+var FormField = require('./components/FormField');
 var KeyEventListener = require('./lib/KeyEventListener');
+var LoadingThrobber = require('./components/LoadingThrobber');
+var Overlay = require('./components/Overlay');
 var React = require('react/addons');
 
 var cx = React.addons.classSet;
@@ -11,7 +13,7 @@ var cx = React.addons.classSet;
 var AuthSpace = React.createClass({
   getInitialState: function() {
     return {
-      showOverlay: false,
+      hideOverlay: true,
       waitingForAuth: false,
       nameError: null,
       emailError: null,
@@ -25,11 +27,18 @@ var AuthSpace = React.createClass({
     };
 
     var authBoxStyles = {
-      height: '250px',
+      height: '270px',
       color: '#555555',
       position: 'relative',
       boxShadow: '0 1px 30px',
       padding: '0px',
+    };
+
+    var buttonStyles = {
+      background: '#4C80A3',
+      margin: '9px',
+      height: '20px',
+      cursor: 'pointer',
     };
 
     return (
@@ -47,7 +56,7 @@ var AuthSpace = React.createClass({
         <Container
           centered={true}
           background='#FFFFFF'
-          width='23em'
+          width='22em'
           rounded='medium'
           style={authBoxStyles}>
 
@@ -60,6 +69,12 @@ var AuthSpace = React.createClass({
             <p className='text-center'>SIGN IN TO YOUR INTERVIEW</p>
           </Container>
 
+          <Overlay
+            height='220px'
+            hidden={this.state.hideOverlay}>
+            <LoadingThrobber/>
+          </Overlay>
+
           {/* Form */}
           <Container style={{padding: '0px'}}>
             <FormField
@@ -68,8 +83,9 @@ var AuthSpace = React.createClass({
               type='text'
               title='NAME'
               placeholder='eg. John Doe'
-              autofocus={true}
+              autofocus={!this.state.waitingForAuth}
               error={this.state.nameError}
+              disabled={this.state.waitingForAuth}
             />
 
             <FormField
@@ -79,7 +95,18 @@ var AuthSpace = React.createClass({
               title='E-MAIL'
               placeholder='eg. me@example.com'
               error={this.state.emailError}
+              disabled={this.state.waitingForAuth}
             />
+          </Container>
+          <Container
+            rounded='medium'
+            style={buttonStyles}
+            onClick={this.submitCredentials}>
+            <p
+              className='text-center'
+              style={{color: '#FFFFFF'}}>
+              Continue
+            </p>
           </Container>
         </Container>
       </Container>
@@ -95,15 +122,16 @@ var AuthSpace = React.createClass({
 
   submitCredentials: function() {
     if (this.state.waitingForAuth) {
-      console.log('Already sent creds');
+      console.info('Already sent creds');
       return;
     }
 
-    this.sendCredentialsToServer();
     this.setState({
-      showOverlay: true,
+      hideOverlay: false,
       waitingForAuth: true,
     });
+
+    this.sendCredentialsToServer();
   },
 
   sendCredentialsToServer: function() {
@@ -117,14 +145,13 @@ var AuthSpace = React.createClass({
         email: email,
       },
       success: () => {
-        console.log('Auth success!');
         location.replace('/i/' + location.search.split('=')[1]);
       },
       error: () => {
-        console.error('Auth failure :(');
         this.setState({
+          hideOverlay: true,
           waitingForAuth: false,
-        })
+        });
       },
     });
   }
