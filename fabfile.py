@@ -61,8 +61,13 @@ def build():
     print "Compiling LESS to CSS"
     build_css()
 
-    print "Transforming JSX"
-    transform_jsx()
+    less_file = os.path.join(STATIC_PATH, 'less', 'akobi_refactor.less')
+    css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi_refactor.css')
+
+    env.run("lessc --compress %s > %s" % (less_file, css_file))
+    # print "Transforming JSX"
+    # transform_jsx()
+
 
 @task
 def deps():

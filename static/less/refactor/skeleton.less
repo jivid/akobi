@@ -1,0 +1,107 @@
+@black: #111111;
+@red:   #FF4136;
+
+/* Default style overrides */
+body {
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+  font-size: 14px;
+  color: @black;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+}
+
+p {
+  margin: 0 0 10px;
+}
+
+select:not(:first-child) {
+  margin-left: 8px;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Custom styling */
+.container {
+  padding: 0.5em;
+}
+
+.rounded-top-small {
+  .make-rounded-top(2px);
+}
+
+.rounded-top-medium {
+  .make-rounded-top(4px);
+}
+
+.rounded-top-large {
+  .make-rounded-top(8px);
+}
+
+.rounded-top-xlarge {
+  .make-rounded-top(12px);
+}
+
+.rounded-bottom-small {
+  .make-rounded-bottom(2px);
+}
+
+.rounded-bottom-medium {
+  .make-rounded-bottom(4px);
+}
+
+.rounded-bottom-large {
+  .make-rounded-bottom(8px);
+}
+
+.rounded-bottom-xlarge {
+  .make-rounded-bottom(12px);
+}
+
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.title {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.form-field {
+  border-bottom: 1px solid #CCCCCC;
+  padding: 20px 20px 10px 20px;
+
+  input {
+    box-shadow: none;
+    border: none;
+    color: #555555;
+    font-size: 14px;
+    width: 100%;
+
+    &:focus {
+      outline: none !important;
+    }
+  }
+
+  .form-field-title {
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+.form-field-error {
+  border-bottom: 1px solid @red;
+}

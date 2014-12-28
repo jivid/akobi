@@ -1,11 +1,11 @@
-var EventBus = require('./EventBus');
-var Socket = require('./Socket');
+var EventBus = require('./lib/EventBus');
+var AkobiWebSocket = require('./AkobiWebSocket');
 
 class Interview {
   constructor(id, onAppsDownloaded) {
     this.id = id;
     this.clientID = null;
-    this.socket = new Socket();
+    this.socket = new AkobiWebSocket();
 
     this.socket.on('open', (msg) => {
       this.downloadApps(onAppsDownloaded);

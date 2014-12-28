@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var EventBus = require('./EventBus');
+var EventBus = require('./lib/EventBus');
 
 class Socket {
   constructor() {

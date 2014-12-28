@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 var ace = require('brace');
-var HorizontalBar = require('./HorizontalBar');
+var Container = require('./Container');
 var React = require('react');
 var Utils = require('../Utils');
 
@@ -21,7 +21,6 @@ var Languages = [
 // Supported Themes
 require('brace/theme/monokai');
 var Themes = [
-  null,
   'monokai',
 ];
 
@@ -31,9 +30,16 @@ var AceEditor = React.createClass({
     language: React.PropTypes.oneOf(Languages),
     theme: React.PropTypes.oneOf(Themes),
     lineWrap: React.PropTypes.number,
-    width: React.PropTypes.string,
-    height: React.PropTypes.string,
+    editorWidth: React.PropTypes.number,
+    editorHeight: React.PropTypes.number,
     showEditorControls: React.PropTypes.bool,
+  },
+
+  getDefaultProps: function() {
+    return {
+      editorWidth: 300,
+      editorHeight: 700,
+    }
   },
 
   getInitialState: function() {
@@ -87,7 +93,7 @@ var AceEditor = React.createClass({
     Languages.forEach((language) => {
       languageOptions.push(
         <option
-          key={language}
+          key={language || 'plaintext'}
           value={language}>
           {Utils.capitalizeFirstLetter(language)}
         </option>
@@ -118,26 +124,20 @@ var AceEditor = React.createClass({
   render: function() {
     var editorName = this.props.name.trim().toLowerCase().replace(' ', '-');
     var id = "ace-editor-" + editorName;
-    var height = this.props.height || '300px';
-    var width = this.props.width || '700px';
-    var style = {
-      height: height,
-      width: width,
-    }
 
-    var languageSelector =
-      <div style={{marginTop: '8px', marginBottom: '8px'}}>
+    var editorControls =
+      <Container background='#eee'>
         {this.getLanguageSelector()}
-      </div>;
-
-    var editorControls = this.props.showEditorControls ? languageSelector : null;
+      </Container>;
 
     return (
-      <div>
-        <HorizontalBar width={width} background="#eee">
-          {editorControls}
-        </HorizontalBar>
-        <div id={id} ref='editor' style={style}/>
+      <div style={{width: this.props.editorWidth}}>
+        {this.props.showEditorControls ? editorControls : null}
+        <div
+          ref='editor'
+          id={id}
+          style={{height: this.props.editorHeight}}
+        />
       </div>
     );
   },

@@ -1,8 +1,8 @@
 /** @jsx React.DOM */
 
-var $ = require('jquery');
 var AceEditor = require('./lib/components/AceEditor');
-var Interview = require('./lib/classes/Interview');
+var Container = require('./lib/components/Container');
+var Interview = require('./Interview');
 var React = require('react');
 
 var AppSpace = React.createClass({
@@ -13,11 +13,7 @@ var AppSpace = React.createClass({
   },
 
   readyToRender: function() {
-    if (!this.state.interview || !this.state.interview.apps) {
-      return false;
-    }
-
-    return true;
+    return (this.state.interview && this.state.interview.apps);
   },
 
   componentWillMount: function() {
@@ -44,18 +40,24 @@ var AppSpace = React.createClass({
       return <p>Loading</p>;
     }
 
+    var containerStyle = {
+      'border': '1px solid black',
+    }
+
     return (
       <div>
         <p>Rendered</p>
         {this.renderModules()}
-        <AceEditor
-          language="python"
-          theme="monokai"
-          name="notebox"
-          width="750px"
-          height="500px"
-          showEditorControls={true}
-        />
+        <Container centered={true} style={containerStyle}>
+          <AceEditor
+            language="python"
+            theme="monokai"
+            name="notebox"
+            editorWidth={750}
+            editorHeight={500}
+            showEditorControls={true}
+          />
+        </Container>
       </div>
     );
   }

@@ -7,6 +7,11 @@ from akobi.lib.redis_client import redis_client
 from akobi.lib.utils import make_random_string
 
 
+class AuthHandlerRefactor(RequestHandler):
+    def get(self):
+        self.render("auth_refactor.html")
+
+
 class AuthHandler(RequestHandler):
     def get(self):
         self.render("auth.html")
