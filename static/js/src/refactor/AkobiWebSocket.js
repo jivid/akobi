@@ -2,7 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var EventBus = require('./lib/EventBus');
 
-class Socket {
+class AkobiWebSocket {
   constructor() {
     _.extend(this, Backbone.Events);
     this.hash = window.location.pathname.split('/')[2];
@@ -42,4 +42,4 @@ class Socket {
   }
 }
 
-module.exports = Socket;
+module.exports = AkobiWebSocket;

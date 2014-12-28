@@ -65,9 +65,31 @@ def build():
     css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi_refactor.css')
 
     env.run("lessc --compress %s > %s" % (less_file, css_file))
-    # print "Transforming JSX"
-    # transform_jsx()
 
+    print "Transforming JSX"
+    transform_jsx()
+
+
+@task
+def refactor():
+    print "Cleaning up old files"
+    clean_dirs()
+
+    print "Preparing for build"
+    prepare_build_dirs()
+
+    print "Compiling LESS to CSS"
+    build_css()
+
+    less_file = os.path.join(STATIC_PATH, 'less', 'akobi_refactor.less')
+    css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi_refactor.css')
+
+    env.run("lessc --compress %s > %s" % (less_file, css_file))
+    env.run("jsx --harmony static/js/src/ static/js/build/")
+    env.run("browserify static/js/build/refactor/AuthSpace.js -o "
+            "static/js/build/auth.js")
+    env.run("browserify static/js/build/refactor/AppSpace.js -o "
+            "static/js/build/app.js")
 
 @task
 def deps():
