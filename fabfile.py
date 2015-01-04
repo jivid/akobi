@@ -2,8 +2,7 @@ import os
 import shutil
 
 from fabric.operations import local as lrun
-from fabric.api import run, task
-from fabric.state import env
+from fabric.api import env, task
 
 PROJECT_ROOT = os.path.dirname(__file__)
 STATIC_PATH = os.path.join(PROJECT_ROOT, 'static')
@@ -15,6 +14,8 @@ def local():
 
 
 def prepare_build_dirs():
+    """ Create the build folders for js and css files
+    """
     for d in ['js', 'css']:
         path = os.path.join(STATIC_PATH, d, 'build')
         if not os.path.exists(path):
@@ -22,6 +23,8 @@ def prepare_build_dirs():
 
 
 def clean_dirs():
+    """ Remove the build folders under static/js and static/css
+    """
     for d in ['js', 'css']:
         path = os.path.join(STATIC_PATH, d, 'build')
         if os.path.exists(path) and os.path.isdir(path):
@@ -90,6 +93,7 @@ def refactor():
             "static/js/build/auth.js")
     env.run("browserify static/js/build/refactor/AppSpace.js -o "
             "static/js/build/app.js")
+
 
 @task
 def deps():
