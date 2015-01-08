@@ -5,12 +5,7 @@ var Container = require('./components/Container');
 var Interview = require('./Interview');
 var React = require('react');
 
-var AppSpace = React.createClass({
-  appModules: {
-    video: 'VideoChatApp',
-    notes: 'NotesApp',
-    collabedit: 'CollabeditApp',
-  },
+var Collabedit = React.createClass({
 
   readyToRender: function() {
     return (this.state.interview && this.state.interview.apps);
@@ -26,15 +21,6 @@ var AppSpace = React.createClass({
     })
   },
 
-  renderModules: function() {
-    var modules = [];
-    this.state.interview.apps.forEach((app) => {
-      modules.push(<p key={app}>{this.appModules[app]}</p>);
-    })
-
-    return modules;
-  },
-
   render: function() {
     if (!this.readyToRender()) {
       return <p>Loading</p>;
@@ -46,8 +32,6 @@ var AppSpace = React.createClass({
 
     return (
       <div>
-        <p>Rendered</p>
-        {this.renderModules()}
         <Container centered={true} style={containerStyle}>
           <AceEditor
             language="python"
@@ -64,4 +48,4 @@ var AppSpace = React.createClass({
 
 });
 
-React.render(<AppSpace/>, document.body);
+React.render(<Collabedit/>, document.getElementById('collabedit-space'));

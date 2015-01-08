@@ -91,8 +91,10 @@ def refactor():
     env.run("jsx --harmony static/js/src/ static/js/build/")
     env.run("browserify static/js/build/refactor/AuthSpace.js -o "
             "static/js/build/auth.js")
-    env.run("browserify static/js/build/refactor/AppSpace.js -o "
-            "static/js/build/app.js")
+    env.run("browserify static/js/build/refactor/Collabedit.js -o "
+            "static/js/build/collabedit.js")
+    env.run("browserify static/js/build/refactor/Notes.js -o "
+            "static/js/build/notes.js")
 
 
 @task
