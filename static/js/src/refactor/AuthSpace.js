@@ -158,4 +158,4 @@ var AuthSpace = React.createClass({
 
 });
 
-React.render(<AuthSpace />, document.body);
+React.render(React.createElement(AuthSpace, null), document.body);
