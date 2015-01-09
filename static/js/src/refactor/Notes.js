@@ -8,10 +8,6 @@ var Notes = React.createClass({
 
   render: function() {
 
-    var containerStyle = {
-      'border': '1px solid black',
-    }
-
     return (
       <div style={{border: "1px solid black"}}>
         <AceEditor
