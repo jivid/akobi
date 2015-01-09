@@ -79,6 +79,15 @@ class InterviewWebSocketHandler(WebSocketHandler):
     def on_message(self, message):
         msg = json.loads(message)
 
+        """
+        1. Socket opens, server responds with open_response
+        2. client gets open response sends download_apps message sent to server
+        3. list of apps for interview sent down to client
+        4. client downloads JS source for every app
+        5. init_interview is sent to the server
+        6. server initializes interview and all apps
+        7. interview begins like normal
+        """
         if msg['type'] == "init_interview":
             log.debug("Initializing interview for client %s on interview %s"
                       % (self.client_id, self.interview_id))
