@@ -32,6 +32,7 @@ var AceEditor = React.createClass({
     lineWrap: React.PropTypes.number,
     editorWidth: React.PropTypes.number,
     editorHeight: React.PropTypes.number,
+    showLineNumbers: React.PropTypes.bool,
     showEditorControls: React.PropTypes.bool,
   },
 
@@ -61,18 +62,20 @@ var AceEditor = React.createClass({
       null;
   },
 
+
   /**
    * Sets up the editor with the language, theme and other
    * options supplied in the component state. Expects an
    * editor and editorSession to be attached to the component.
    */
-  setupEditor: function(aceMode, aceTheme, lineWrap) {
+  setupEditor: function(aceMode, aceTheme, showLineNumbers, lineWrap) {
     if (!this.editor || !this.editorSession) {
       return;
     }
 
     this.editorSession.setMode(aceMode);
     this.editor.setTheme(aceTheme);
+    this.editor.renderer.setShowGutter(showLineNumbers);
 
     if (lineWrap) {
       this.editor.setOption('wrap', lineWrap);
@@ -83,6 +86,7 @@ var AceEditor = React.createClass({
     this.setupEditor(
       this.aceMode(this.state.language),
       this.aceTheme(this.state.theme),
+      this.state.showLineNumbers,
       this.state.lineWrap
     );
     this.editor.focus();

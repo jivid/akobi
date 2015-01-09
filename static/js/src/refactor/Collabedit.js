@@ -7,19 +7,20 @@ var React = require('react');
 var Collabedit = React.createClass({
 
   render: function() {
-
+    var width = 500;
     var containerStyle = {
       'border': '1px solid black',
+      'padding': '0px',
     }
 
     return (
       <div>
-        <Container centered={true} style={containerStyle}>
+        <Container width={width} style={containerStyle}>
           <AceEditor
             language="python"
             theme="monokai"
             name="notebox"
-            editorWidth={750}
+            editorWidth={width}
             editorHeight={500}
             showEditorControls={true}
           />
