@@ -13,16 +13,14 @@ var Notes = React.createClass({
     }
 
     return (
-      <div>
-        <Container centered={true} style={containerStyle}>
-          <AceEditor
-            name="notebox"
-            editorWidth={800}
-            editorHeight={150}
-            showLineNumbers={false}
-            showEditorControls={false}
-          />
-        </Container>
+      <div style={{border: "1px solid black"}}>
+        <AceEditor
+          name="notebox"
+          editorWidth={750}
+          editorHeight={500}
+          showLineNumbers={false}
+          showEditorControls={false}
+        />
       </div>
     );
   }
