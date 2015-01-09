@@ -90,7 +90,7 @@ def refactor():
     env.run("lessc --compress %s > %s" % (less_file, css_file))
     env.run("jsx --harmony static/js/src/ static/js/build/")
     env.run("browserify static/js/build/refactor/AuthSpace.js -o "
-            "static/js/build/auth.js")
+            "static/js/build/authspace.js")
     env.run("browserify static/js/build/refactor/AppSpace.js -o "
             "static/js/build/appspace.js")
 
