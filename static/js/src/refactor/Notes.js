@@ -7,9 +7,7 @@ var React = require('react');
 var Notes = React.createClass({
 
   render: function() {
-
     var width = 500;
-
     var containerStyle = {
       'border': '1px solid black',
       'padding': '0px',
