@@ -2,7 +2,6 @@
 
 var AceEditor = require('./components/AceEditor');
 var Container = require('./components/Container');
-
 var React = require('react');
 
 var Collabedit = React.createClass({
