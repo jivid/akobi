@@ -14,5 +14,4 @@ var Notes = React.createClass({
 
 });
 
-
 module.exports = Notes;

@@ -4,5 +4,15 @@ var React = require('react');
 var Collabedit = require('./Collabedit');
 var Notes = require('./Notes');
 
-React.render(<Collabedit/>, document.getElementById('collabedit-space'));
-React.render(<Notes />, document.getElementById('notes-space'));
+var AppSpace = React.createClass({
+  render: function() {
+    return (
+      <div>
+        <Collabedit/>
+        <Notes/>
+      </div>
+    );
+  }
+});
+
+React.render(<AppSpace/>, document.body);

@@ -48,5 +48,4 @@ var Collabedit = React.createClass({
 
 });
 
-
 module.exports = Collabedit;
