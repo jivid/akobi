@@ -8,16 +8,23 @@ var Notes = React.createClass({
 
   render: function() {
 
+    var width = 500;
+
+    var containerStyle = {
+      'border': '1px solid black',
+      'padding': '0px',
+    }
+
     return (
-      <div style={{border: "1px solid black"}}>
+      <Container style={containerStyle} width={width}>
         <AceEditor
           name="notebox"
-          editorWidth={750}
+          editorWidth={width}
           editorHeight={500}
           showLineNumbers={false}
           showEditorControls={false}
         />
-      </div>
+        </Container>
     );
   }
 
