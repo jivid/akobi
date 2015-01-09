@@ -1,10 +1,9 @@
 /** @jsx React.DOM */
 
-var React = require('react');
-var Interview = require('./Interview');
-
 var Collabedit = require('./Collabedit');
+var Interview = require('./Interview');
 var Notes = require('./Notes');
+var React = require('react');
 
 var AppSpace = React.createClass({
 
