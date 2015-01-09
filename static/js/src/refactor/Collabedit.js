@@ -48,4 +48,5 @@ var Collabedit = React.createClass({
 
 });
 
-React.render(<Collabedit/>, document.getElementById('collabedit-space'));
+
+module.exports = Collabedit;

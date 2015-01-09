@@ -14,4 +14,5 @@ var Notes = React.createClass({
 
 });
 
-React.render(<Notes />, document.getElementById('notes-space'));
+
+module.exports = Notes;
