@@ -5,7 +5,7 @@ the below link for information on ICE clients Peer connections etc.
 README FIRST http://www.html5rocks.com/en/tutorials/webrtc/basics/
 */
 var videoAdapter = require ("../../ext/videoadapter");
-var util = require ("./lib/Utils");
+var Utils = require ("./lib/Utils");
 var React = require("react/addons");
 var EventBus = require("./lib/EventBus");
 
@@ -67,7 +67,7 @@ class VideoLogic {
   };
 
   errorCallback(error) {
-    util.throwException(error);
+    Utils.throwException(error);
   };
 
   waitForPC(callback) {
@@ -145,8 +145,6 @@ class VideoLogic {
         });
       }
     };
-
-    console.log(this.pc);
   };
 
   getLocalStream() {

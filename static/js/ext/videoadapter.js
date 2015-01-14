@@ -28,7 +28,6 @@
     RTCIceCandidate = mozRTCIceCandidate;
 
     // Get UserMedia (only difference is the prefix).
-    // Code from Adam Barth.
     getUserMedia = navigator.mozGetUserMedia.bind(navigator);
 
     // Creates iceServer from the url for FF.
@@ -147,7 +146,7 @@
       };
     }
   } else {
-    console.log("Browser does not appear to be WebRTC-capable");
+    console.error("Browser does not appear to be WebRTC-capable");
   }
 
   module.exports =  {

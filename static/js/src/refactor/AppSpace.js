@@ -2,9 +2,9 @@
 
 var Collabedit = require('./Collabedit');
 var Interview = require('./Interview');
+var React = require('react');
 var Notes = require('./Notes');
 var Video = require('./Video');
-var React = require('react');
 
 var AppSpace = React.createClass({
 
