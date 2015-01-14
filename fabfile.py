@@ -1,16 +1,22 @@
+import logging
 import os
 import shutil
+import sys
 
-from fabric.operations import local as lrun
-from fabric.api import env, task
+from fabric.operations import local as run
+from fabric.api import task
+
+log = logging.getLogger()
+log.setLevel(logging.INFO)
+
+stdout = logging.StreamHandler(sys.stdout)
+stdout.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s %(levelname)s - %(message)s')
+stdout.setFormatter(formatter)
+log.addHandler(stdout)
 
 PROJECT_ROOT = os.path.dirname(__file__)
 STATIC_PATH = os.path.join(PROJECT_ROOT, 'static')
-
-
-@task
-def local():
-    env.run = lrun
 
 
 def prepare_build_dirs():
@@ -35,7 +41,7 @@ def build_css():
     less_file = os.path.join(STATIC_PATH, 'less', 'akobi.less')
     css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi.css')
 
-    env.run("lessc --compress %s > %s" % (less_file, css_file))
+    run("lessc --compress %s > %s" % (less_file, css_file))
 
 
 def transform_jsx():
@@ -46,11 +52,11 @@ def transform_jsx():
     js_build_ext = os.path.join(js_build, 'ext')
 
     # transform JSX
-    env.run("jsx %s %s" % (js_src, js_build))
+    run("jsx %s %s" % (js_src, js_build))
 
     # copy external libs
     os.makedirs(js_build_ext)
-    env.run("cp -Rf %s %s" % (js_ext, js_build))
+    run("cp -Rf %s %s" % (js_ext, js_build))
 
 
 @task
@@ -67,7 +73,7 @@ def build():
     less_file = os.path.join(STATIC_PATH, 'less', 'akobi_refactor.less')
     css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi_refactor.css')
 
-    env.run("lessc --compress %s > %s" % (less_file, css_file))
+    run("lessc --compress %s > %s" % (less_file, css_file))
 
     print "Transforming JSX"
     transform_jsx()
@@ -87,16 +93,43 @@ def refactor():
     less_file = os.path.join(STATIC_PATH, 'less', 'akobi_refactor.less')
     css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi_refactor.css')
 
-    env.run("lessc --compress %s > %s" % (less_file, css_file))
-    env.run("jsx --harmony static/js/src/ static/js/build/")
-    env.run("browserify static/js/build/refactor/AuthSpace.js -o "
+    run("lessc --compress %s > %s" % (less_file, css_file))
+    run("jsx --harmony static/js/src/ static/js/build/")
+    run("browserify static/js/build/refactor/AuthSpace.js -o "
             "static/js/build/authspace.js")
-    env.run("browserify static/js/build/refactor/AppSpace.js -o "
+    run("browserify static/js/build/refactor/AppSpace.js -o "
             "static/js/build/appspace.js")
 
 
 @task
 def deps():
+    """ Install project-specific python and JS dependencies
+    """
+    run("pip install -r requirements.txt")
     js_packages = ['react', 'backbone', 'jquery', 'underscore', 'brace']
     pkgs = ' '.join(js_packages)
-    env.run("npm install --prefix ./static/js/ %s" % pkgs)
+    run("npm install --prefix ./static/js/ %s" % pkgs)
+
+
+@task
+def deploy(deploy_type=None, branch=None):
+    """ Deploy develop, master or a custom branch
+    Example usage:
+    $ fab deploy:develop  # Will deploy the develop branch to dev.akobi.info
+    $ fab deploy:master   # Will deploy the master branch to www.akobi.info
+
+    # Will deploy a custom branch from github to exp.akobi.info
+    $ fab deploy:experimental,branch=react_browserify
+    """
+    deploy_type = deploy_type if deploy_type is not None else 'develop'
+
+    if deploy_type in ('develop', 'master') and branch is not None:
+        log.info("Cannot deploy custom branch with %s. "
+                 "Ignoring branch name" % (deploy_type))
+        branch = None
+
+    if deploy_type == 'experimental' and branch is None:
+        log.fatal("Deploying 'experimental' requires a branch name")
+        return
+
+    pass
