@@ -7,13 +7,10 @@ class Interview {
     this.clientID = null;
     this.socket = new AkobiWebSocket();
 
-    this.socket.on('open', (msg) => {
-      this.downloadApps(onAppsDownloaded);
-    });
-
     this.socket.on('message', (msg) => {
       if (msg.type === 'open_response') {
         this.clientID = msg.clientID;
+        this.downloadApps(onAppsDownloaded);
       } else {
         EventBus.trigger(msg.type, msg);
       }
@@ -32,7 +29,7 @@ class Interview {
 
     this.socket.send({
       type: 'download_apps',
-      clientID: '',
+      clientID: this.clientID,
       interviewID: this.id,
     });
   }
