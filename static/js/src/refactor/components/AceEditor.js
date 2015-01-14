@@ -34,6 +34,7 @@ var AceEditor = React.createClass({
     editorHeight: React.PropTypes.number,
     showLineNumbers: React.PropTypes.bool,
     showEditorControls: React.PropTypes.bool,
+    content: React.PropTypes.string
   },
 
   getDefaultProps: function() {
@@ -47,6 +48,7 @@ var AceEditor = React.createClass({
     return {
       language: this.props.language,
       theme: this.props.theme,
+      content: this.props.content
     }
   },
 
@@ -89,6 +91,7 @@ var AceEditor = React.createClass({
       this.state.showLineNumbers,
       this.state.lineWrap
     );
+    this.editor.session.setValue(this.state.content);
     this.editor.focus();
   },
 
@@ -152,7 +155,13 @@ var AceEditor = React.createClass({
     this.setupEditorFromState();
   },
 
+  componentWillReceiveProps: function() {
+    this.setState({content: this.editor.session.doc.getValue()});
+  },
+
   componentWillUpdate: function() {
+    console.log("Going to update aceeditor");
+    //this.setState({content : this.editor.session.doc.getValue()});
     this.editor.destroy();
   },
 
