@@ -164,9 +164,9 @@ var AceEditor = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     this.setState({
-                   content: nextProps.content,
-                   cursor : this.editor.getCursorPosition()
-                 });
+       content: nextProps.content,
+       cursor : this.editor.getCursorPosition()
+     });
   },
 
   componentDidUpdate: function() {

@@ -5,13 +5,15 @@ var Container = require('./components/Container');
 var React = require('react');
 var DiffMatchPatch = require('../../ext/diff_match_patch');
 
-var ASK_DIFF = 1;
-var RECEIVED_DIFF = 2;
-var APPLY_DIFF = 3;
-var ACK = 4;
-var ASK_SHADOW = 5;
-var RECEIVED_SHADOW = 6;
-var APPLY_SHADOW = 7;
+var states = {
+  ASK_DIFF : 1,
+  RECEIVED_DIFF : 2,
+  APPLY_DIFF : 3,
+  ACK : 4,
+  ASK_SHADOW : 5,
+  RECEIVED_SHADOW : 6,
+  APPLY_SHADOW : 7
+}
 
 var Collabedit = React.createClass({
 
@@ -19,7 +21,7 @@ var Collabedit = React.createClass({
     this.diffObj = new DiffMatchPatch();
 
     var startCapture = () => {
-      this.captureInterval = setInterval(this.capture, 1000);
+      this.captureInterval = setInterval(this.capture, 125);
       EventBus.on("socket_closed", () => {
         clearInterval(this.captureInterval);
       });
@@ -28,16 +30,16 @@ var Collabedit = React.createClass({
     startCapture();
     EventBus.on("collabedit", (msg) => {
       switch (msg.data.type){
-        case ASK_DIFF:
+        case states.ASK_DIFF:
           this.sendDiff();
           break;
-        case APPLY_DIFF:
+        case states.APPLY_DIFF:
           this.applyDiff(msg.data.data);
           break;
-        case ASK_SHADOW:
+        case states.ASK_SHADOW:
           this.sendShadow();
           break;
-        case APPLY_SHADOW:
+        case states.APPLY_SHADOW:
           this.applyShadow(msg.data.data);
           break;
       }
@@ -45,9 +47,10 @@ var Collabedit = React.createClass({
   },
 
   getInitialState: function() {
+    var defaultState = "# Welcome to the Akobi Collaborative Code Editor!"
     return {
-      shadow: "# Welcome to the Akobi Collaborative Code Editor!",
-      content: "# Welcome to the Akobi Collaborative Code Editor!"
+      shadow: defaultState,
+      content: defaultState
     }
   },
 
@@ -69,7 +72,7 @@ var Collabedit = React.createClass({
       clientID: this.props.interview.clientID,
       interviewID: this.props.interview.id,
       data: {
-          type: RECEIVED_DIFF,
+          type: states.RECEIVED_DIFF,
           data: this.getDiff()
       }
     });
@@ -81,7 +84,7 @@ var Collabedit = React.createClass({
       clientID: this.props.interview.clientID,
       interviewID: this.props.interview.id,
       data: {
-          type: RECEIVED_SHADOW,
+          type: states.RECEIVED_SHADOW,
           data: this.state.shadow
       }
     });
@@ -93,7 +96,7 @@ var Collabedit = React.createClass({
       clientID: this.props.interview.clientID,
       interviewID: this.props.interview.id,
       data: {
-          type: ACK,
+          type: states.ACK,
           data: {}
       }
     });
@@ -115,7 +118,7 @@ var Collabedit = React.createClass({
         clientID: this.props.interview.clientID,
         interviewID: this.props.interview.id,
         data: {
-            type: ACK,
+            type: states.ACK,
             data: {}
         }
     });
