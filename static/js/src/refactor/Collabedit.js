@@ -5,8 +5,6 @@ var Container = require('./components/Container');
 var React = require('react');
 var DiffMatchPatch = require('../../ext/diff_match_patch');
 
-console.log(DiffMatchPatch);
-
 var ASK_DIFF = 1;
 var RECEIVED_DIFF = 2;
 var APPLY_DIFF = 3;
@@ -40,7 +38,6 @@ var Collabedit = React.createClass({
           this.sendShadow();
           break;
         case APPLY_SHADOW:
-          console.log(msg);
           this.applyShadow(msg.data.data);
           break;
       }
@@ -55,13 +52,10 @@ var Collabedit = React.createClass({
   },
 
   capture: function() {
-    console.log("captured document state");
-    console.log(this.refs.editor.editor.session.doc.getValue());
     this.setState({content : this.refs.editor.editor.session.doc.getValue()});
   },
 
   getDiff: function() {
-    console.log("just got diff");
     var diff = this.diffObj.diff_main(this.state.shadow, this.state.content);
     // Save the current text to diff agaisnt in future.
     this.setState({shadow: this.state.content});
@@ -70,7 +64,6 @@ var Collabedit = React.createClass({
   },
 
   sendDiff: function() {
-    console.log("going to send diff");
     this.props.interview.socket.send({
       type: 'collabedit',
       clientID: this.props.interview.clientID,
@@ -83,7 +76,6 @@ var Collabedit = React.createClass({
   },
 
   sendShadow: function() {
-    console.log("going to send shadow");
     this.props.interview.socket.send({
       type: 'collabedit',
       clientID: this.props.interview.clientID,
@@ -96,7 +88,6 @@ var Collabedit = React.createClass({
   },
 
   applyShadow: function(shadow) {
-    console.log(shadow);
     this.props.interview.socket.send({
       type: 'collabedit',
       clientID: this.props.interview.clientID,
@@ -106,14 +97,10 @@ var Collabedit = React.createClass({
           data: {}
       }
     });
-    console.log("Done sending");
     this.setState({shadow: shadow});
-    console.log("Done setState");
-    console.log("Leaving applyShadow");
   },
 
   applyDiff: function(diff){
-    console.log("going to apply diff");
     // Generate the patches.
     var patch = this.diffObj.patch_make(this.state.shadow, diff);
 
@@ -135,13 +122,10 @@ var Collabedit = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    var update = this.state.content != nextState.content;
-    console.log("Update is " + update);
-    return update;
+    return this.state.content != nextState.content;
   },
 
   render: function() {
-    console.log("rendering collabedit");
     var width = 500;
     var containerStyle = {
       'border': '1px solid black',
