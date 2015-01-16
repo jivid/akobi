@@ -34,6 +34,7 @@ var AceEditor = React.createClass({
     editorHeight: React.PropTypes.number,
     showLineNumbers: React.PropTypes.bool,
     showEditorControls: React.PropTypes.bool,
+    content: React.PropTypes.string
   },
 
   getDefaultProps: function() {
@@ -47,6 +48,8 @@ var AceEditor = React.createClass({
     return {
       language: this.props.language,
       theme: this.props.theme,
+      content: this.props.content,
+      cursor : {row : 0, column : 0}
     }
   },
 
@@ -89,6 +92,8 @@ var AceEditor = React.createClass({
       this.state.showLineNumbers,
       this.state.lineWrap
     );
+    this.editor.session.setValue(this.state.content);
+    this.editor.moveCursorToPosition(this.state.cursor);
     this.editor.focus();
   },
 
@@ -125,6 +130,11 @@ var AceEditor = React.createClass({
     return languageSelector;
   },
 
+  shouldComponentUpdate: function(nextProps, nextState) {
+    // Don't re-render if just the cursor changes
+    return this.state.cursor.position == nextState.cursor.position;
+  },
+
   render: function() {
     var editorName = this.props.name.trim().toLowerCase().replace(' ', '-');
     var id = "ace-editor-" + editorName;
@@ -152,13 +162,16 @@ var AceEditor = React.createClass({
     this.setupEditorFromState();
   },
 
-  componentWillUpdate: function() {
-    this.editor.destroy();
+  componentWillReceiveProps: function(nextProps) {
+    this.setState({
+       content: nextProps.content,
+       cursor : this.editor.getCursorPosition()
+     });
   },
 
   componentDidUpdate: function() {
     this.setupEditorFromState();
-  },
+  }
 
 });
 

@@ -40,7 +40,7 @@ var AppSpace = React.createClass({
     return (
       <div>
         <div style={{float:"left"}}>
-          <Collabedit />
+          <Collabedit interview={this.state.interview}/>
         </div>
         <div style={{float:"left"}}>
           <Notes />
