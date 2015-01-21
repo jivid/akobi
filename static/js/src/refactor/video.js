@@ -168,10 +168,34 @@ var Video = React.createClass({
   },
 
   render: function() {
+    var videoContainerStyle = {
+      'position' : 'relative',
+      'width' : '100%',
+      'height' : '375px',
+    }
+
+    var remoteVideoStyle = {
+      'background' : '#000000',
+      'position' : 'absolute',
+      'width' : '100%',
+      'height' : '375px',
+      'top' : '0px',
+      'left' : '0px',
+    }
+
+    var localVideoStyle = {
+      'background' : '#000000',
+      'position' : 'absolute',
+      'width' : '130px',
+      'height' : '100px',
+      'bottom' : '0px',
+      'right' : '0px',
+    }
+
     return (
-      <div id="video-container">
-        <video id="local-video" ref="localVideo" autoPlay="true" muted="true"></video>
-        <video id="remote-video" ref="remoteVideo" autoPlay="true"></video>
+      <div id="video-container" style={videoContainerStyle}>
+        <video id="remote-video" style={remoteVideoStyle} ref="remoteVideo" autoPlay="true"></video>
+        <video id="local-video" style={localVideoStyle} ref="localVideo" autoPlay="true" muted="true"></video>
       </div>
     );
   }

@@ -30,8 +30,8 @@ var AceEditor = React.createClass({
     language: React.PropTypes.oneOf(Languages),
     theme: React.PropTypes.oneOf(Themes),
     lineWrap: React.PropTypes.number,
-    editorWidth: React.PropTypes.number,
-    editorHeight: React.PropTypes.number,
+    editorWidth: React.PropTypes.string,
+    editorHeight: React.PropTypes.string,
     showLineNumbers: React.PropTypes.bool,
     showEditorControls: React.PropTypes.bool,
     content: React.PropTypes.string
@@ -39,8 +39,9 @@ var AceEditor = React.createClass({
 
   getDefaultProps: function() {
     return {
-      editorWidth: 300,
-      editorHeight: 700,
+      editorWidth: '100%',
+      editorHeight: '100%',
+      showLineNumbers: true,
     }
   },
 
@@ -65,7 +66,6 @@ var AceEditor = React.createClass({
       null;
   },
 
-
   /**
    * Sets up the editor with the language, theme and other
    * options supplied in the component state. Expects an
@@ -89,7 +89,7 @@ var AceEditor = React.createClass({
     this.setupEditor(
       this.aceMode(this.state.language),
       this.aceTheme(this.state.theme),
-      this.state.showLineNumbers,
+      this.props.showLineNumbers,
       this.state.lineWrap
     );
     this.editor.session.setValue(this.state.content);

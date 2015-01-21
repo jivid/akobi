@@ -39,15 +39,15 @@ var AppSpace = React.createClass({
     }
     return (
       <div>
-        <div style={{float:"left"}}>
+        <div style={{float:"left", width:"48%", margin:"1%"}}>
+          <Video interview={this.state.interview}/>
+        </div>
+        <div style={{float:"right", width:"48%", height:"750px", margin:"1%"}}>
           <Collabedit interview={this.state.interview}/>
         </div>
-        <div style={{float:"left"}}>
+        <div style={{float:"left", width:"48%", height:"375px", margin:"1%"}}>
           <Notes />
         </div>
-         <div style={{float:"left"}}>
-            <Video interview={this.state.interview}/>
-         </div>
       </div>
     );
   }
