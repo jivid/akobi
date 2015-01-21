@@ -18,7 +18,8 @@ var Notes = React.createClass({
         <AceEditor
           name="notebox"
           showLineNumbers={false}
-          showEditorControls={false} />
+          showEditorControls={false}
+        />
         </Container>
     );
   }
