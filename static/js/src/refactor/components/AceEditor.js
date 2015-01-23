@@ -30,16 +30,18 @@ var AceEditor = React.createClass({
     language: React.PropTypes.oneOf(Languages),
     theme: React.PropTypes.oneOf(Themes),
     lineWrap: React.PropTypes.number,
-    editorWidth: React.PropTypes.number,
-    editorHeight: React.PropTypes.number,
+    editorWidth: React.PropTypes.string,
+    editorHeight: React.PropTypes.string,
     showLineNumbers: React.PropTypes.bool,
     showEditorControls: React.PropTypes.bool,
+    content: React.PropTypes.string
   },
 
   getDefaultProps: function() {
     return {
-      editorWidth: 300,
-      editorHeight: 700,
+      editorWidth: '100%',
+      editorHeight: '100%',
+      showLineNumbers: true,
     }
   },
 
@@ -47,6 +49,8 @@ var AceEditor = React.createClass({
     return {
       language: this.props.language,
       theme: this.props.theme,
+      content: this.props.content,
+      cursor : {row : 0, column : 0}
     }
   },
 
@@ -61,7 +65,6 @@ var AceEditor = React.createClass({
       'ace/theme/' + theme :
       null;
   },
-
 
   /**
    * Sets up the editor with the language, theme and other
@@ -86,9 +89,11 @@ var AceEditor = React.createClass({
     this.setupEditor(
       this.aceMode(this.state.language),
       this.aceTheme(this.state.theme),
-      this.state.showLineNumbers,
+      this.props.showLineNumbers,
       this.state.lineWrap
     );
+    this.editor.session.setValue(this.state.content);
+    this.editor.moveCursorToPosition(this.state.cursor);
     this.editor.focus();
   },
 
@@ -125,6 +130,11 @@ var AceEditor = React.createClass({
     return languageSelector;
   },
 
+  shouldComponentUpdate: function(nextProps, nextState) {
+    // Don't re-render if just the cursor changes
+    return this.state.cursor.position == nextState.cursor.position;
+  },
+
   render: function() {
     var editorName = this.props.name.trim().toLowerCase().replace(' ', '-');
     var id = "ace-editor-" + editorName;
@@ -152,13 +162,16 @@ var AceEditor = React.createClass({
     this.setupEditorFromState();
   },
 
-  componentWillUpdate: function() {
-    this.editor.destroy();
+  componentWillReceiveProps: function(nextProps) {
+    this.setState({
+       content: nextProps.content,
+       cursor : this.editor.getCursorPosition()
+     });
   },
 
   componentDidUpdate: function() {
     this.setupEditorFromState();
-  },
+  }
 
 });
 

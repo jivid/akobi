@@ -41,7 +41,15 @@ class InterviewHTTPHandler(RequestHandler):
         # Finally allow the user through to the interview
         self.render('interview.html', applications=self.request.arguments)
 
-
+"""
+1. Socket opens, server responds with open_response
+2. client gets open response sends download_apps message sent to server
+3. list of apps for interview sent down to client
+4. client downloads JS source for every app
+5. init_interview is sent to the server
+6. server initializes interview and all apps
+7. interview begins like normal
+"""
 class InterviewWebSocketHandler(WebSocketHandler):
     def __init__(self, *args, **kwargs):
         super(InterviewWebSocketHandler, self).__init__(*args, **kwargs)
