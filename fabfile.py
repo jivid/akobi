@@ -130,9 +130,11 @@ def deploy(deploy_type=None, branch=None):
     env.host_string = '10.0.0.130'
     build = None
 
-    if deploy_type in ('develop', 'master') and branch is not None:
-        log.info("Cannot deploy custom branch with %s. "
-                 "Ignoring branch name" % (deploy_type))
+    if deploy_type in ('develop', 'master'):
+        if branch is not None:
+            log.info("Cannot deploy custom branch with %s. "
+                     "Ignoring branch name" % (deploy_type))
+
         branch = 'master' if deploy_type == 'master' else 'develop'
         build = 'fab local build'
         port = '8888'
