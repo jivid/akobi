@@ -142,11 +142,19 @@ def deploy(deploy_type=None, branch=None):
             log.fatal("Deploying experimental version requires a branch name")
             return
 
+        deploy_type = 'exp'
         port = '8889'
         if branch == 'react_browserify':
             build = 'fab local refactor'
         else:
             build = 'fab refactor'
 
-    cmd = ' '.join(['/var/www/scripts/fetch.sh', deploy_type, branch, port, build])
+    cmd = ' '.join([
+        'nohup',
+        '/var/www/scripts/fetch.sh',
+        deploy_type,
+        branch,
+        port,
+        build
+    ])
     sudo(cmd)
