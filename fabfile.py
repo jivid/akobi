@@ -138,5 +138,5 @@ def deploy(deploy_type=None, branch=None):
         log.fatal("Deploying experimental version requires a branch name")
         return
 
-    cmd = ' '.join(['./build.sh', deploy_type])
+    cmd = ' '.join(['./fetch.sh', branch])
     sudo(cmd)
