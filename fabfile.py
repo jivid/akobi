@@ -3,8 +3,8 @@ import os
 import shutil
 import sys
 
-from fabric.operations import local as run
-from fabric.api import task
+from fabric.operations import local as lrun
+from fabric.api import env, sudo, task
 
 log = logging.getLogger()
 log.setLevel(logging.INFO)
@@ -41,7 +41,7 @@ def build_css():
     less_file = os.path.join(STATIC_PATH, 'less', 'akobi.less')
     css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi.css')
 
-    run("lessc --compress %s > %s" % (less_file, css_file))
+    lrun("lessc --compress %s > %s" % (less_file, css_file))
 
 
 def transform_jsx():
@@ -52,11 +52,11 @@ def transform_jsx():
     js_build_ext = os.path.join(js_build, 'ext')
 
     # transform JSX
-    run("jsx %s %s" % (js_src, js_build))
+    lrun("jsx %s %s" % (js_src, js_build))
 
     # copy external libs
     os.makedirs(js_build_ext)
-    run("cp -Rf %s %s" % (js_ext, js_build))
+    lrun("cp -Rf %s %s" % (js_ext, js_build))
 
 
 @task
@@ -73,7 +73,7 @@ def build():
     less_file = os.path.join(STATIC_PATH, 'less', 'akobi_refactor.less')
     css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi_refactor.css')
 
-    run("lessc --compress %s > %s" % (less_file, css_file))
+    lrun("lessc --compress %s > %s" % (less_file, css_file))
 
     print "Transforming JSX"
     transform_jsx()
@@ -93,11 +93,11 @@ def refactor():
     less_file = os.path.join(STATIC_PATH, 'less', 'akobi_refactor.less')
     css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi_refactor.css')
 
-    run("lessc --compress %s > %s" % (less_file, css_file))
-    run("jsx --harmony static/js/src/ static/js/build/")
-    run("browserify static/js/build/refactor/AuthSpace.js -o "
+    lrun("lessc --compress %s > %s" % (less_file, css_file))
+    lrun("jsx --harmony static/js/src/ static/js/build/")
+    lrun("browserify static/js/build/refactor/AuthSpace.js -o "
             "static/js/build/authspace.js")
-    run("browserify static/js/build/refactor/AppSpace.js -o "
+    lrun("browserify static/js/build/refactor/AppSpace.js -o "
             "static/js/build/appspace.js")
 
 
@@ -105,10 +105,14 @@ def refactor():
 def deps():
     """ Install project-specific python and JS dependencies
     """
-    run("pip install -r requirements.txt")
+    log.info("Installing python dependencies from requirements.txt")
+    lrun("pip install -r requirements.txt")
+
+    log.info("Installing JS dependencies")
     js_packages = ['react', 'backbone', 'jquery', 'underscore', 'brace']
     pkgs = ' '.join(js_packages)
-    run("npm install --prefix ./static/js/ %s" % pkgs)
+    log.info(pkgs)
+    lrun("npm install --prefix ./static/js/ %s" % pkgs)
 
 
 @task
@@ -122,14 +126,17 @@ def deploy(deploy_type=None, branch=None):
     $ fab deploy:experimental,branch=react_browserify
     """
     deploy_type = deploy_type if deploy_type is not None else 'develop'
+    env.gateway = 'sshbastion.local.akobi.info'
+    env.host_string = '10.0.0.130'
 
     if deploy_type in ('develop', 'master') and branch is not None:
         log.info("Cannot deploy custom branch with %s. "
                  "Ignoring branch name" % (deploy_type))
         branch = None
 
-    if deploy_type == 'experimental' and branch is None:
-        log.fatal("Deploying 'experimental' requires a branch name")
+    if deploy_type in ('exp', 'experimental') and branch is None:
+        log.fatal("Deploying experimental version requires a branch name")
         return
 
-    pass
+    cmd = ' '.join(['./build.sh', deploy_type])
+    sudo(cmd)
