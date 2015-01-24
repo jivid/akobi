@@ -128,15 +128,25 @@ def deploy(deploy_type=None, branch=None):
     deploy_type = deploy_type if deploy_type is not None else 'develop'
     env.gateway = 'sshbastion.local.akobi.info'
     env.host_string = '10.0.0.130'
+    build = None
 
     if deploy_type in ('develop', 'master') and branch is not None:
         log.info("Cannot deploy custom branch with %s. "
                  "Ignoring branch name" % (deploy_type))
-        branch = None
+        branch = 'master' if deploy_type == 'master' else 'develop'
+        build = 'fab local build'
+        port = '8888'
 
-    if deploy_type in ('exp', 'experimental') and branch is None:
-        log.fatal("Deploying experimental version requires a branch name")
-        return
+    if deploy_type in ('exp', 'experimental'):
+        if branch is None:
+            log.fatal("Deploying experimental version requires a branch name")
+            return
 
-    cmd = ' '.join(['./fetch.sh', branch])
+        port = '8889'
+        if branch == 'react_browserify':
+            build = 'fab local refactor'
+        else:
+            build = 'fab refactor'
+
+    cmd = ' '.join(['/var/www/scripts/fetch.sh', deploy_type, branch, port, build])
     sudo(cmd)
