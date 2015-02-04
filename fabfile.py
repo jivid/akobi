@@ -125,11 +125,11 @@ def deploy(deploy_type=None, branch=None):
     # Will deploy a custom branch from github to exp.akobi.info
     $ fab deploy:exp,branch=react_browserify
     """
-    if deploy_type is None:
+    if deploy_type is None or\
+            deploy_type not in ('develop', 'master', 'exp', 'experimental'):
         log.fatal("Must specify type of deploy (master, develop, exp)")
         return
 
-    deploy_type = deploy_type if deploy_type is not None else 'develop'
     env.gateway = 'sshbastion.local.akobi.info'
     env.host_string = '10.0.0.130'
     build = None
