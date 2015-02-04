@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -29,12 +30,15 @@ def build_assets():
 
 
 def main():
-    print "Building assets"
-    # build_assets()
+    if len(sys.argv) < 2:
+        print "No port specified for server. Defaulting to 8888"
+        port = 8888
+    else:
+        port = int(sys.argv[1])
 
-    print "Running server"
+    print "Running server on port %d" % port
     http_server = HTTPServer(app)
-    http_server.listen(8888)
+    http_server.listen(port)
     IOLoop.instance().start()
 
 
