@@ -127,6 +127,8 @@ def deploy(deploy_type=None, branch=None):
     """
     if deploy_type is None:
         log.fatal("Must specify type of deploy (master, develop, exp)")
+        return
+
     deploy_type = deploy_type if deploy_type is not None else 'develop'
     env.gateway = 'sshbastion.local.akobi.info'
     env.host_string = '10.0.0.130'
