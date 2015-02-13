@@ -15,6 +15,11 @@ class IndexHandler(RequestHandler):
         self.render('index.html', applications=applications)
 
 
+class TestHandler(RequestHandler):
+    def get(self, *args, **kwargs):
+        self.render('test.html')
+
+
 class SetupHandler(RequestHandler):
     def get(self, *args, **kwargs):
 
