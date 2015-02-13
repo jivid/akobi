@@ -35,6 +35,7 @@ var AceEditor = React.createClass({
     showLineNumbers: React.PropTypes.bool,
     showEditorControls: React.PropTypes.bool,
     content: React.PropTypes.string
+    onChangeLanguage: React.PropTypes.func,
   },
 
   getDefaultProps: function() {
@@ -118,6 +119,7 @@ var AceEditor = React.createClass({
       this.setState({
         language: language,
       });
+      this.props.onChangeLanguage(language);
     }
 
     var languageSelector =
