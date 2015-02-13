@@ -5,6 +5,7 @@ var Interview = require('./Interview');
 var React = require('react');
 var Notes = require('./Notes');
 var Video = require('./Video');
+var StatusBar = require('./StatusBar');
 
 var AppSpace = React.createClass({
 
@@ -39,6 +40,9 @@ var AppSpace = React.createClass({
     }
     return (
       <div>
+        <div>
+          <StatusBar interview={this.state.interview}/>
+        </div>
         <div style={{float:"left", width:"49%", margin:"0.5%"}}>
           <Video interview={this.state.interview}/>
         </div>
