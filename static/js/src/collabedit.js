@@ -1,165 +1,157 @@
-/** @jsx React.DOM **/
-define(['common', 'ext/diff_match_patch'], function(common, DiffMatchPatch) {
+/** @jsx React.DOM */
 
-    var ASK_DIFF = 1;
-    var RECEIVED_DIFF = 2;
-    var APPLY_DIFF = 3;
-    var ACK = 4;
-    var ASK_SHADOW = 5;
-    var RECEIVED_SHADOW = 6;
-    var APPLY_SHADOW = 7;
+var AceEditor = require('./components/AceEditor');
+var Container = require('./components/Container');
+var React = require('react');
+var DiffMatchPatch = require('../ext/diff_match_patch');
 
-    var diffObj = new DiffMatchPatch.diff_match_patch();
+var states = {
+  ASK_DIFF : 1,
+  RECEIVED_DIFF : 2,
+  APPLY_DIFF : 3,
+  ACK : 4,
+  ASK_SHADOW : 5,
+  RECEIVED_SHADOW : 6,
+  APPLY_SHADOW : 7
+}
 
-    var CollabEditText = Backbone.Model.extend({
+var Collabedit = React.createClass({
 
-        defaults: {
-            contents: "This is a collaborative editor.",
-            shadow: "This is a collaborative editor."
-        },
+  componentDidMount: function() {
+    this.diffObj = new DiffMatchPatch();
 
-        clear: function() {
-            this.set({'contents': ""});
-            this.set({'shadow': ""});
-        },
+    var startCapture = () => {
+      this.captureInterval = setInterval(this.capture, 125);
+      EventBus.on("socket_closed", () => {
+        clearInterval(this.captureInterval);
+      });
+    };
 
-        getDiff: function(){
-            var diff =  diffObj.diff_main(this.get('shadow'), this.get
-            ('contents'));
+    startCapture();
+    EventBus.on("collabedit", (msg) => {
+      switch (msg.data.type){
+        case states.ASK_DIFF:
+          this.sendDiff();
+          break;
+        case states.APPLY_DIFF:
+          this.applyDiff(msg.data.data);
+          break;
+        case states.ASK_SHADOW:
+          this.sendShadow();
+          break;
+        case states.APPLY_SHADOW:
+          this.applyShadow(msg.data.data);
+          break;
+      }
+    });
+  },
 
-            // Save the current text to diff agaisnt in future.
-            this.set({'shadow': this.get('contents')});
+  getInitialState: function() {
+    var defaultState = "# Welcome to the Akobi Collaborative Code Editor!"
+    return {
+      shadow: defaultState,
+      content: defaultState
+    }
+  },
 
-            return diff;
-        },
+  capture: function() {
+    this.setState({content : this.refs.editor.editor.session.doc.getValue()});
+  },
 
-        sendDiff: function() {
-            interview.socket.send({
-                type: 'collabedit',
-                clientID: interview.client.id,
-                interviewID: interview.id,
-                data: {
-                    type: RECEIVED_DIFF,
-                    data: this.getDiff()
-                }
-            });
-        },
+  getDiff: function() {
+    var diff = this.diffObj.diff_main(this.state.shadow, this.state.content);
+    // Save the current text to diff agaisnt in future.
+    this.setState({shadow: this.state.content});
 
-        sendShadow: function() {
-            interview.socket.send({
-                type: 'collabedit',
-                clientID: interview.client.id,
-                interviewID: interview.id,
-                data: {
-                    type: RECEIVED_SHADOW,
-                    data: this.get('shadow')
-                }
-            });
-        },
+    return diff;
+  },
 
-        applyShadow: function(shadow) {
-            this.set({'shadow': shadow});
+  sendDiff: function() {
+    this.props.interview.socket.send({
+      type: 'collabedit',
+      clientID: this.props.interview.clientID,
+      interviewID: this.props.interview.id,
+      data: {
+          type: states.RECEIVED_DIFF,
+          data: this.getDiff()
+      }
+    });
+  },
 
-            interview.socket.send({
-                type: 'collabedit',
-                clientID: interview.client.id,
-                interviewID: interview.id,
-                data: {
-                    type: ACK,
-                    data: {}
-                }
-            });
-        },
+  sendShadow: function() {
+    this.props.interview.socket.send({
+      type: 'collabedit',
+      clientID: this.props.interview.clientID,
+      interviewID: this.props.interview.id,
+      data: {
+          type: states.RECEIVED_SHADOW,
+          data: this.state.shadow
+      }
+    });
+  },
 
-        applyDiff: function(diff){
-            // Generate the patches.
-            var patch = diffObj.patch_make(this.get('shadow'), diff);
+  applyShadow: function(shadow) {
+    this.props.interview.socket.send({
+      type: 'collabedit',
+      clientID: this.props.interview.clientID,
+      interviewID: this.props.interview.id,
+      data: {
+          type: states.ACK,
+          data: {}
+      }
+    });
+    this.setState({shadow: shadow});
+  },
 
-            // Patch the shadow then the main text.
-            this.set({'shadow' : diffObj.patch_apply(patch, this.get('shadow'))[0]});
-            this.set({'contents': diffObj.patch_apply(patch, this.get('contents'))[0]});
+  applyDiff: function(diff){
+    // Generate the patches.
+    var patch = this.diffObj.patch_make(this.state.shadow, diff);
 
-            interview.socket.send({
-                type: 'collabedit',
-                clientID: interview.client.id,
-                interviewID: interview.id,
-                data: {
-                    type: ACK,
-                    data: {}
-                }
-            });
+    // Patch the shadow then the main text.
+    this.setState({
+      shadow : this.diffObj.patch_apply(patch, this.state.shadow)[0],
+      content : this.diffObj.patch_apply(patch, this.state.content)[0]
+    });
+
+    this.props.interview.socket.send({
+        type: 'collabedit',
+        clientID: this.props.interview.clientID,
+        interviewID: this.props.interview.id,
+        data: {
+            type: states.ACK,
+            data: {}
         }
     });
+  },
 
-    var CollabEditBox = React.createClass({
-        render: function() {
-            var classes = React.addons.classSet({
-                'app': true,
-                'container-full': true,
-            });
-            return (
-                <div id="collabedit" className={classes}>
-                    # Welcome to the Akobi Collaborative Code Editor! Currently, we only
-                    support Python syntax highlighting, but support for more languages will be added soon!
-                </div>
-            );
-        }
-    });
+  shouldComponentUpdate: function(nextProps, nextState) {
+    return this.state.content != nextState.content;
+  },
 
-    var CollabEditView = common.AkobiApplicationView.extend({
+  render: function() {
+    var containerStyle = {
+      'border': '1px solid black',
+      'padding': '0px',
+      'width': '100%',
+      'height' : '100%',
+    }
 
-        initialize: function() {
-            this.model = new CollabEditText();
+    return (
+      <div>
+        <Container style={containerStyle}>
+          <AceEditor
+            ref="editor"
+            language="python"
+            theme="monokai"
+            name="notebox"
+            showEditorControls={true}
+            content={this.state.content}
+          />
+        </Container>
+      </div>
+    );
+  }
 
-            this.captureInterval = setInterval(
-                $.proxy(this.capture, this), 250
-            );
-            EventBus.on("socket_closed", function() {
-                clearInterval(this.captureInterval);
-            });
-
-            this.model.on('change:contents', function(event){
-                cursor = this.editor.getCursorPosition();
-                this.editor.session.setValue(event.attributes.contents);
-                this.editor.moveCursorToPosition(cursor);
-            }, this);
-
-            this.render();
-        },
-
-        render: function() {
-            React.renderComponent(
-                <CollabEditBox value={this.model.get('contents')} />, this.$el.get(0)
-            );
-            this.$el.addClass('container-med pull-right')
-            $('#collabedit-space').append(this.$el);
-            this.editor = ace.edit("collabedit");
-            this.editor.setOption("wrap", 80);
-            this.editor.setTheme("ace/theme/monokai");
-            this.editor.getSession().setMode("ace/mode/python");
-        },
-
-        capture: function() {
-            this.model.set({'contents' : this.editor.session.doc.getValue()});
-        },
-    });
-
-    var collabEditView = new CollabEditView();
-
-    EventBus.on("collabedit", function(msg) {
-        switch (msg.data.type){
-            case ASK_DIFF:
-                collabEditView.model.sendDiff();
-                break;
-            case APPLY_DIFF:
-                collabEditView.model.applyDiff(msg.data.data);
-                break;
-            case ASK_SHADOW:
-                collabEditView.model.sendShadow();
-                break;
-            case APPLY_SHADOW:
-                collabEditView.model.applyShadow(msg.data.data);
-                break;
-        }
-    });
 });
+
+module.exports = Collabedit;
