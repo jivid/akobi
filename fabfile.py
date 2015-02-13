@@ -74,26 +74,6 @@ def build():
     css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi_refactor.css')
 
     lrun("lessc --compress %s > %s" % (less_file, css_file))
-
-    print "Transforming JSX"
-    transform_jsx()
-
-
-@task
-def refactor():
-    print "Cleaning up old files"
-    clean_dirs()
-
-    print "Preparing for build"
-    prepare_build_dirs()
-
-    print "Compiling LESS to CSS"
-    build_css()
-
-    less_file = os.path.join(STATIC_PATH, 'less', 'akobi_refactor.less')
-    css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi_refactor.css')
-
-    lrun("lessc --compress %s > %s" % (less_file, css_file))
     lrun("jsx --harmony static/js/src/ static/js/build/")
     lrun("browserify static/js/build/AuthSpace.js -o "
             "static/js/build/Auth.js")
@@ -150,10 +130,7 @@ def deploy(deploy_type=None, branch=None):
 
         deploy_type = 'exp'
         port = '8889'
-        if branch == 'react_browserify':
-            build = 'fab local refactor'
-        else:
-            build = 'fab refactor'
+        build = 'fab build'
 
     cmd = ' '.join([
         'nohup',
