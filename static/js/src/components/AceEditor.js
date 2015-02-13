@@ -20,8 +20,10 @@ var Languages = [
 
 // Supported Themes
 require('brace/theme/monokai');
+require('brace/theme/dawn');
 var Themes = [
   'monokai',
+  'dawn'
 ];
 
 var AceEditor = React.createClass({
@@ -140,7 +142,7 @@ var AceEditor = React.createClass({
     var id = "ace-editor-" + editorName;
 
     var editorControls =
-      <Container background='#eee'>
+      <Container background='#F9726D'>
         {this.getLanguageSelector()}
       </Container>;
 

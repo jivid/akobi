@@ -17,6 +17,8 @@ var Notes = React.createClass({
       <Container style={containerStyle}>
         <AceEditor
           name="notebox"
+          theme="monokai"
+          content="You can take notes about the interview here."
           showLineNumbers={false}
           showEditorControls={false}
         />

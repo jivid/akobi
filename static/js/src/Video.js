@@ -184,12 +184,12 @@ var Video = React.createClass({
     }
 
     var localVideoStyle = {
-      'background' : '#000000',
+      'background' : '#292d30',
       'position' : 'absolute',
-      'width' : '130px',
-      'height' : '100px',
-      'bottom' : '0px',
-      'right' : '0px',
+      'width' : '208px',
+      'height' : '155px',
+      'bottom' : '5px',
+      'right' : '5px',
     }
 
     return (
