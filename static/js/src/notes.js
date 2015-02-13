@@ -1,99 +1,29 @@
-/** @jsx React.DOM **/
-define(['common'], function(common) {
-    var Note = Backbone.Model.extend({
+/** @jsx React.DOM */
 
-        defaults: {
-            contents : "Enter your notes here"
-        },
+var AceEditor = require('./components/AceEditor');
+var Container = require('./components/Container');
+var React = require('react');
 
-        clear: function() {
-            this.set({'contents' : ""});
-        },
+var Notes = React.createClass({
 
-        sync: function() {
-            interview.socket.send({
-                type: 'notes',
-                clientID: interview.client.id,
-                interviewID: interview.id,
-                data: {
-                    note: this.get('contents')
-                }
-            });
-            countMe("note_sync");
-        }
-    });
+  render: function() {
+    var containerStyle = {
+      'border': '1px solid black',
+      'padding': '0px',
+      'width' : '100%',
+    }
 
-    var NoteBox = React.createClass({
-        render: function() {
-            var classes = React.addons.classSet({
-                'app': true,
-                'shadow': true,
-                'container-full': true
-            });
-            return (
-                <div id="notebox" className={classes}>
-                    {this.props.value}
-                </div>
-            );
-        }
-    });
+    return (
+      <Container style={containerStyle}>
+        <AceEditor
+          name="notebox"
+          showLineNumbers={false}
+          showEditorControls={false}
+        />
+        </Container>
+    );
+  }
 
-    var NoteView = common.AkobiApplicationView.extend({
-        events: {
-            "focusin #notebox"  : "startShortCapture",
-            "focusout #notebox" : "stopShortCapture"
-        },
-
-        initialize: function() {
-            this.model = new Note();
-
-            /* Set up a simple note capture every 15 seconds so we don't
-               accidentally losing any data */
-            this.longCapture = setInterval(
-                $.proxy(this.captureAndSync, this), 15000
-            );
-            EventBus.on("socket_closed", function() {
-                clearInterval(this.longCapture);
-            });
-
-            this.render();
-        },
-
-        render: function() {
-            React.renderComponent(
-                <NoteBox rows="4" cols="50" value={this.model.get('contents')} />, this.$el.get(0)
-            );
-            this.$el.addClass("container-med pull-left");
-            $('#notes-space').append(this.$el);
-            this.editor = ace.edit('notebox');
-        },
-
-        saveNoteState: function() {
-            var contents = this.editor.session.getValue();
-            this.model.set({'contents' : contents});
-        },
-
-        captureAndSync: function() {
-            this.saveNoteState();
-            this.model.sync();
-        },
-
-        /* Capture the state of the textbox every second. We're not maintaining
-           any history, just a dump of the entire contents. */
-        startShortCapture: function() {
-            this.shortCapture = setInterval(
-                $.proxy(this.saveNoteState, this), 1000
-            );
-        },
-
-        /* Stop the capture and send up the latest state to the server */
-        stopShortCapture: function() {
-            if (!(this.shortCapture === undefined)) {
-                clearInterval(this.shortCapture);
-            }
-            this.model.sync();
-        }
-    });
-
-    new NoteView();
 });
+
+module.exports = Notes;
