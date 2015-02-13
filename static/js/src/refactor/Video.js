@@ -13,7 +13,11 @@ class VideoLogic {
   constructor(interview, localVideo, remoteVideo) {
     this.pc_config = {
         'iceServers': [
-          { 'url': 'stun:stun.l.google.com:19302'}
+          { 'url': 'stun:stun.l.google.com:19302'},
+          { 'url': 'turn:54.86.69.99:3478?transport=udp',
+            'username' : 'akobi',
+            'credential' : 'akobi' 
+          }
         ]
     };
 
