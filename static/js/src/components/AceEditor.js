@@ -20,10 +20,8 @@ var Languages = [
 
 // Supported Themes
 require('brace/theme/monokai');
-require('brace/theme/dawn');
 var Themes = [
   'monokai',
-  'dawn'
 ];
 
 var AceEditor = React.createClass({
