@@ -28,20 +28,14 @@ def prepare_build_dirs():
             os.makedirs(path)
 
 
-def clean_dirs():
+@task
+def clean():
     """ Remove the build folders under static/js and static/css
     """
     for d in ['js', 'css']:
         path = os.path.join(STATIC_PATH, d, 'build')
         if os.path.exists(path) and os.path.isdir(path):
             shutil.rmtree(path)
-
-
-def build_css():
-    less_file = os.path.join(STATIC_PATH, 'less', 'akobi.less')
-    css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi.css')
-
-    lrun("lessc --compress %s > %s" % (less_file, css_file))
 
 
 def transform_jsx():
@@ -62,16 +56,14 @@ def transform_jsx():
 @task
 def build():
     print "Cleaning up old files"
-    clean_dirs()
+    clean()
 
     print "Preparing for build"
     prepare_build_dirs()
 
     print "Compiling LESS to CSS"
-    build_css()
-
-    less_file = os.path.join(STATIC_PATH, 'less', 'akobi_refactor.less')
-    css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi_refactor.css')
+    less_file = os.path.join(STATIC_PATH, 'less', 'akobi.less')
+    css_file = os.path.join(STATIC_PATH, 'css', 'build', 'akobi.css')
 
     lrun("lessc --compress %s > %s" % (less_file, css_file))
     lrun("jsx --harmony static/js/src/ static/js/build/")
