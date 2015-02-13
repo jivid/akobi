@@ -9,6 +9,12 @@ var StatusBar = require('./StatusBar');
 
 var AppSpace = React.createClass({
 
+  getInitialState: function() {
+    return {
+      timeElapsed: 0
+    }
+  },
+
   readyToRender: function() {
     return (this.state.interview && this.state.interview.apps);
   },
@@ -23,6 +29,9 @@ var AppSpace = React.createClass({
         clientID: this.state.interview.clientID,
         interviewID: this.state.interview.id,
       });
+
+      this.interval = setInterval(this.tick, 1000);
+
       this.forceUpdate()
     };
 
@@ -34,6 +43,13 @@ var AppSpace = React.createClass({
     })
   },
 
+  tick: function() {
+    this.setState({
+      timeElapsed: this.state.timeElapsed + 1,
+    });
+    console.log("TimeElapsed: " + this.state.timeElapsed);
+  },
+
   render: function() {
     if (!this.readyToRender()) {
       return <p>Loading</p>;
@@ -41,7 +57,7 @@ var AppSpace = React.createClass({
     return (
       <div>
         <div>
-          <StatusBar interview={this.state.interview}/>
+          <StatusBar timeElapsed={this.state.timeElapsed}/>
         </div>
         <div style={{float:"left", width:"49%", margin:"0.5%"}}>
           <Video interview={this.state.interview}/>

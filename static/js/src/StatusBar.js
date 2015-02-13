@@ -10,7 +10,7 @@ var StatusBar = React.createClass({
   propTypes: {
     interviewer_name: React.PropTypes.string.isRequired,
     interviewee_name: React.PropTypes.string.isRequired,
-    interview: React.PropTypes.object.isRequired.
+    timeElapsed: React.PropTypes.number.isRequired,
   },
 
   getDefaultProps: function() {
@@ -22,15 +22,16 @@ var StatusBar = React.createClass({
 
   getInitialState: function() {
     return {
-      time_elapsed: 0
+      timeElapsed: 0
     }
-  }
+  },
 
   componentWillReceiveProps: function(nextProps) {
     this.setState({
-      time_elapsed: nextProps.interview.time_elapsed > this.props.interview.time_elapsed
+      timeElapsed: nextProps.timeElapsed
     });
-  }
+    this.forceUpdate();
+  },
 
   render: function() {
 
@@ -54,7 +55,7 @@ var StatusBar = React.createClass({
         <button style={childStyle} type='button'>Toggle Mic</button>
         <label style={childStyle} name='interviewer_name_label'>{this.props.interviewer_name}</label>
         <label style={childStyle} name='interviewee_name_label'>{this.props.interviewee_name}</label>
-        <label style={childStyle} name='time_elapsed_label'>{this.state.time_elapsed}</label>
+        <label style={childStyle} name='time_elapsed_label'>{this.state.timeElapsed}</label>
       </Container>
     );
   }
