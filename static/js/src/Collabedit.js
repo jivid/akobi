@@ -128,6 +128,15 @@ var Collabedit = React.createClass({
     return this.state.content != nextState.content;
   },
 
+  onChangeLanguage: function(newLanguage){
+    this.props.interview.socket.send({
+      type: 'collabedit',
+      clientID: this.props.interview.clientID,
+      interviewID: this.props.interview.id,
+      data: newLanguage
+    })    
+  },
+
   render: function() {
     var containerStyle = {
       'border': '1px solid black',
@@ -145,6 +154,7 @@ var Collabedit = React.createClass({
             name="notebox"
             showEditorControls={true}
             content={this.state.content}
+            onChangeLanguage={this.onChangeLanguage}
           />
       </div>
     );
