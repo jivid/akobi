@@ -62,7 +62,7 @@ var AuthSpace = React.createClass({
 
           {/* Header */}
           <Container
-            background='rgba(249,81,74,0.8)'
+            background='#F9726D'
             rounded='medium'
             roundedBottom={false}
             style={{height: '20px', color: '#FFFFFF', padding: '15px'}}>

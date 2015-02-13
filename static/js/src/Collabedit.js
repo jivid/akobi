@@ -138,8 +138,7 @@ var Collabedit = React.createClass({
 
     return (
       <div>
-        <Container style={containerStyle}>
-          <AceEditor
+        <AceEditor
             ref="editor"
             language="python"
             theme="monokai"
@@ -147,7 +146,6 @@ var Collabedit = React.createClass({
             showEditorControls={true}
             content={this.state.content}
           />
-        </Container>
       </div>
     );
   }
