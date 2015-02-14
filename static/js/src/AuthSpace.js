@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
 var $ = require('jquery');
+var Button = require('./components/Button');
 var Container = require('./components/Container');
 var FormField = require('./components/FormField');
 var KeyEventListener = require('./lib/KeyEventListener');
@@ -35,9 +36,10 @@ var AuthSpace = React.createClass({
     };
 
     var buttonStyles = {
-      background: '#4C80A3',
-      margin: '9px',
-      height: '20px',
+      marginTop: '9px',
+      marginLeft: '5px',
+      width: '97%',
+      height: '35px',
       cursor: 'pointer',
     };
 
@@ -98,16 +100,13 @@ var AuthSpace = React.createClass({
               disabled={this.state.waitingForAuth}
             />
           </Container>
-          <Container
-            rounded='medium'
+
+          <Button
+            text='Continue'
             style={buttonStyles}
-            onClick={this.submitCredentials}>
-            <p
-              className='text-center'
-              style={{color: '#FFFFFF'}}>
-              Continue
-            </p>
-          </Container>
+            onClick={this.submitCredentials}
+          />
+
         </Container>
       </Container>
     );
