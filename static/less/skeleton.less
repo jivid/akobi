@@ -1,5 +1,6 @@
 @black: #111111;
 @red:   #FF4136;
+@background-blue: #4C80A3;
 
 /* Default style overrides */
 body {
@@ -7,7 +8,7 @@ body {
   font-size: 14px;
   color: @black;
   margin: 0;
-  background-color: #4C80A3;
+  background-color: @background-blue;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -79,6 +80,14 @@ textarea {
 .title {
   margin-top: 20px;
   margin-bottom: 10px;
+}
+
+.button {
+  border-radius: 4px;
+  border: 0;
+  background: @background-blue;
+  color: white;
+  width: 100%;
 }
 
 .form-field {
