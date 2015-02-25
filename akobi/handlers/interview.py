@@ -84,6 +84,14 @@ class InterviewWebSocketHandler(WebSocketHandler):
         self.write_message(msg)
         ongoing_interviews[interview_id].add(self)
 
+        if len(ongoing_interviews[interview_id]) == 2:
+            log.debug("Two clients connected to interview %s" % interview_id)
+            msg = utils.create_message(msg_type='clients_connected',
+                                       client=self.client_id,
+                                       interview=self.interview_id)
+            for client in ongoing_interviews[interview_id]:
+                client.write_message(msg)
+
     def on_message(self, message):
         msg = json.loads(message)
 
@@ -123,4 +131,10 @@ class InterviewWebSocketHandler(WebSocketHandler):
         for app_name in live_apps:
             utils.function_as_callback(live_apps[app_name].on_client_leave,
                                        self)
+        ongoing_interviews[self.interview_id].remove(self)
+        msg = utils.create_message(msg_type='client_disconnected',
+                                   client=self.client_id,
+                                   interview=self.interview_id)
+        for client in ongoing_interviews[self.interview_id]:
+            client.write_message(msg)
         log.info("Web socket connection closed.")

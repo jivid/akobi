@@ -11,6 +11,7 @@ var StatusBar = React.createClass({
     interviewer_name: React.PropTypes.string.isRequired,
     interviewee_name: React.PropTypes.string.isRequired,
     timeElapsed: React.PropTypes.number.isRequired,
+    onlineStatus: React.PropTypes.bool.isRequired
   },
 
   getDefaultProps: function() {
@@ -22,13 +23,15 @@ var StatusBar = React.createClass({
 
   getInitialState: function() {
     return {
-      timeElapsed: 0
+      timeElapsed: 0,
+      onlineStatus: false
     }
   },
 
   componentWillReceiveProps: function(nextProps) {
     this.setState({
-      timeElapsed: nextProps.timeElapsed
+      timeElapsed: nextProps.timeElapsed,
+      onlineStatus: nextProps.onlineStatus
     });
     this.forceUpdate();
   },
@@ -46,6 +49,26 @@ var StatusBar = React.createClass({
     var childStyle = {
       'verticalAlign': 'middle',
       'margin': '5px',
+    };
+
+    var onlineStatusStyle = {};
+    if (this.state.onlineStatus) {
+      onlineStatusStyle = {
+        'borderRadius': '50%',
+        'width': '20px',
+        'height': '20px',
+        'background': '#008000',
+      }
+    }
+    else {
+      onlineStatusStyle = {
+        'borderRadius': '50%',
+        'width': '20px',
+        'height': '20px',
+        'background': 'none repeat scroll 0% 0% #FF0000',
+        'verticalAlign': 'middle',
+        'margin': '5px',
+      }
     }
 
     return (
@@ -56,6 +79,7 @@ var StatusBar = React.createClass({
         <label style={childStyle} name='interviewer_name_label'>{this.props.interviewer_name}</label>
         <label style={childStyle} name='interviewee_name_label'>{this.props.interviewee_name}</label>
         <label style={childStyle} name='time_elapsed_label'>{this.state.timeElapsed}</label>
+        <div style={onlineStatusStyle} ></div>
       </Container>
     );
   }

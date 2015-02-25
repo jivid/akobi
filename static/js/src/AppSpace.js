@@ -11,7 +11,8 @@ var AppSpace = React.createClass({
 
   getInitialState: function() {
     return {
-      timeElapsed: 0
+      timeElapsed: 0,
+      onlineStatus: false
     }
   },
 
@@ -30,8 +31,6 @@ var AppSpace = React.createClass({
         interviewID: this.state.interview.id,
       });
 
-      this.interval = setInterval(this.tick, 1000);
-
       this.forceUpdate()
     };
 
@@ -41,6 +40,19 @@ var AppSpace = React.createClass({
     this.setState({
       interview: interview,
     })
+
+    EventBus.on("clients_connected", (msg) => {
+      this.interval = setInterval(this.tick, 1000);
+      this.setState({
+        onlineStatus: true
+      });
+    });
+
+    EventBus.on("client_disconnected", (msg) => {
+      this.setState({
+        onlineStatus: false
+      });
+    });
   },
 
   tick: function() {
@@ -50,6 +62,8 @@ var AppSpace = React.createClass({
     console.log("TimeElapsed: " + this.state.timeElapsed);
   },
 
+
+
   render: function() {
     if (!this.readyToRender()) {
       return <p>Loading</p>;
@@ -57,7 +71,7 @@ var AppSpace = React.createClass({
     return (
       <div>
         <div>
-          <StatusBar timeElapsed={this.state.timeElapsed}/>
+          <StatusBar timeElapsed={this.state.timeElapsed} onlineStatus={this.state.onlineStatus} interview={this.state.interview}/>
         </div>
         <div style={{float:"left", width:"48%", margin:"1%"}}>
           <Video interview={this.state.interview}/>
