@@ -12,7 +12,8 @@ var states = {
   ACK : 4,
   ASK_SHADOW : 5,
   RECEIVED_SHADOW : 6,
-  APPLY_SHADOW : 7
+  APPLY_SHADOW : 7,
+  LANGUAGE_CHANGE : 8
 }
 
 var Collabedit = React.createClass({
@@ -42,6 +43,9 @@ var Collabedit = React.createClass({
         case states.APPLY_SHADOW:
           this.applyShadow(msg.data.data);
           break;
+        case states.LANGUAGE_CHANGE:
+          this.applyChangeLanguage(msg.data.data);
+          break;
       }
     });
   },
@@ -50,7 +54,8 @@ var Collabedit = React.createClass({
     var defaultState = "# Welcome to the Akobi Collaborative Code Editor!"
     return {
       shadow: defaultState,
-      content: defaultState
+      content: defaultState,
+      language: "python"
     }
   },
 
@@ -133,8 +138,25 @@ var Collabedit = React.createClass({
       type: 'collabedit',
       clientID: this.props.interview.clientID,
       interviewID: this.props.interview.id,
-      data: newLanguage
+      data: {
+        type: states.LANGUAGE_CHANGE,
+        language: newLanguage
+      }
     })    
+  },
+
+  applyChangeLanguage: function(newLanguage){
+    this.setState({language: newLanguage});  
+
+    this.props.interview.socket.send({
+        type: 'collabedit',
+        clientID: this.props.interview.clientID,
+        interviewID: this.props.interview.id,
+        data: {
+            type: states.ACK,
+            data: {}
+        }
+    });   
   },
 
   render: function() {
@@ -149,7 +171,7 @@ var Collabedit = React.createClass({
       <div>
         <AceEditor
             ref="editor"
-            language="python"
+            language={this.state.language}
             theme="monokai"
             name="notebox"
             showEditorControls={true}

@@ -34,7 +34,7 @@ var AceEditor = React.createClass({
     editorHeight: React.PropTypes.string,
     showLineNumbers: React.PropTypes.bool,
     showEditorControls: React.PropTypes.bool,
-    content: React.PropTypes.string
+    content: React.PropTypes.string,
     onChangeLanguage: React.PropTypes.func,
   },
 
