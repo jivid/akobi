@@ -23,7 +23,7 @@ var StatusBar = React.createClass({
 
   getInitialState: function() {
     return {
-      timeElapsed: 0,
+      timeElapsed: "0:00:00",
       onlineStatus: false,
       endInterviewModal: 'hidden',
     }
@@ -52,9 +52,18 @@ var StatusBar = React.createClass({
     location.replace('/');
   },
 
+  secsToHMS: function (secs) {
+    var hours = Math.floor(secs / 3600)
+    var minutes = Math.floor(secs / 60);
+    var seconds = ((secs % 60)).toFixed(0);
+    return hours + ":" + (minutes < 10 ? '0' : '') + minutes + ":"
+      + (seconds < 10 ? '0' : '') + seconds;
+  },
+
   componentWillReceiveProps: function(nextProps) {
+    var newTime = this.secsToHMS(nextProps.timeElapsed);
     this.setState({
-      timeElapsed: nextProps.timeElapsed,
+      timeElapsed: newTime,
       onlineStatus: nextProps.onlineStatus
     });
     this.forceUpdate();
@@ -63,8 +72,8 @@ var StatusBar = React.createClass({
   render: function() {
 
     var containerStyle = {
-      'width': '100%',
-      'height': '7%',
+      'width': '98%',
+      'height': '50px',
       'background': '-moz-linear-gradient(#F9726D, #D7635F)',
       'padding': '15px',
       'float': 'left',
@@ -77,16 +86,17 @@ var StatusBar = React.createClass({
 
     var onlineStatusStyle = {
       'borderRadius': '50%',
-      'width': '20px',
-      'height': '20px',
+      'width': '30px',
+      'height': '30px',
       'verticalAlign': 'middle',
       'margin': '5px',
+      'float': 'right',
     };
     if (this.state.onlineStatus) {
       onlineStatusStyle['background'] = '#008000'
     }
     else {
-      onlineStatusStyle['background'] = 'none repeat scroll 0% 0% #FF0000'
+      onlineStatusStyle['background'] = '#FF0000'
     }
 
     var endInterviewOverlayStyle = {
@@ -110,6 +120,12 @@ var StatusBar = React.createClass({
       'textAlign': 'center',
     };
 
+    var onlineStatusTextStyle = {
+      'verticalAlign': 'middle',
+      'margin': '5px',
+      'float': 'right',
+    };
+
     return (
       <div>
         <Container style={containerStyle} >
@@ -120,6 +136,7 @@ var StatusBar = React.createClass({
           <label style={childStyle} name='interviewee_name_label'>{this.props.interviewee_name}</label>
           <label style={childStyle} name='time_elapsed_label'>{this.state.timeElapsed}</label>
           <div style={onlineStatusStyle} ></div>
+          <label style={onlineStatusTextStyle}>{this.state.onlineStatus ? 'ONLINE' : 'OFFLINE'}</label>
         </Container>
         <Container style={endInterviewOverlayStyle}>
             <Container
