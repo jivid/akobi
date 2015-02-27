@@ -59,10 +59,7 @@ var AppSpace = React.createClass({
     this.setState({
       timeElapsed: this.state.timeElapsed + 1,
     });
-    console.log("TimeElapsed: " + this.state.timeElapsed);
   },
-
-
 
   render: function() {
     if (!this.readyToRender()) {
