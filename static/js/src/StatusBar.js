@@ -11,7 +11,7 @@ var StatusBar = React.createClass({
     interviewer_name: React.PropTypes.string.isRequired,
     interviewee_name: React.PropTypes.string.isRequired,
     timeElapsed: React.PropTypes.number.isRequired,
-    onlineStatus: React.PropTypes.bool.isRequired
+    onlineStatus: React.PropTypes.bool.isRequired,
   },
 
   getDefaultProps: function() {
@@ -24,8 +24,32 @@ var StatusBar = React.createClass({
   getInitialState: function() {
     return {
       timeElapsed: 0,
-      onlineStatus: false
+      onlineStatus: false,
+      endInterviewModal: 'hidden',
     }
+  },
+
+  endInterview: function() {
+    var msg = {
+      type: 'end_interview',
+      clientID: this.props.interview.clientID,
+      interviewID: this.props.interview.id
+    }
+    this.props.interview.socket.send(msg);
+    EventBus.trigger(msg.type, msg);
+
+    this.setState({
+      endInterviewModal: 'visible'
+    });
+    this.forceUpdate();
+  },
+
+  reJoinInterview: function() {
+    location.reload();
+  },
+
+  exitInterview: function() {
+    location.replace('/');
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -51,36 +75,62 @@ var StatusBar = React.createClass({
       'margin': '5px',
     };
 
-    var onlineStatusStyle = {};
+    var onlineStatusStyle = {
+      'borderRadius': '50%',
+      'width': '20px',
+      'height': '20px',
+      'verticalAlign': 'middle',
+      'margin': '5px',
+    };
     if (this.state.onlineStatus) {
-      onlineStatusStyle = {
-        'borderRadius': '50%',
-        'width': '20px',
-        'height': '20px',
-        'background': '#008000',
-      }
+      onlineStatusStyle['background'] = '#008000'
     }
     else {
-      onlineStatusStyle = {
-        'borderRadius': '50%',
-        'width': '20px',
-        'height': '20px',
-        'background': 'none repeat scroll 0% 0% #FF0000',
-        'verticalAlign': 'middle',
-        'margin': '5px',
-      }
+      onlineStatusStyle['background'] = 'none repeat scroll 0% 0% #FF0000'
     }
 
+    var endInterviewOverlayStyle = {
+      'width': '100%',
+      'height': '100%',
+      'zIndex': '99999',
+      'position': 'absolute',
+      'left': '0px',
+      'top': '0px',
+      'backgroundColor': 'rgba(0, 0, 0, 0.5)',
+      'visibility': this.state.endInterviewModal,
+    };
+
+    var endInterviewModalStyle = {
+      'position': 'relative',
+      'height': '350px',
+      'width': '425px',
+      'top': '35%',
+      'left': '40%',
+      'backgroundColor': '#32A8CF',
+      'textAlign': 'center',
+    };
+
     return (
-      <Container style={containerStyle} >
-        <button style={childStyle} type='button'>End Call</button>
-        <button style={childStyle} type='button'>Toggle Video</button>
-        <button style={childStyle} type='button'>Toggle Mic</button>
-        <label style={childStyle} name='interviewer_name_label'>{this.props.interviewer_name}</label>
-        <label style={childStyle} name='interviewee_name_label'>{this.props.interviewee_name}</label>
-        <label style={childStyle} name='time_elapsed_label'>{this.state.timeElapsed}</label>
-        <div style={onlineStatusStyle} ></div>
-      </Container>
+      <div>
+        <Container style={containerStyle} >
+          <button style={childStyle} type='button' onClick={this.endInterview}>End Interview</button>
+          <button style={childStyle} type='button'>Toggle Video</button>
+          <button style={childStyle} type='button'>Toggle Mic</button>
+          <label style={childStyle} name='interviewer_name_label'>{this.props.interviewer_name}</label>
+          <label style={childStyle} name='interviewee_name_label'>{this.props.interviewee_name}</label>
+          <label style={childStyle} name='time_elapsed_label'>{this.state.timeElapsed}</label>
+          <div style={onlineStatusStyle} ></div>
+        </Container>
+        <Container style={endInterviewOverlayStyle}>
+            <Container
+              rounded={'medium'}
+              style={endInterviewModalStyle}>
+                <label>You have left the interview. If this was done in error, select 'Re-join Interview' below</label>
+                <button type='button' onClick={this.reJoinInterview}>Re-Join Interview</button>
+                <button type='button' onClick={this.exitInterview}>Leave Interview</button>
+            </Container>
+        </Container>
+      </div>
     );
   }
 

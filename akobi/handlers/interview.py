@@ -118,10 +118,19 @@ class InterviewWebSocketHandler(WebSocketHandler):
             self.write_message(message)
             return
 
+        elif msg['type'] == "end_interview":
+            log.debug("Closing websocket for client %s" % self.client_id)
+            self.manual_close()
+            return
+
         if self.interview_initialized is True:
             app = utils.app_name_from_msg(msg)
             application = registry.find(msg['interviewID'], app)
             application.handle_message(msg, ongoing_interviews)
+
+    def manual_close(self):
+        self.close()
+        self.on_close()
 
     def on_close(self):
         live_apps = registry.apps_for_interview(self.interview_id)

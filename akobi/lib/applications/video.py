@@ -40,6 +40,7 @@ class VideoApplication(BaseApplication):
                 socket.write_message(message)
 
     def on_client_leave(self, socket, *args, **kwargs):
+        # video doesn't stop when this is called without tab closure
         self.sockets.remove(socket)
 
 
