@@ -34,7 +34,7 @@ var AceEditor = React.createClass({
     editorHeight: React.PropTypes.string,
     showLineNumbers: React.PropTypes.bool,
     showEditorControls: React.PropTypes.bool,
-    content: React.PropTypes.string
+    content: React.PropTypes.string,
   },
 
   getDefaultProps: function() {
@@ -49,8 +49,7 @@ var AceEditor = React.createClass({
     return {
       language: this.props.language,
       theme: this.props.theme,
-      content: this.props.content,
-      cursor : {row : 0, column : 0}
+      content: this.props.content
     }
   },
 
@@ -64,6 +63,14 @@ var AceEditor = React.createClass({
     return theme ?
       'ace/theme/' + theme :
       null;
+  },
+  
+  getCurrentCursorPosition: function() {
+    return this.editor.getCursorPosition();
+  },
+  
+  setCurrentCursorPosition: function(cursor) {
+    this.editor.moveCursorToPosition(cursor);
   },
 
   /**
@@ -92,8 +99,9 @@ var AceEditor = React.createClass({
       this.props.showLineNumbers,
       this.state.lineWrap
     );
+    var cursor = this.editor.getCursorPosition();
     this.editor.session.setValue(this.state.content);
-    this.editor.moveCursorToPosition(this.state.cursor);
+    this.editor.moveCursorToPosition(cursor);
     this.editor.focus();
   },
 
@@ -130,11 +138,6 @@ var AceEditor = React.createClass({
     return languageSelector;
   },
 
-  shouldComponentUpdate: function(nextProps, nextState) {
-    // Don't re-render if just the cursor changes
-    return this.state.cursor.position == nextState.cursor.position;
-  },
-
   render: function() {
     var editorName = this.props.name.trim().toLowerCase().replace(' ', '-');
     var id = "ace-editor-" + editorName;
@@ -155,24 +158,20 @@ var AceEditor = React.createClass({
       </div>
     );
   },
-
+  
   componentDidMount: function() {
     this.editor = ace.edit(this.refs.editor.getDOMNode());
     this.editorSession = this.editor.getSession();
     this.setupEditorFromState();
   },
-
+  
   componentWillReceiveProps: function(nextProps) {
-    this.setState({
-       content: nextProps.content,
-       cursor : this.editor.getCursorPosition()
-     });
+   this.setState({content: nextProps.content});
   },
 
   componentDidUpdate: function() {
     this.setupEditorFromState();
   }
-
 });
 
 module.exports = AceEditor;
