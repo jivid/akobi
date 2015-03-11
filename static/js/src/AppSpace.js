@@ -70,16 +70,18 @@ var AppSpace = React.createClass({
         <div>
           <StatusBar timeElapsed={this.state.timeElapsed} onlineStatus={this.state.onlineStatus} interview={this.state.interview}/>
         </div>
-        <div style={{float:"left", width:"49%", margin:"0.5%"}}>
-          <Video interview={this.state.interview}/>
-        </div>
-        <div style={{float:"right", width:"49%", height:"750px", margin:"0.5%"}}>
-          <Collabedit interview={this.state.interview}/>
-        </div>
-        <div style={{float:"left", width:"49%", height:"387px", margin:"0.5%"}}>
-          <Notes
+        <div style={{paddingTop:"15px", paddingLeft:"50px", paddingRight:"50px"}}>
+          <div style={{float:"left", width:"30%", margin:"0.5%"}}>
+            <Video interview={this.state.interview}/>
+          </div>
+          <div style={{float:"right", width:"30%", height:"750px", margin:"0.5%"}}>
+            <Collabedit interview={this.state.interview}/>
+          </div>
+          <div style={{float:"left", width:"30%", height:"387px", margin:"0.5%"}}>
+            <Notes
             interview={this.state.interview}
             content="You can take private interview notes that will be emailed to you when the interview is finished."/>
+          </div>
         </div>
       </div>
     );

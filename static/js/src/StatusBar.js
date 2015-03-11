@@ -72,31 +72,32 @@ var StatusBar = React.createClass({
   render: function() {
 
     var containerStyle = {
-      'width': '98%',
-      'height': '50px',
-      'background': '-moz-linear-gradient(#F9726D, #D7635F)',
+      'width': '100%',
+      'height': '25px',
+      'backgroundColor': '#F9726D',
       'padding': '15px',
-      'float': 'left',
+      'display': 'flex',
+      'flexDirection': 'row',
+      'alignItems': 'center',
+      'fontSize': '16px'
     };
 
     var childStyle = {
-      'verticalAlign': 'middle',
       'margin': '5px',
     };
 
     var onlineStatusStyle = {
       'borderRadius': '50%',
-      'width': '30px',
-      'height': '30px',
+      'width': '25px',
+      'height': '25px',
       'verticalAlign': 'middle',
       'margin': '5px',
-      'float': 'right',
     };
     if (this.state.onlineStatus) {
-      onlineStatusStyle['background'] = '#008000'
+      onlineStatusStyle['background'] = '#209531'
     }
     else {
-      onlineStatusStyle['background'] = '#FF0000'
+      onlineStatusStyle['background'] = '#E02A2A'
     }
 
     var endInterviewOverlayStyle = {
@@ -126,17 +127,30 @@ var StatusBar = React.createClass({
       'float': 'right',
     };
 
+    var clickableImageStyle = {
+
+    };
+
     return (
       <div>
         <Container style={containerStyle} >
-          <button style={childStyle} type='button' onClick={this.endInterview}>End Interview</button>
-          <button style={childStyle} type='button'>Toggle Video</button>
-          <button style={childStyle} type='button'>Toggle Mic</button>
-          <label style={childStyle} name='interviewer_name_label'>{this.props.interviewer_name}</label>
-          <label style={childStyle} name='interviewee_name_label'>{this.props.interviewee_name}</label>
-          <label style={childStyle} name='time_elapsed_label'>{this.state.timeElapsed}</label>
-          <div style={onlineStatusStyle} ></div>
-          <label style={onlineStatusTextStyle}>{this.state.onlineStatus ? 'ONLINE' : 'OFFLINE'}</label>
+          <div style={{'marginRight': '350px'}}>
+            <i className='fa fa-phone fa-3' onClick={this.endInterview}></i>
+            <button type='button' onClick={this.endInterview}>End Interview</button>
+            <button style={childStyle} type='button'>Toggle Video</button>
+            <button style={childStyle} type='button'>Toggle Mic</button>
+          </div>
+          <div style={{'marginRight': '50px', 'display': 'flex'}}>
+            <div style={onlineStatusStyle} ></div>
+            <label style={childStyle} name='interviewer_name_label'>{this.props.interviewer_name}</label>
+          </div>
+          <div style={{'marginRight': '50px', 'display': 'flex'}}>
+            <div style={onlineStatusStyle} ></div>
+            <label style={childStyle} name='interviewee_name_label'>{this.props.interviewee_name}</label>
+          </div>
+          <div>
+            <label style={childStyle} name='time_elapsed_label'>{this.state.timeElapsed}</label>
+          </div>
         </Container>
         <Container style={endInterviewOverlayStyle}>
             <Container
