@@ -12,7 +12,8 @@ var states = {
   ACK : 4,
   ASK_SHADOW : 5,
   RECEIVED_SHADOW : 6,
-  APPLY_SHADOW : 7
+  APPLY_SHADOW : 7,
+  LANGUAGE_CHANGE : 8
 }
 
 var LANGUAGE_CHANGE = 8
@@ -42,7 +43,7 @@ var Collabedit = React.createClass({
         case states.APPLY_SHADOW:
           this.applyShadow(msg.data.data);
           break;
-        case LANGUAGE_CHANGE:
+        case states.LANGUAGE_CHANGE:
           this.applyChangeLanguage(msg.data.data);
           break;
       }
@@ -227,6 +228,32 @@ var Collabedit = React.createClass({
 
   applyChangeLanguage: function(newLanguage){
     this.setState({language : newLanguage });
+  },
+
+  onChangeLanguage: function(newLanguage){
+    this.props.interview.socket.send({
+      type: 'collabedit',
+      clientID: this.props.interview.clientID,
+      interviewID: this.props.interview.id,
+      data: {
+        type: states.LANGUAGE_CHANGE,
+        language: newLanguage
+      }
+    })    
+  },
+
+  applyChangeLanguage: function(newLanguage){
+    this.setState({language: newLanguage});  
+
+    this.props.interview.socket.send({
+        type: 'collabedit',
+        clientID: this.props.interview.clientID,
+        interviewID: this.props.interview.id,
+        data: {
+            type: states.ACK,
+            data: {}
+        }
+    });   
   },
 
   render: function() {
