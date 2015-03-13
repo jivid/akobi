@@ -140,10 +140,6 @@ var AceEditor = React.createClass({
     return languageSelector;
   },
 
-  //shouldComponentUpdate: function(nextProps, nextState) {
-    //return (this.state.language != nextState.language);
-  //},
-
   render: function() {
     var editorName = this.props.name.trim().toLowerCase().replace(' ', '-');
     var id = "ace-editor-" + editorName;
