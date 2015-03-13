@@ -234,7 +234,6 @@ var Collabedit = React.createClass({
   },
 
   render: function() {
-    console.log("In render");
     var containerStyle = {
       'border': '1px solid black',
       'padding': '0px',
@@ -255,7 +254,7 @@ var Collabedit = React.createClass({
           />
       </div>
     );
-  },
+  }
 
 
 

@@ -144,15 +144,7 @@ var AceEditor = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    // Don't re-render if just the cursor changes
-    console.log("AceEditor: entered shouldComponentUpdate");
-    if (this.state.language != nextState.language){
-      console.log("AceEditor: language changed return true");
-      return true;
-    }
-    if (this.state.cursor.position == nextState.cursor.position){
-      return true;
-    } 
+    return (this.state.language != nextState.language);
   },
 
   render: function() {
@@ -187,7 +179,6 @@ var AceEditor = React.createClass({
     this.setState({
        language: nextProps.language,
        content: nextProps.content,
-       cursor : this.editor.getCursorPosition()
      });
 
   },
