@@ -15,6 +15,8 @@ var states = {
   APPLY_SHADOW : 7
 }
 
+var LANGUAGE_CHANGE = 8
+
 var Collabedit = React.createClass({
 
   componentDidMount: function() {
@@ -40,6 +42,9 @@ var Collabedit = React.createClass({
         case states.APPLY_SHADOW:
           this.applyShadow(msg.data.data);
           break;
+        case LANGUAGE_CHANGE:
+          this.applyChangeLanguage(msg.data.data);
+          break;
       }
     });
   },
@@ -49,6 +54,7 @@ var Collabedit = React.createClass({
     return {
       shadow: defaultState,
       content: defaultState,
+      language: "python"
     }
   },
 
@@ -203,7 +209,24 @@ var Collabedit = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.content != nextState.content;
+    return this.state.content != nextState.content || 
+      this.state.language != nextState.language;
+  },
+
+  onChangeLanguage: function(newLanguage){
+    this.props.interview.socket.send({
+      type: 'collabedit',
+      clientID: this.props.interview.clientID,
+      interviewID: this.props.interview.id,
+      data: {
+            type: LANGUAGE_CHANGE,
+            data: newLanguage
+        }
+    })    
+  },
+
+  applyChangeLanguage: function(newLanguage){
+    this.setState({language : newLanguage });
   },
 
   render: function() {
@@ -218,15 +241,18 @@ var Collabedit = React.createClass({
       <div>
         <AceEditor
             ref="editor"
-            language="python"
+            language={this.state.language}
             theme="monokai"
             name="notebox"
             showEditorControls={true}
             content={this.state.content}
+            onChangeLanguage={this.onChangeLanguage}
           />
       </div>
     );
   }
+
+
 
 });
 

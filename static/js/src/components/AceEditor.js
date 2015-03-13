@@ -35,6 +35,7 @@ var AceEditor = React.createClass({
     showLineNumbers: React.PropTypes.bool,
     showEditorControls: React.PropTypes.bool,
     content: React.PropTypes.string,
+    onChangeLanguage: React.PropTypes.func
   },
 
   getDefaultProps: function() {
@@ -126,12 +127,13 @@ var AceEditor = React.createClass({
       this.setState({
         language: language,
       });
+      this.props.onChangeLanguage(language);
     }
-
     var languageSelector =
       <select
         onChange={onLanguageChange.bind(this)}
-        defaultValue={this.state.language}>
+        defaultValue={this.state.language}
+        value={this.state.language || 'plaintext'}>
         {languageOptions}
       </select>;
 
@@ -166,7 +168,11 @@ var AceEditor = React.createClass({
   },
   
   componentWillReceiveProps: function(nextProps) {
-   this.setState({content: nextProps.content});
+    this.setState({
+       language: nextProps.language,
+       content: nextProps.content
+     });
+
   },
 
   componentDidUpdate: function() {
