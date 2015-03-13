@@ -30,6 +30,10 @@ var StatusBar = React.createClass({
   },
 
   endInterview: function() {
+    if (!this.state.onlineStatus) {
+      return;
+    }
+
     var msg = {
       type: 'end_interview',
       clientID: this.props.interview.clientID,
@@ -86,6 +90,20 @@ var StatusBar = React.createClass({
       'margin': '5px',
     };
 
+    var buttonBarStyle = {
+      'display': 'flex',
+      'flexDirection': 'row',
+      'alignItems': 'center',
+      'marginRight': '1050px'
+    }
+
+    var timeBarStyle = {
+      'display': 'flex',
+      'flexDirection': 'row',
+      'alignItems': 'center',
+      'margin-right': '50px'
+    }
+
     var onlineStatusStyle = {
       'borderRadius': '50%',
       'width': '25px',
@@ -93,10 +111,13 @@ var StatusBar = React.createClass({
       'verticalAlign': 'middle',
       'margin': '5px',
     };
+    var statusImage = ''
     if (this.state.onlineStatus) {
+      statusImage = '/static/images/puter_online.png'
       onlineStatusStyle['background'] = '#209531'
     }
     else {
+      statusImage = '/static/images/puter.png'
       onlineStatusStyle['background'] = '#E02A2A'
     }
 
@@ -127,30 +148,23 @@ var StatusBar = React.createClass({
       'float': 'right',
     };
 
-    var clickableImageStyle = {
-
-    };
-
     return (
       <div>
         <Container style={containerStyle} >
-          <div style={{'marginRight': '350px'}}>
-            <i className='fa fa-phone fa-3' onClick={this.endInterview}></i>
-            <button type='button' onClick={this.endInterview}>End Interview</button>
-            <button style={childStyle} type='button'>Toggle Video</button>
-            <button style={childStyle} type='button'>Toggle Mic</button>
-          </div>
-          <div style={{'marginRight': '50px', 'display': 'flex'}}>
-            <div style={onlineStatusStyle} ></div>
+          <img style={{'marginRight':'1375px'}} src='/static/images/akobi.png'></img>
+          <div style={{ 'marginRight': '50px', 'display': 'flex'}}>
+            <img style={{'marginRight': '10px'}} src={statusImage}></img>
             <label style={childStyle} name='interviewer_name_label'>{this.props.interviewer_name}</label>
           </div>
           <div style={{'marginRight': '50px', 'display': 'flex'}}>
-            <div style={onlineStatusStyle} ></div>
+            <img style={{'marginRight': '10px'}} src={statusImage}></img>
             <label style={childStyle} name='interviewee_name_label'>{this.props.interviewee_name}</label>
           </div>
-          <div>
+          <div style={timeBarStyle}>
+            <img style={{'marginRight': '5px'}} src='/static/images/clock.png'></img>
             <label style={childStyle} name='time_elapsed_label'>{this.state.timeElapsed}</label>
           </div>
+          <button type='button' className='endInterview' onClick={this.endInterview}></button>
         </Container>
         <Container style={endInterviewOverlayStyle}>
             <Container

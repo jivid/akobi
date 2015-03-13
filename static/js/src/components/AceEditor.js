@@ -151,7 +151,7 @@ var AceEditor = React.createClass({
     var id = "ace-editor-" + editorName;
 
     var editorControls =
-      <Container background='#F9726D'>
+      <Container background='#2C3029'>
         {this.getLanguageSelector()}
       </Container>;
 
