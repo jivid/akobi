@@ -43,7 +43,6 @@ var Collabedit = React.createClass({
           this.applyShadow(msg.data.data);
           break;
         case LANGUAGE_CHANGE:
-          console.log("Entered case: LANGUAGE_CHANGE")
           this.applyChangeLanguage(msg.data.data);
           break;
       }
@@ -215,7 +214,6 @@ var Collabedit = React.createClass({
   },
 
   onChangeLanguage: function(newLanguage){
-    console.log("In onChangeLanguage, newLanguage: " + newLanguage)
     this.props.interview.socket.send({
       type: 'collabedit',
       clientID: this.props.interview.clientID,
@@ -228,9 +226,7 @@ var Collabedit = React.createClass({
   },
 
   applyChangeLanguage: function(newLanguage){
-    console.log("In applyChangeLanguage, newLanguage: " + newLanguage)
     this.setState({language : newLanguage });
-    console.log("In applyChangeLanguage, language: " + this.state.language)
   },
 
   render: function() {

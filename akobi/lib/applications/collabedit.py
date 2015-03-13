@@ -110,7 +110,6 @@ class CollabEditHandler(BaseApplication):
                 time.time() + .25, self._start_synchronization_loop)
 
         elif message['type'] == CollabEditHandler.LANGUAGE_CHANGE:
-            log.debug("enterd server side LANGUAGE_CHANGE")
             self._send_message(self.sockets[0],
                 CollabEditHandler.LANGUAGE_CHANGE, msg_data=message['data'])
             self._send_message(self.sockets[1],

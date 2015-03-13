@@ -94,7 +94,6 @@ var AceEditor = React.createClass({
   },
 
   setupEditorFromState: function() {
-    console.log("AceEditor: setupEditorFromState: language: " + this.state.language);
     this.setupEditor(
       this.aceMode(this.state.language),
       this.aceTheme(this.state.theme),
@@ -129,9 +128,7 @@ var AceEditor = React.createClass({
         language: language,
       });
       this.props.onChangeLanguage(language);
-      console.log("AceEditor: getLanguageSelector: language: " + this.state.language);
     }
-    console.log("this.state.language: " + this.state.language);
     var languageSelector =
       <select
         onChange={onLanguageChange.bind(this)}
@@ -143,12 +140,11 @@ var AceEditor = React.createClass({
     return languageSelector;
   },
 
-  shouldComponentUpdate: function(nextProps, nextState) {
-    return (this.state.language != nextState.language);
-  },
+  //shouldComponentUpdate: function(nextProps, nextState) {
+    //return (this.state.language != nextState.language);
+  //},
 
   render: function() {
-    console.log("AceEditor: in render");
     var editorName = this.props.name.trim().toLowerCase().replace(' ', '-');
     var id = "ace-editor-" + editorName;
 
@@ -178,13 +174,12 @@ var AceEditor = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     this.setState({
        language: nextProps.language,
-       content: nextProps.content,
+       content: nextProps.content
      });
 
   },
 
   componentDidUpdate: function() {
-    console.log("AceEditor: in componentDidUpdate")
     this.setupEditorFromState();
   }
 });
