@@ -15,6 +15,8 @@ var states = {
   APPLY_SHADOW : 7
 }
 
+var LANGUAGE_CHANGE = 8
+
 var Collabedit = React.createClass({
 
   componentDidMount: function() {
@@ -42,6 +44,10 @@ var Collabedit = React.createClass({
         case states.APPLY_SHADOW:
           this.applyShadow(msg.data.data);
           break;
+        case LANGUAGE_CHANGE:
+          console.log("Entered case: LANGUAGE_CHANGE")
+          this.applyChangeLanguage(msg.data.data);
+          break;
       }
     });
   },
@@ -50,7 +56,8 @@ var Collabedit = React.createClass({
     var defaultState = "# Welcome to the Akobi Collaborative Code Editor!"
     return {
       shadow: defaultState,
-      content: defaultState
+      content: defaultState,
+      language: "python"
     }
   },
 
@@ -125,19 +132,31 @@ var Collabedit = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.content != nextState.content;
+    return this.state.content != nextState.content || 
+      this.state.language != nextState.language;
   },
 
   onChangeLanguage: function(newLanguage){
+    console.log("In onChangeLanguage, newLanguage: " + newLanguage)
     this.props.interview.socket.send({
       type: 'collabedit',
       clientID: this.props.interview.clientID,
       interviewID: this.props.interview.id,
-      data: newLanguage
+      data: {
+            type: LANGUAGE_CHANGE,
+            data: newLanguage
+        }
     })    
   },
 
+  applyChangeLanguage: function(newLanguage){
+    console.log("In applyChangeLanguage, newLanguage: " + newLanguage)
+    this.setState({language : newLanguage });
+    console.log("In applyChangeLanguage, language: " + this.state.language)
+  },
+
   render: function() {
+    console.log("In render");
     var containerStyle = {
       'border': '1px solid black',
       'padding': '0px',
@@ -149,7 +168,7 @@ var Collabedit = React.createClass({
       <div>
         <AceEditor
             ref="editor"
-            language="python"
+            language={this.state.language}
             theme="monokai"
             name="notebox"
             showEditorControls={true}
@@ -158,7 +177,9 @@ var Collabedit = React.createClass({
           />
       </div>
     );
-  }
+  },
+
+
 
 });
 

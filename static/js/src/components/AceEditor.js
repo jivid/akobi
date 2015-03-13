@@ -34,8 +34,8 @@ var AceEditor = React.createClass({
     editorHeight: React.PropTypes.string,
     showLineNumbers: React.PropTypes.bool,
     showEditorControls: React.PropTypes.bool,
-    content: React.PropTypes.string
-    onChangeLanguage: React.PropTypes.func,
+    content: React.PropTypes.string,
+    onChangeLanguage: React.PropTypes.func
   },
 
   getDefaultProps: function() {
@@ -87,6 +87,7 @@ var AceEditor = React.createClass({
   },
 
   setupEditorFromState: function() {
+    console.log("AceEditor: setupEditorFromState: language: " + this.state.language);
     this.setupEditor(
       this.aceMode(this.state.language),
       this.aceTheme(this.state.theme),
@@ -120,12 +121,14 @@ var AceEditor = React.createClass({
         language: language,
       });
       this.props.onChangeLanguage(language);
+      console.log("AceEditor: getLanguageSelector: language: " + this.state.language);
     }
-
+    console.log("this.state.language: " + this.state.language);
     var languageSelector =
       <select
         onChange={onLanguageChange.bind(this)}
-        defaultValue={this.state.language}>
+        defaultValue={this.state.language}
+        value={this.state.language || 'plaintext'}>
         {languageOptions}
       </select>;
 
@@ -134,10 +137,18 @@ var AceEditor = React.createClass({
 
   shouldComponentUpdate: function(nextProps, nextState) {
     // Don't re-render if just the cursor changes
-    return this.state.cursor.position == nextState.cursor.position;
+    console.log("AceEditor: entered shouldComponentUpdate");
+    if (this.state.language != nextState.language){
+      console.log("AceEditor: language changed return true");
+      return true;
+    }
+    if (this.state.cursor.position == nextState.cursor.position){
+      return true;
+    } 
   },
 
   render: function() {
+    console.log("AceEditor: in render");
     var editorName = this.props.name.trim().toLowerCase().replace(' ', '-');
     var id = "ace-editor-" + editorName;
 
@@ -166,12 +177,14 @@ var AceEditor = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     this.setState({
+       language: nextProps.language,
        content: nextProps.content,
        cursor : this.editor.getCursorPosition()
      });
   },
 
   componentDidUpdate: function() {
+    console.log("AceEditor: in componentDidUpdate")
     this.setupEditorFromState();
   }
 

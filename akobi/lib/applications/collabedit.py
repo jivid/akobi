@@ -25,6 +25,7 @@ class CollabEditHandler(BaseApplication):
     ASK_SHADOW = 5
     RECEIVED_SHADOW = 6
     APPLY_SHADOW = 7
+    LANGUAGE_CHANGE = 8
 
     def __init__(self):
         self.sockets = []
@@ -107,6 +108,14 @@ class CollabEditHandler(BaseApplication):
             self.state = CollabEditHandler.INITIAL
             utils.register_timeout(
                 time.time() + .25, self._start_synchronization_loop)
+
+        elif message['type'] == CollabEditHandler.LANGUAGE_CHANGE:
+            log.debug("enterd server side LANGUAGE_CHANGE")
+            self._send_message(self.sockets[0],
+                CollabEditHandler.LANGUAGE_CHANGE, msg_data=message['data'])
+            self._send_message(self.sockets[1],
+                CollabEditHandler.LANGUAGE_CHANGE, msg_data=message['data'])
+            log.debug("server: sent %s LANGUAGE_CHANGE to both clients" % (message['data']))
 
         else:
             log.error(
