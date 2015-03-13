@@ -11,7 +11,7 @@ var Button = React.createClass({
 
   render: function() {
     return (
-      <button className='button' {...this.props}>
+      <button className='button' style={this.props.style} onClick={this.props.onClick}>
         {this.props.text}
       </button>
     );
