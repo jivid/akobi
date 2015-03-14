@@ -4,8 +4,6 @@ var $ = require('jquery');
 var Button = require('./components/Button');
 var Container = require('./components/Container');
 var FormField = require('./components/FormField');
-var KeyEventListener = require('./lib/KeyEventListener');
-var LoadingThrobber = require('./components/LoadingThrobber');
 var React = require('react/addons');
 
 var cx = React.addons.classSet;
