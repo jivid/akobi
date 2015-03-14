@@ -125,29 +125,15 @@ var MainSpace = React.createClass({
   },
 
   createInterview: function() {
-    var interviewerName = this.refs.interviewerNameInput.getValue();
-    var interviewerEmail = this.refs.interviewerEmailInput.getValue();
-    var intervieweeName = this.refs.intervieweeNameInput.getValue();
-    var intervieweeEmail = this.refs.intervieweeEmailInput.getValue();
-
-    var fields = [
-      interviewerName,
-      interviewerEmail,
-      intervieweeName,
-      intervieweeEmail
-    ];
-
-    var postData = {
-      'interviewer_name': interviewerName,
-      'interviewer_email': interviewerEmail,
-      'interviewee_name': intervieweeName,
-      'interviewee_email': intervieweeEmail,
-    };
-
     $.ajax({
       type: 'POST',
       url: location.pathname,
-      data: postData,
+      data: {
+        'interviewer_name' : this.refs.interviewerNameInput.getValue(),
+        'interviewer_email': this.refs.interviewerEmailInput.getValue(),
+        'interviewee_name' : this.refs.intervieweeNameInput.getValue(),
+        'interviewee_email': this.refs.intervieweeEmailInput.getValue(),
+      },
       success: (result) => {
         location.replace('/i/' + result.interviewID)
       }
