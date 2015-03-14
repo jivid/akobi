@@ -68,7 +68,7 @@ def build():
     lrun("lessc --compress %s > %s" % (less_file, css_file))
     lrun("jsx --harmony static/js/src/ static/js/build/")
     lrun("browserify static/js/build/AuthSpace.js -o "
-            "static/js/build/Auth.js")
+         "static/js/build/Auth.js")
     lrun("browserify static/js/build/AppSpace.js -o "
             "static/js/build/App.js")
     lrun("browserify static/js/build/MainSpace.js -o "
