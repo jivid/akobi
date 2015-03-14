@@ -11,40 +11,22 @@ applications.remove("Heartbeat")
 
 
 class IndexHandler(RequestHandler):
+    def _store_arg_in_redis(self, interview_id, arg_key):
+        redis = redis_client.get_redis_instance()
+        interview_key = "interview:%s" % interview_id
+
+        arg_value = self.get_argument(arg_key)
+        redis.hset(interview_key, arg_key, arg_value)
+
     def get(self, *args, **kwargs):
-        self.render('index.html', applications=applications)
+        self.render('index.html')
 
-
-class TestHandler(RequestHandler):
-    def get(self, *args, **kwargs):
-        self.render('test.html')
-
-
-class SetupHandler(RequestHandler):
-    def get(self, *args, **kwargs):
-
-        # HTML checkboxes pass nothing if they are unchecked
-        application_state = {}
-        interviewer = self.get_query_argument('interviewer_email')
-        interviewee = self.get_query_argument('interviewee_email')
-
-        for application in applications:
-            if self.get_query_argument(application, None):
-                application_state[application] = self.get_query_argument(
-                    application)
-
-        # TODO: We should probably do this more like a product serial than
-        # just a random id.
+    def post(self, *args, **kwargs):
         interview_id = make_random_string()
 
-        redis = redis_client.get_redis_instance()
-        interview_key = "interview:%s" % (interview_id)
-        log.info("Setting interviewer email")
-        redis.hset(interview_key, "interviewer_email", interviewer)
-        log.info("Setting interviewee email")
-        redis.hset(interview_key, "interviewee_email", interviewee)
+        self._store_arg_in_redis(interview_id, 'interviewer_email')
+        self._store_arg_in_redis(interview_id, 'interviewer_name')
+        self._store_arg_in_redis(interview_id, 'interviewee_email')
+        self._store_arg_in_redis(interview_id, 'interviewee_name')
 
-        self.render(
-            'setup_complete.html',
-            interview_id=interview_id,
-            application_state=application_state)
+        self.write({'interviewID': interview_id})

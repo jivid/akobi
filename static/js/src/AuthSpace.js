@@ -39,7 +39,7 @@ var AuthSpace = React.createClass({
       marginTop: '9px',
       marginLeft: '5px',
       width: '97%',
-      height: '35px',
+      height: '38px',
       cursor: 'pointer',
     };
 

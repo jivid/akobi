@@ -71,6 +71,8 @@ def build():
             "static/js/build/Auth.js")
     lrun("browserify static/js/build/AppSpace.js -o "
             "static/js/build/App.js")
+    lrun("browserify static/js/build/MainSpace.js -o "
+            "static/js/build/Main.js")
 
 
 @task
