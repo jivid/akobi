@@ -1,5 +1,6 @@
 import smtplib
 
+from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler
 from validate_email import validate_email
 
@@ -35,7 +36,8 @@ class IndexHandler(RequestHandler):
             msg
         ])
 
-    def _send_interviewer_email(self, smtp_server, interviewer, link):
+    def _send_interviewer_email(self, interviewer, link):
+        smtp_server = self._start_smtp_server()
         body = (
             "You've created an Akobi Interview!\n\n"
             "Here's the link: %s" % (link)
@@ -43,8 +45,10 @@ class IndexHandler(RequestHandler):
 
         email = self._make_email_message(interviewer, body)
         smtp_server.sendmail(self.AKOBI_EMAIL_ADDRESS, interviewer, email)
+        smtp_server.quit()
 
-    def _send_interviewee_email(self, smtp_server, interviewee, link):
+    def _send_interviewee_email(self, interviewee, link):
+        smtp_server = self._start_smtp_server()
         body = (
             "You've been invited to an Akobi Interview!\n\n"
             "Here's the link: %s" % (link)
@@ -52,6 +56,7 @@ class IndexHandler(RequestHandler):
 
         email = self._make_email_message(interviewee, body)
         smtp_server.sendmail(self.AKOBI_EMAIL_ADDRESS, interviewee, email)
+        smtp_server.quit()
 
     def _get_and_store(self, interview_id, arg_key):
         redis = redis_client.get_redis_instance()
@@ -75,15 +80,13 @@ class IndexHandler(RequestHandler):
         self._get_and_store(interview_id, 'interviewee_name')
 
         interview_link = "http://akobi.info/i/%s" % interview_id
-        smtp_server = self._start_smtp_server()
 
         if validate_email(interviewer):
-            self._send_interviewer_email(smtp_server, interviewer,
-                                         interview_link)
+            IOLoop.instance().add_callback(self._send_interviewer_email,
+                                           interviewer, interview_link)
 
         if validate_email(interviewee):
-            self._send_interviewee_email(smtp_server, interviewee,
-                                         interview_link)
+            IOLoop.instance().add_callback(self._send_interviewee_email,
+                                           interviewee, interview_link)
 
-        smtp_server.quit()
         self.write({'interviewID': interview_id})
