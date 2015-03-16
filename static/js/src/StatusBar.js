@@ -12,20 +12,24 @@ var StatusBar = React.createClass({
     interviewee_name: React.PropTypes.string.isRequired,
     timeElapsed: React.PropTypes.number.isRequired,
     onlineStatus: React.PropTypes.bool.isRequired,
+    interval: React.PropTypes.object
   },
 
   getDefaultProps: function() {
     return {
       interviewee_name: 'Steve Osborne',
       interviewer_name: 'Divij Rajkumar',
+      interval: null
     };
   },
 
   getInitialState: function() {
     return {
-      timeElapsed: "0:00:00",
+      timeElapsed: 0,
       onlineStatus: false,
       endInterviewModal: 'hidden',
+      interviewer_name: 'interviewer_name',
+      interviewee_name: 'interviewee_name'
     }
   },
 
@@ -45,7 +49,6 @@ var StatusBar = React.createClass({
     this.setState({
       endInterviewModal: 'visible'
     });
-    this.forceUpdate();
   },
 
   reJoinInterview: function() {
@@ -64,13 +67,35 @@ var StatusBar = React.createClass({
       + (seconds < 10 ? '0' : '') + seconds;
   },
 
-  componentWillReceiveProps: function(nextProps) {
-    var newTime = this.secsToHMS(nextProps.timeElapsed);
+  componentWillMount: function() {
+    EventBus.on("clients_connected", (msg) => {
+      if (this.props.interval == null) {
+        console.log("Clients Joined")
+        this.props.interval = setInterval(this.tick, 1000);
+        this.setState({
+          onlineStatus: true
+        });
+      }
+    });
+
+    EventBus.on("client_disconnected", (msg) => {
+      this.setState({
+        onlineStatus: false
+      });
+    });
+  },
+
+  tick: function() {
     this.setState({
-      timeElapsed: newTime,
+      timeElapsed: this.state.timeElapsed + 1,
+    });
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    this.setState({
       onlineStatus: nextProps.onlineStatus
     });
-    this.forceUpdate();
+    this.forceUpdate()
   },
 
   render: function() {
@@ -101,7 +126,7 @@ var StatusBar = React.createClass({
       'display': 'flex',
       'flexDirection': 'row',
       'alignItems': 'center',
-      'margin-right': '50px'
+      'marginRight': '50px'
     }
 
     var statusImage = ''
@@ -139,13 +164,13 @@ var StatusBar = React.createClass({
       'backgroundColor': '#FFF',
       'textAlign': 'center',
       'padding': '15px',
-      'font-size': '20px',
+      'fontSize': '20px',
       'display': 'flex',
       'flexDirection': 'column'
     };
 
-    var endInterviewLabelText = 'You have left the interview. If this was done in
-      error, press "Re-Join Interview" button below.'
+    var endInterviewLabelText = 'You have left the interview. If this was done in' +
+    ' error, press "Re-Join Interview" button below.'
 
     var reJoinButtonStyle = {
       'cursor':'pointer',
@@ -168,15 +193,15 @@ var StatusBar = React.createClass({
           <img style={{'marginRight':'1175px'}} src='/static/images/akobi.png'></img>
           <div style={nameBarStyle}>
             <img style={{'marginRight': '10px'}} src={statusImage}></img>
-            <label style={childStyle}>{this.props.interviewer_name}</label>
+            <label style={childStyle}>{this.props.interview.interviewerName}</label>
           </div>
           <div style={nameBarStyle}>
             <img style={{'marginRight': '10px'}} src={statusImage}></img>
-            <label style={childStyle} >{this.props.interviewee_name}</label>
+            <label style={childStyle} >{this.props.interview.intervieweeName}</label>
           </div>
           <div style={timeBarStyle}>
             <img style={{'marginRight': '5px'}} src='/static/images/clock.png'></img>
-            <label style={childStyle}>{this.state.timeElapsed}</label>
+            <label style={childStyle}>{this.secsToHMS(this.state.timeElapsed)}</label>
           </div>
           <button type='button' className='endInterview' onClick={this.endInterview}></button>
         </Container>

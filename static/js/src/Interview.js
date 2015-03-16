@@ -9,6 +9,8 @@ class Interview {
 
     this.socket.on('message', (msg) => {
       if (msg.type === 'open_response') {
+        this.interviewerName = msg.data.interviewerName
+        this.intervieweeName = msg.data.intervieweeName
         this.clientID = msg.clientID;
         this.downloadApps(onAppsDownloaded);
       } else {

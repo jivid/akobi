@@ -49,6 +49,7 @@ class InterviewHTTPHandler(RequestHandler):
 5. init_interview is sent to the server
 6. server initializes interview and all apps
 7. interview begins like normal
+8. Server tells
 """
 class InterviewWebSocketHandler(WebSocketHandler):
     def __init__(self, *args, **kwargs):
@@ -79,19 +80,19 @@ class InterviewWebSocketHandler(WebSocketHandler):
         if self.interview_id is None:
             self.interview_id = interview_id
 
+        redis = redis_client.get_redis_instance()
+        interview_key = "interview:%s" % self.interview_id
+
+        interviewer_name = redis.hget(interview_key, "interviewer_name")
+        interviewee_name = redis.hget(interview_key, "interviewee_name")
+
         msg = utils.create_message(msg_type='open_response',
                                    client=self.client_id,
-                                   interview=self.interview_id)
+                                   interview=self.interview_id,
+                                   interviewerName=interviewer_name,
+                                   intervieweeName=interviewee_name)
         self.write_message(msg)
         ongoing_interviews[interview_id].add(self)
-
-        if len(ongoing_interviews[interview_id]) == 2:
-            log.debug("Two clients connected to interview %s" % interview_id)
-            msg = utils.create_message(msg_type='clients_connected',
-                                       client=self.client_id,
-                                       interview=self.interview_id)
-            for client in ongoing_interviews[interview_id]:
-                client.write_message(msg)
 
     def on_message(self, message):
         msg = json.loads(message)
@@ -102,6 +103,15 @@ class InterviewWebSocketHandler(WebSocketHandler):
 
             Initializer.initialize(msg['interviewID'], self)
             self.interview_initialized = True
+
+            if len(ongoing_interviews[self.interview_id]) == 2:
+                log.debug("Two clients connected to interview %s" % self.interview_id)
+                msg = utils.create_message(msg_type='clients_connected',
+                                           client=self.client_id,
+                                           interview=self.interview_id)
+                for client in ongoing_interviews[self.interview_id]:
+                    client.write_message(msg)
+                    log.info(str(client))
             return
 
         elif msg['type'] == "download_apps":
@@ -112,10 +122,14 @@ class InterviewWebSocketHandler(WebSocketHandler):
             registry.register_to_interview(self.interview_id, "Video")
 
             apps = registry.app_names_for_interview(self.interview_id)
+
+
+
             message = utils.create_message(msg_type="download_apps",
                                            client=self.client_id,
                                            interview=self.interview_id,
-                                           applications=apps)
+                                           applications=apps
+                                           )
             self.write_message(message)
             return
 

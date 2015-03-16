@@ -41,25 +41,6 @@ var AppSpace = React.createClass({
     this.setState({
       interview: interview,
     })
-
-    EventBus.on("clients_connected", (msg) => {
-      this.interval = setInterval(this.tick, 1000);
-      this.setState({
-        onlineStatus: true
-      });
-    });
-
-    EventBus.on("client_disconnected", (msg) => {
-      this.setState({
-        onlineStatus: false
-      });
-    });
-  },
-
-  tick: function() {
-    this.setState({
-      timeElapsed: this.state.timeElapsed + 1,
-    });
   },
 
   render: function() {
