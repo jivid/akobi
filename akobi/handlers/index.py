@@ -1,5 +1,6 @@
 import smtplib
 
+from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler
 from validate_email import validate_email
 
@@ -13,90 +14,79 @@ applications.remove("Heartbeat")
 
 
 class IndexHandler(RequestHandler):
-    def get(self, *args, **kwargs):
-        self.render('index.html', applications=applications)
+    SMTP_SERVER = 'smtp.gmail.com:587'
+    AKOBI_EMAIL_ADDRESS = 'AkobiInterview@gmail.com'
+    AKOBI_EMAIL_PASSWORD = 'AppleOrange'
+    AKOBI_EMAIL_SUBJECT = 'Akobi Interview'
 
-
-class TestHandler(RequestHandler):
-    def get(self, *args, **kwargs):
-        self.render('test.html')
-
-
-class SetupHandler(RequestHandler):
-
-    # SMTP Server Credentials
-    smtp_username = 'AkobiInterview@gmail.com'
-    smtp_password = 'AppleOrange'
-
-    # Email fields
-    akobi_email_addr = 'AkobiInterview@gmail.com'
-    akobi_email_subject = 'Akobi Interview'
-
-    def start_smtp_server(self):
-        server = smtplib.SMTP('smtp.gmail.com:587')
+    def _start_smtp_server(self):
+        server = smtplib.SMTP(self.SMTP_SERVER)
         server.ehlo()
         server.starttls()
-        server.login(self.smtp_username, self.smtp_password)
+        server.login(self.AKOBI_EMAIL_ADDRESS, self.AKOBI_EMAIL_PASSWORD)
 
         return server
 
-    def send_interviewee_email(self, smpt_server, interviewee, link):
-        body = "You've been invited to an Akobi Interview! %s" % (link)
-        msg = "\r\n".join([
-          "From: %s" % self.akobi_email_addr,
-          "To: %s" % interviewee,
-          "Subject: %s" % self.akobi_email_subject,
-          "",
-          body
-          ])
-        smpt_server.sendmail(self.akobi_email_addr, interviewee, msg)
+    def _make_email_message(self, to_addr, msg):
+        return "\r\n".join([
+            "From: %s" % self.AKOBI_EMAIL_ADDRESS,
+            "To: %s" % to_addr,
+            "Subject: %s" % self.AKOBI_EMAIL_SUBJECT,
+            "",
+            msg
+        ])
 
-    def send_interviewer_email(self, smtp_server, interviewer, link):
-        body = "You've created an Akobi Interview! %s" % (link)
-        msg = "\r\n".join([
-          "From: %s" % self.akobi_email_addr,
-          "To: %s" % interviewer,
-          "Subject: %s" % self.akobi_email_subject,
-          "",
-          body
-          ])
-        smtp_server.sendmail(self.akobi_email_addr, interviewer, msg)
+    def _send_interviewer_email(self, interviewer, link):
+        smtp_server = self._start_smtp_server()
+        body = (
+            "You've created an Akobi Interview!\n\n"
+            "Here's the link: %s" % (link)
+        )
 
-    def get(self, *args, **kwargs):
-
-        # HTML checkboxes pass nothing if they are unchecked
-        application_state = {}
-        interviewer = self.get_query_argument('interviewer_email')
-        interviewee = self.get_query_argument('interviewee_email')
-
-        for application in applications:
-            if self.get_query_argument(application, None):
-                application_state[application] = self.get_query_argument(
-                    application)
-
-        # TODO: We should probably do this more like a product serial than
-        # just a random id.
-        interview_id = make_random_string()
-
-        redis = redis_client.get_redis_instance()
-        interview_key = "interview:%s" % (interview_id)
-        redis.hset(interview_key, "interviewer_email", interviewer)
-        redis.hset(interview_key, "interviewee_email", interviewee)
-
-        interview_link = "http://akobi.info/i/%s" % (interview_id)
-
-        smtp_server = self.start_smtp_server()
-        if (validate_email(interviewee)):
-            self.send_interviewee_email(smtp_server, interviewee,
-                                        interview_link)
-
-        if (validate_email(interviewer)):
-            self.send_interviewer_email(smtp_server, interviewer,
-                                        interview_link)
+        email = self._make_email_message(interviewer, body)
+        smtp_server.sendmail(self.AKOBI_EMAIL_ADDRESS, interviewer, email)
         smtp_server.quit()
 
-        # TODO: This page to be removed
-        self.render(
-            'setup_complete.html',
-            interview_id=interview_id,
-            application_state=application_state)
+    def _send_interviewee_email(self, interviewee, link):
+        smtp_server = self._start_smtp_server()
+        body = (
+            "You've been invited to an Akobi Interview!\n\n"
+            "Here's the link: %s" % (link)
+        )
+
+        email = self._make_email_message(interviewee, body)
+        smtp_server.sendmail(self.AKOBI_EMAIL_ADDRESS, interviewee, email)
+        smtp_server.quit()
+
+    def _get_and_store(self, interview_id, arg_key):
+        redis = redis_client.get_redis_instance()
+        interview_key = "interview:%s" % interview_id
+
+        arg_value = self.get_argument(arg_key)
+        redis.hset(interview_key, arg_key, arg_value)
+
+        return arg_value
+
+    def get(self, *args, **kwargs):
+        self.render('index.html')
+
+    def post(self, *args, **kwargs):
+        interview_id = make_random_string()
+
+        interviewer = self._get_and_store(interview_id, 'interviewer_email')
+        interviewee = self._get_and_store(interview_id, 'interviewee_email')
+
+        self._get_and_store(interview_id, 'interviewer_name')
+        self._get_and_store(interview_id, 'interviewee_name')
+
+        interview_link = "http://akobi.info/i/%s" % interview_id
+
+        if validate_email(interviewer):
+            IOLoop.instance().add_callback(self._send_interviewer_email,
+                                           interviewer, interview_link)
+
+        if validate_email(interviewee):
+            IOLoop.instance().add_callback(self._send_interviewee_email,
+                                           interviewee, interview_link)
+
+        self.write({'interviewID': interview_id})
