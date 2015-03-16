@@ -104,21 +104,19 @@ var StatusBar = React.createClass({
       'margin-right': '50px'
     }
 
-    var onlineStatusStyle = {
-      'borderRadius': '50%',
-      'width': '25px',
-      'height': '25px',
-      'verticalAlign': 'middle',
-      'margin': '5px',
-    };
     var statusImage = ''
     if (this.state.onlineStatus) {
       statusImage = '/static/images/puter_online.png'
-      onlineStatusStyle['background'] = '#209531'
     }
     else {
       statusImage = '/static/images/puter.png'
-      onlineStatusStyle['background'] = '#E02A2A'
+    }
+
+    var nameBarStyle = {
+      'marginRight': '50px',
+      'display': 'flex',
+      'justifyContent': 'center',
+      'width': '200px'
     }
 
     var endInterviewOverlayStyle = {
@@ -128,7 +126,7 @@ var StatusBar = React.createClass({
       'position': 'absolute',
       'left': '0px',
       'top': '0px',
-      'backgroundColor': 'rgba(0, 0, 0, 0.5)',
+      'backgroundColor': 'rgba(0, 0, 0, 0.7)',
       'visibility': this.state.endInterviewModal,
     };
 
@@ -138,31 +136,47 @@ var StatusBar = React.createClass({
       'width': '425px',
       'top': '35%',
       'left': '40%',
-      'backgroundColor': '#32A8CF',
+      'backgroundColor': '#FFF',
       'textAlign': 'center',
+      'padding': '15px',
+      'font-size': '20px',
+      'display': 'flex',
+      'flexDirection': 'column'
     };
 
-    var onlineStatusTextStyle = {
-      'verticalAlign': 'middle',
-      'margin': '5px',
-      'float': 'right',
-    };
+    var endInterviewLabelText = 'You have left the interview. If this was done in
+      error, press "Re-Join Interview" button below.'
+
+    var reJoinButtonStyle = {
+      'cursor':'pointer',
+      'marginBottom': '10px',
+      'padding': '10px',
+      'fontSize': '18px',
+      'backgroundColor': '#4C80A3'
+    }
+
+    var leaveInterviewStyle = {
+      'cursor':'pointer',
+      'padding': '10px',
+      'fontSize': '18px',
+      'backgroundColor': '#F9726D'
+    }
 
     return (
       <div>
         <Container style={containerStyle} >
-          <img style={{'marginRight':'1375px'}} src='/static/images/akobi.png'></img>
-          <div style={{ 'marginRight': '50px', 'display': 'flex'}}>
+          <img style={{'marginRight':'1175px'}} src='/static/images/akobi.png'></img>
+          <div style={nameBarStyle}>
             <img style={{'marginRight': '10px'}} src={statusImage}></img>
-            <label style={childStyle} name='interviewer_name_label'>{this.props.interviewer_name}</label>
+            <label style={childStyle}>{this.props.interviewer_name}</label>
           </div>
-          <div style={{'marginRight': '50px', 'display': 'flex'}}>
+          <div style={nameBarStyle}>
             <img style={{'marginRight': '10px'}} src={statusImage}></img>
-            <label style={childStyle} name='interviewee_name_label'>{this.props.interviewee_name}</label>
+            <label style={childStyle} >{this.props.interviewee_name}</label>
           </div>
           <div style={timeBarStyle}>
             <img style={{'marginRight': '5px'}} src='/static/images/clock.png'></img>
-            <label style={childStyle} name='time_elapsed_label'>{this.state.timeElapsed}</label>
+            <label style={childStyle}>{this.state.timeElapsed}</label>
           </div>
           <button type='button' className='endInterview' onClick={this.endInterview}></button>
         </Container>
@@ -170,9 +184,9 @@ var StatusBar = React.createClass({
             <Container
               rounded={'medium'}
               style={endInterviewModalStyle}>
-                <label>You have left the interview. If this was done in error, select 'Re-join Interview' below</label>
-                <button type='button' onClick={this.reJoinInterview}>Re-Join Interview</button>
-                <button type='button' onClick={this.exitInterview}>Leave Interview</button>
+                <label style={{'marginTop': '100px', 'marginBottom':'60px'}}>{endInterviewLabelText}</label>
+                <button style={reJoinButtonStyle} className='button' type='button' onClick={this.reJoinInterview}>Re-Join Interview</button>
+                <button style={leaveInterviewStyle} className='button' type='button' onClick={this.exitInterview}>Leave Interview</button>
             </Container>
         </Container>
       </div>

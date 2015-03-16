@@ -75,20 +75,6 @@ var AppSpace = React.createClass({
       'height': '800px'
     }
 
-    var flexRowContainer = {
-      'display': 'flex',
-      'justifyContent': 'flex-start',
-      'flexFlow': 'row wrap',
-      'alignItems': 'flex-start'
-    }
-
-    var flexColContainer = {
-      'display': 'flex',
-      'justifyContent': 'flex-start',
-      'flexFlow': 'column wrap',
-      'alignItems': 'flex-start'
-    }
-
     return (
       <div>
         <div>
