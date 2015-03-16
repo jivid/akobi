@@ -46,7 +46,7 @@ var AppSpace = React.createClass({
           <Collabedit interview={this.state.interview}/>
         </div>
         <div style={{float:"left", width:"49%", height:"387px", margin:"0.5%"}}>
-          <Notes />
+          <Notes interview={this.state.interview} content="You can take private interview notes that will be emailed to you when the interview is finished."/>
         </div>
       </div>
     );

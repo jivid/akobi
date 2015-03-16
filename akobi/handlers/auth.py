@@ -29,10 +29,17 @@ class AuthHandler(RequestHandler):
 
         interviewer = redis.hget(interview_key, "interviewer_email")
         interviewee = redis.hget(interview_key, "interviewee_email")
+
         if not email == interviewer and not email == interviewee:
             log.error("Email doesn't validate")
             self._send_error("Invalid Email")
             return
+
+        # If you're an interviewer append '1' to the cookie
+        # If you're an interviewee append '0' to the cookie
+        is_interviewer = 0
+        if email == interviewer:
+            is_interviewer = 1
 
         log.info("Email validation successful")
         session_id = make_random_string()
@@ -42,7 +49,7 @@ class AuthHandler(RequestHandler):
         redis.set(session_key, interview)
         redis.expire(session_key, 3600)
 
-        cookie = "%s$%s" % (interview, session_id)
+        cookie = "%s$%s$%s" % (interview, session_id, is_interviewer)
         expiry = time.time() + 3600
         self.set_cookie('_sessionid', cookie, expires=expiry)
 

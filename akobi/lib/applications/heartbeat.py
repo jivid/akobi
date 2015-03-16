@@ -26,4 +26,7 @@ class HeartbeatApplication(BaseApplication):
         redis.hset("heartbeat", client_id, message['datetime'])
         log.debug(redis.hget("heartbeat", client_id))
 
+    def on_client_leave(self, *args, **kwargs):
+        log.info("on_client_leave for heartbeat")
+
 registry.register("Heartbeat", HeartbeatApplication)

@@ -47,6 +47,7 @@ class CollabEditHandler(BaseApplication):
             self.state += 1
 
     def on_client_leave(self, socket, *args, **kwargs):
+        log.info("on_client_leave for collabedit")
         self.state = CollabEditHandler.PRE_INTERVIEW
         self.sockets.remove(socket)
 
