@@ -30,6 +30,7 @@ var AceEditor = React.createClass({
     language: React.PropTypes.oneOf(Languages),
     theme: React.PropTypes.oneOf(Themes),
     lineWrap: React.PropTypes.number,
+    printMargin: React.PropTypes.bool,
     editorWidth: React.PropTypes.string,
     editorHeight: React.PropTypes.string,
     showLineNumbers: React.PropTypes.bool,
@@ -43,6 +44,7 @@ var AceEditor = React.createClass({
       editorWidth: '100%',
       editorHeight: '100%',
       showLineNumbers: true,
+      printMargin: true,
     }
   },
 
@@ -65,11 +67,11 @@ var AceEditor = React.createClass({
       'ace/theme/' + theme :
       null;
   },
-  
+
   getCurrentCursorPosition: function() {
     return this.editor.getCursorPosition();
   },
-  
+
   setCurrentCursorPosition: function(cursor) {
     this.editor.moveCursorToPosition(cursor);
   },
@@ -79,7 +81,7 @@ var AceEditor = React.createClass({
    * options supplied in the component state. Expects an
    * editor and editorSession to be attached to the component.
    */
-  setupEditor: function(aceMode, aceTheme, showLineNumbers, lineWrap) {
+  setupEditor: function(aceMode, aceTheme, showLineNumbers, lineWrap, printMargin) {
     if (!this.editor || !this.editorSession) {
       return;
     }
@@ -91,6 +93,9 @@ var AceEditor = React.createClass({
     if (lineWrap) {
       this.editor.setOption('wrap', lineWrap);
     }
+    if (!printMargin) {
+      this.editor.setShowPrintMargin(false);
+    }
   },
 
   setupEditorFromState: function() {
@@ -98,7 +103,8 @@ var AceEditor = React.createClass({
       this.aceMode(this.state.language),
       this.aceTheme(this.state.theme),
       this.props.showLineNumbers,
-      this.state.lineWrap
+      this.state.lineWrap,
+      this.props.printMargin
     );
     var cursor = this.editor.getCursorPosition();
     this.editor.session.setValue(this.state.content);
@@ -160,13 +166,13 @@ var AceEditor = React.createClass({
       </div>
     );
   },
-  
+
   componentDidMount: function() {
     this.editor = ace.edit(this.refs.editor.getDOMNode());
     this.editorSession = this.editor.getSession();
     this.setupEditorFromState();
   },
-  
+
   componentWillReceiveProps: function(nextProps) {
     this.setState({
        language: nextProps.language,

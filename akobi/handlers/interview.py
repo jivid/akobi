@@ -19,7 +19,7 @@ class InterviewHTTPHandler(RequestHandler):
         self.redirect(auth_url)
 
     def get(self, interview_id, *args, **kwargs):
-        if not "_sessionid" in self.cookies:
+        if "_sessionid" not in self.cookies:
             self._redirect_to_auth(interview_id)
             return
 
@@ -56,6 +56,7 @@ class InterviewWebSocketHandler(WebSocketHandler):
         self.client_id = None
         self.interview_id = None
         self.interview_initialized = False
+        self.role = None
 
     def write_message(self, msg, *args, **kwargs):
         """ Thin wrapper around write_message to dump a dict to string before
@@ -110,6 +111,12 @@ class InterviewWebSocketHandler(WebSocketHandler):
             self.write_message(message)
             return
 
+        elif msg['type'] == "notes" and self.role is None:
+            # TODO: Rethink client_id to email mapping for now we capture
+            # the role on each notes message so we can email notes to
+            # each participant when they leave the interview
+            self.role = msg['data']['role']
+
         if self.interview_initialized is True:
             app = utils.app_name_from_msg(msg)
             application = registry.find(msg['interviewID'], app)
@@ -122,5 +129,9 @@ class InterviewWebSocketHandler(WebSocketHandler):
 
         for app_name in live_apps:
             utils.function_as_callback(live_apps[app_name].on_client_leave,
-                                       self)
+                                       self,
+                                       interview_id=self.interview_id,
+                                       client_id=self.client_id,
+                                       role=self.role)
+
         log.info("Web socket connection closed.")
