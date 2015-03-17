@@ -31,12 +31,12 @@ def make_email_message(to_addr, msg):
     ])
 
 
-def send_email(interviewer, msg_body):
-    if not validate_email(interviewer):
+def send_email(email_addr, msg_body):
+    if not validate_email(email_addr):
         return
     smtp_server = start_smtp_server()
-    email = make_email_message(interviewer, msg_body)
-    smtp_server.sendmail(AKOBI_EMAIL_ADDRESS, interviewer, email)
+    email = make_email_message(email_addr, msg_body)
+    smtp_server.sendmail(AKOBI_EMAIL_ADDRESS, email_addr, email)
     smtp_server.quit()
 
 

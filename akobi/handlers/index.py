@@ -2,9 +2,8 @@ from tornado.web import RequestHandler
 
 from akobi.lib.applications.registry import registry
 from akobi.lib.redis_client import redis_client
-from akobi.lib.utils import function_as_callback
-from akobi.lib.utils import make_random_string
-from akobi.lib.utils import send_email
+from akobi.lib.utils import function_as_callback, \
+    make_random_string, send_email
 
 
 applications = registry.available.keys()

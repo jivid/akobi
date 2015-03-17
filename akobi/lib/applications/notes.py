@@ -2,8 +2,7 @@ from akobi import log
 from akobi.lib.applications.base import BaseApplication
 from akobi.lib.applications.registry import registry
 from akobi.lib.redis_client import redis_client
-from akobi.lib.utils import function_as_callback
-from akobi.lib.utils import send_email
+from akobi.lib.utils import function_as_callback, send_email
 
 
 class NotesApplication(BaseApplication):
@@ -29,11 +28,8 @@ class NotesApplication(BaseApplication):
         redis = redis_client.get_redis_instance()
 
         # If you're an interviewer = '1', interviewee = '0'
-        email = ""
-        if role == 1:
-            email = redis.hget(interview_key, "interviewer_email")
-        else:
-            email = redis.hget(interview_key, "interviewee_email")
+        hkey = 'interviewer_email' if role == 1 else 'interviewee_email'
+        email = redis.hget(interview_key, hkey)
 
         body = ("Thanks for interviewing with Akobi!\n\n"
                 "Here's your notes:\n\n%s" %
