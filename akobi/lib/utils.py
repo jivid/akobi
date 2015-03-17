@@ -1,9 +1,43 @@
 import datetime
 import random
+import smtplib
 
 from tornado.ioloop import IOLoop
+from validate_email import validate_email
 
 from akobi.lib.applications.base import BaseApplication
+
+SMTP_SERVER = 'smtp.gmail.com:587'
+AKOBI_EMAIL_ADDRESS = 'AkobiInterview@gmail.com'
+AKOBI_EMAIL_PASSWORD = 'AppleOrange'
+AKOBI_EMAIL_SUBJECT = 'Akobi Interview'
+
+
+def start_smtp_server():
+    server = smtplib.SMTP(SMTP_SERVER)
+    server.ehlo()
+    server.starttls()
+    server.login(AKOBI_EMAIL_ADDRESS, AKOBI_EMAIL_PASSWORD)
+    return server
+
+
+def make_email_message(to_addr, msg):
+    return "\r\n".join([
+        "From: %s" % AKOBI_EMAIL_ADDRESS,
+        "To: %s" % to_addr,
+        "Subject: %s" % AKOBI_EMAIL_SUBJECT,
+        "",
+        msg
+    ])
+
+
+def send_email(email_addr, msg_body):
+    if not validate_email(email_addr):
+        return
+    smtp_server = start_smtp_server()
+    email = make_email_message(email_addr, msg_body)
+    smtp_server.sendmail(AKOBI_EMAIL_ADDRESS, email_addr, email)
+    smtp_server.quit()
 
 
 def app_name_from_msg(msg):

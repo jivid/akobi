@@ -40,6 +40,7 @@ class VideoApplication(BaseApplication):
                 socket.write_message(message)
 
     def on_client_leave(self, socket, *args, **kwargs):
+        log.info("on_client_leave for video")
         self.sockets.remove(socket)
 
 
