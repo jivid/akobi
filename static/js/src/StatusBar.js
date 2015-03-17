@@ -8,17 +8,15 @@ var update = React.addons.update;
 
 var StatusBar = React.createClass({
   propTypes: {
-    interviewer_name: React.PropTypes.string.isRequired,
-    interviewee_name: React.PropTypes.string.isRequired,
     timeElapsed: React.PropTypes.number.isRequired,
     onlineStatus: React.PropTypes.bool.isRequired,
+    interviewer_name: React.PropTypes.string,
+    interviewee_name: React.PropTypes.string,
     interval: React.PropTypes.object
   },
 
   getDefaultProps: function() {
     return {
-      interviewee_name: 'Steve Osborne',
-      interviewer_name: 'Divij Rajkumar',
       interval: null
     };
   },
@@ -34,10 +32,6 @@ var StatusBar = React.createClass({
   },
 
   endInterview: function() {
-    if (!this.state.onlineStatus) {
-      return;
-    }
-
     var msg = {
       type: 'end_interview',
       clientID: this.props.interview.clientID,
@@ -70,12 +64,11 @@ var StatusBar = React.createClass({
   componentWillMount: function() {
     EventBus.on("clients_connected", (msg) => {
       if (this.props.interval == null) {
-        console.log("Clients Joined")
         this.props.interval = setInterval(this.tick, 1000);
-        this.setState({
-          onlineStatus: true
-        });
       }
+      this.setState({
+          onlineStatus: true
+       });
     });
 
     EventBus.on("client_disconnected", (msg) => {
@@ -102,46 +95,76 @@ var StatusBar = React.createClass({
 
     var containerStyle = {
       'width': '100%',
-      'height': '25px',
+      'height': '55px',
       'backgroundColor': '#F9726D',
-      'padding': '15px',
       'display': 'flex',
       'flexDirection': 'row',
       'alignItems': 'center',
       'fontSize': '16px'
     };
 
+    var akobiLogoStyle = {
+      'overflow': 'hidden',
+      'width': '100px',
+      'height': '28px',
+      'paddingLeft' : '15px',
+    };
+
+    // flex containers for status bar components
+    var onlineStatusContainer = {
+      'display': 'flex',
+      'flexDirection': 'row',
+      'justifyContent': 'flex-end',
+      'width': '70%',
+      'marginRight': '0.5%'
+    };
+
+    var timeContainer = {
+      'display': 'flex',
+      'flexDirection': 'row',
+      'justifyContent': 'flex-start',
+      'alignItems': 'center',
+      'width': '6%',
+    };
+
     var childStyle = {
       'margin': '5px',
     };
-
-    var buttonBarStyle = {
-      'display': 'flex',
-      'flexDirection': 'row',
-      'alignItems': 'center',
-      'marginRight': '1050px'
-    }
 
     var timeBarStyle = {
       'display': 'flex',
       'flexDirection': 'row',
       'alignItems': 'center',
-      'marginRight': '50px'
     }
 
-    var statusImage = ''
+    // I'm always online.
+    var myStatus = '/static/images/puter_online.png'
+    var theirStatus;
+    
+    // They are online if the interview has started.
     if (this.state.onlineStatus) {
-      statusImage = '/static/images/puter_online.png'
+      theirStatus = '/static/images/puter_online.png'
     }
     else {
-      statusImage = '/static/images/puter.png'
+      theirStatus = '/static/images/puter.png'
+    }
+    
+    // Determine who I am and give me the right status.
+    var intervieweeImage;
+    var interviewerImage;
+    if (document.cookie.charAt(document.cookie.length - 1) === '1') {
+        intervieweeImage = myStatus;
+        interviewerImage = theirStatus;
+    } else {
+        intervieweeImage = theirStatus;
+        interviewerImage = myStatus;
+
     }
 
     var nameBarStyle = {
-      'marginRight': '50px',
+      'marginRight': '2em',
       'display': 'flex',
       'justifyContent': 'center',
-      'width': '200px'
     }
 
     var endInterviewOverlayStyle = {
@@ -190,20 +213,32 @@ var StatusBar = React.createClass({
     return (
       <div>
         <Container style={containerStyle} >
-          <img style={{'marginRight':'1175px'}} src='/static/images/akobi.png'></img>
-          <div style={nameBarStyle}>
-            <img style={{'marginRight': '10px'}} src={statusImage}></img>
-            <label style={childStyle}>{this.props.interview.interviewerName}</label>
+          <div>
+            <div style={akobiLogoStyle}>
+              <img src='/static/images/akobi.png'></img>
+            </div>
           </div>
-          <div style={nameBarStyle}>
-            <img style={{'marginRight': '10px'}} src={statusImage}></img>
-            <label style={childStyle} >{this.props.interview.intervieweeName}</label>
+          <div style={onlineStatusContainer}>
+            <div style={nameBarStyle}>
+              <img style={{'marginRight': '1em'}} src={interviewerImage}></img>
+              <label style={childStyle}>{this.props.interview.interviewerName}</label>
+            </div>
+            <div style={nameBarStyle}>
+              <img style={{'marginRight': '1em'}} src={intervieweeImage}></img>
+              <label style={childStyle} >{this.props.interview.intervieweeName}</label>
+            </div>
           </div>
-          <div style={timeBarStyle}>
-            <img style={{'marginRight': '5px'}} src='/static/images/clock.png'></img>
-            <label style={childStyle}>{this.secsToHMS(this.state.timeElapsed)}</label>
+          <div style={timeContainer}>
+            <div style={timeBarStyle}>
+              <img style={{'marginRight': '5px'}} src='/static/images/clock.png'></img>
+              <label style={childStyle}>{this.secsToHMS(this.state.timeElapsed)}</label>
+            </div>
           </div>
-          <button type='button' className='endInterview' onClick={this.endInterview}></button>
+          <div style={{'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'flex-start', 'marginLeft' : '5%', 'alignItems': 'center'}}>
+            <div>
+              <button type='button' className='endInterview' onClick={this.endInterview}></button>
+            </div>
+          </div>
         </Container>
         <Container style={endInterviewOverlayStyle}>
             <Container

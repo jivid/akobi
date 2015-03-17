@@ -65,7 +65,9 @@ class VideoLogic {
     });
 
     EventBus.on("end_interview", (msg) => {
-      this.closeConnection();
+      if (this.pc) {
+        this.closeConnection();
+      }
     })
 
     this.getLocalStream();
@@ -153,7 +155,6 @@ class VideoLogic {
   };
 
   closeConnection() {
-    //this.localVideo.pause();
     this.pc.close();
   };
 

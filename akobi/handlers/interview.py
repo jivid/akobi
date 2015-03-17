@@ -49,7 +49,8 @@ class InterviewHTTPHandler(RequestHandler):
 5. init_interview is sent to the server
 6. server initializes interview and all apps
 7. interview begins like normal
-8. Server tells
+8. Server sends clients_connected to all clients indicating all clients
+   connected
 """
 class InterviewWebSocketHandler(WebSocketHandler):
     def __init__(self, *args, **kwargs):
@@ -111,7 +112,6 @@ class InterviewWebSocketHandler(WebSocketHandler):
                                            interview=self.interview_id)
                 for client in ongoing_interviews[self.interview_id]:
                     client.write_message(msg)
-                    log.info(str(client))
             return
 
         elif msg['type'] == "download_apps":
@@ -122,14 +122,10 @@ class InterviewWebSocketHandler(WebSocketHandler):
             registry.register_to_interview(self.interview_id, "Video")
 
             apps = registry.app_names_for_interview(self.interview_id)
-
-
-
             message = utils.create_message(msg_type="download_apps",
                                            client=self.client_id,
                                            interview=self.interview_id,
-                                           applications=apps
-                                           )
+                                           applications=apps)
             self.write_message(message)
             return
 
