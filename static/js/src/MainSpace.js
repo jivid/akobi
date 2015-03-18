@@ -40,7 +40,6 @@ var MainSpace = React.createClass({
 
     return (
       <Container
-          centered={true}
           background='#FFFFFF'
           width='19em'
           rounded='medium'
@@ -87,13 +86,19 @@ var MainSpace = React.createClass({
 
     var createButtonStyles = {
       marginTop: '50px',
-      marginLeft: '567px',
-      width: '20%',
+      width: '100%',
       height: '38px',
       cursor: 'pointer',
       background: '#F9726D',
     };
 
+    var infoBoxesStyles = {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'flex-start',
+    };
 
     return (
       <div>
@@ -109,17 +114,20 @@ var MainSpace = React.createClass({
           </Container>
         </Container>
 
-        <div style={{display: 'flex'}}>
-          <div style={{marginRight: '-300px', marginLeft: '380px'}}>
+        <div style={infoBoxesStyles}>
+          <div style={{marginRight: '100px'}}>
             {this.getBox('interviewer')}
           </div>
 
           {this.getBox('interviewee')}
         </div>
-        <Button
-          style={createButtonStyles}
-          onClick={this.createInterview}
-          text='CREATE INTERVIEW'/>
+        <div style={{width: '20%'}} className='centered'>
+            <Button
+                style={createButtonStyles}
+                onClick={this.createInterview}
+                text='CREATE INTERVIEW'
+            />
+        </div>
       </div>
     );
   },
