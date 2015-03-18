@@ -197,8 +197,8 @@ var Video = React.createClass({
     var localVideoStyle = {
       'background' : '#292d30',
       'position' : 'absolute',
-      'width' : '208px',
-      'height' : '155px',
+      'width' : '25%',
+      'height' : '28%',
       'bottom' : '5px',
       'right' : '5px',
     }
