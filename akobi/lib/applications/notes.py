@@ -27,10 +27,10 @@ class NotesApplication(BaseApplication):
 
         redis = redis_client.get_redis_instance()
 
-        # If you're an interviewer = '1', interviewee = '0'
+        # If you're an interviewer = '0', interviewee = '1'
         hkey = 'interviewer_email' if role == 1 else 'interviewee_email'
         email = redis.hget(interview_key, hkey)
-
+        log.info("Sending an email for %s" % email)
         body = ("Thanks for interviewing with Akobi!\n\n"
                 "Here's your notes:\n\n%s" %
                 redis.hget("notes", client_id))
