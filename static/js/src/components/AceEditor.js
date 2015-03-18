@@ -137,6 +137,7 @@ var AceEditor = React.createClass({
     }
     var languageSelector =
       <select
+        style={{background: '#2C3029', color: 'white'}}
         onChange={onLanguageChange.bind(this)}
         defaultValue={this.state.language}
         value={this.state.language || 'plaintext'}>
@@ -158,7 +159,8 @@ var AceEditor = React.createClass({
     }
 
     var editorControls =
-      <Container style={topBarStyle} background='#2C3029'>
+
+      <Container background='#2C3029' style={topBarStyle}>
         {this.getLanguageSelector()}
       </Container>;
 
