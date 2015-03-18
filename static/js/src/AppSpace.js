@@ -73,7 +73,7 @@ var AppSpace = React.createClass({
             <div style={{float:"left", width:"49%", height:"387px", margin:"0.5%"}}>
               <Notes
                 interview={this.state.interview}
-                content="You can take private interview notes that will be emailed to you when the interview is finished."/>
+                content="Notes: Your private notes will be emailed to you at the end."/>
             </div>
           </Container>
         </div>
