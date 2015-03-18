@@ -50,10 +50,11 @@ var AppSpace = React.createClass({
 
     var transparentStyle = {
       'backgroundColor': 'rgba(0, 0, 0, 0.5)',
-      'paddingLeft': '50px',
-      'paddingRight': '50px',
+      'paddingLeft': '20px',
+      'paddingRight': '20px',
       'paddingTop': '25px',
-      'height': '800px'
+      'height': '800px',
+      'width': '92%'
     }
 
     return (
@@ -61,15 +62,15 @@ var AppSpace = React.createClass({
         <div>
           <StatusBar timeElapsed={this.state.timeElapsed} onlineStatus={this.state.onlineStatus} interview={this.state.interview}/>
         </div>
-        <div style={{paddingTop:"55px", paddingLeft:"10%", paddingRight:"10%"}}>
+        <div style={{paddingTop:"55px", 'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center'}}>
           <Container style={transparentStyle} rounded="medium">
-            <div style={{float:"left", width:"53%", margin:"0.5%"}}>
+            <div style={{float:"left", width:"49%", margin:"0.5%"}}>
               <Video interview={this.state.interview}/>
             </div>
-            <div style={{float:"right", width:"45%", height:"750px", margin:"0.5%"}}>
+            <div style={{float:"right", width:"49%", height:"750px", margin:"0.5%"}}>
               <Collabedit interview={this.state.interview}/>
             </div>
-            <div style={{float:"left", width:"53%", height:"387px", margin:"0.5%"}}>
+            <div style={{float:"left", width:"49%", height:"387px", margin:"0.5%"}}>
               <Notes
                 interview={this.state.interview}
                 content="Notes: Your private notes will be emailed to you at the end."/>

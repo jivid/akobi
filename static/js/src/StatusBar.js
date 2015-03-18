@@ -140,7 +140,7 @@ var StatusBar = React.createClass({
     // I'm always online.
     var myStatus = '/static/images/puter_online.png'
     var theirStatus;
-    
+
     // They are online if the interview has started.
     if (this.state.onlineStatus) {
       theirStatus = '/static/images/puter_online.png'
@@ -148,7 +148,7 @@ var StatusBar = React.createClass({
     else {
       theirStatus = '/static/images/puter.png'
     }
-    
+
     // Determine who I am and give me the right status.
     var intervieweeImage;
     var interviewerImage;
@@ -176,14 +176,15 @@ var StatusBar = React.createClass({
       'top': '0px',
       'backgroundColor': 'rgba(0, 0, 0, 0.7)',
       'visibility': this.state.endInterviewModal,
+      'display': 'flex',
+      'alignItems': 'center',
+      'justifyContent': 'center',
     };
 
     var endInterviewModalStyle = {
       'position': 'relative',
-      'height': '350px',
-      'width': '425px',
-      'top': '35%',
-      'left': '40%',
+      'height': '320px',
+      'width': '25%',
       'backgroundColor': '#FFF',
       'textAlign': 'center',
       'padding': '15px',

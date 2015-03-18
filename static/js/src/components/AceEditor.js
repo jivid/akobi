@@ -151,13 +151,21 @@ var AceEditor = React.createClass({
     var editorName = this.props.name.trim().toLowerCase().replace(' ', '-');
     var id = "ace-editor-" + editorName;
 
+    var topBarStyle = {
+      'height': '33px',
+      'display': 'flex',
+      'alignItems': 'center',
+      'justifyContent': 'flex-start',
+      'paddingLeft': '5px',
+    }
+
     var editorControls =
-      <Container background='#2C3029' style={{padding: '5px'}}>
+      <Container background='#2C3029' style={topBarStyle}>
         {this.getLanguageSelector()}
       </Container>;
 
     return (
-      <div style={{width: this.props.editorWidth}}>
+      <div style={{ 'width': this.props.editorWidth}}>
         {this.props.showEditorControls ? editorControls : null}
         <div
           ref='editor'
