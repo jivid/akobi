@@ -49,6 +49,8 @@ class InterviewHTTPHandler(RequestHandler):
 5. init_interview is sent to the server
 6. server initializes interview and all apps
 7. interview begins like normal
+8. Server sends clients_connected to all clients indicating all clients
+   connected
 """
 class InterviewWebSocketHandler(WebSocketHandler):
     def __init__(self, *args, **kwargs):
@@ -79,9 +81,17 @@ class InterviewWebSocketHandler(WebSocketHandler):
         if self.interview_id is None:
             self.interview_id = interview_id
 
+        redis = redis_client.get_redis_instance()
+        interview_key = "interview:%s" % self.interview_id
+
+        interviewer_name = redis.hget(interview_key, "interviewer_name")
+        interviewee_name = redis.hget(interview_key, "interviewee_name")
+
         msg = utils.create_message(msg_type='open_response',
                                    client=self.client_id,
-                                   interview=self.interview_id)
+                                   interview=self.interview_id,
+                                   interviewerName=interviewer_name,
+                                   intervieweeName=interviewee_name)
         self.write_message(msg)
         ongoing_interviews[interview_id].add(self)
 
@@ -94,6 +104,14 @@ class InterviewWebSocketHandler(WebSocketHandler):
 
             Initializer.initialize(msg['interviewID'], self)
             self.interview_initialized = True
+
+            if len(ongoing_interviews[self.interview_id]) == 2:
+                log.debug("Two clients connected to interview %s" % self.interview_id)
+                msg = utils.create_message(msg_type='clients_connected',
+                                           client=self.client_id,
+                                           interview=self.interview_id)
+                for client in ongoing_interviews[self.interview_id]:
+                    client.write_message(msg)
             return
 
         elif msg['type'] == "download_apps":
@@ -116,11 +134,19 @@ class InterviewWebSocketHandler(WebSocketHandler):
             # the role on each notes message so we can email notes to
             # each participant when they leave the interview
             self.role = msg['data']['role']
+        elif msg['type'] == "end_interview":
+            log.debug("Closing websocket for client %s" % self.client_id)
+            self.manual_close()
+            return
 
         if self.interview_initialized is True:
             app = utils.app_name_from_msg(msg)
             application = registry.find(msg['interviewID'], app)
             application.handle_message(msg, ongoing_interviews)
+
+    def manual_close(self):
+        self.close()
+        self.on_close()
 
     def on_close(self):
         live_apps = registry.apps_for_interview(self.interview_id)
@@ -134,4 +160,10 @@ class InterviewWebSocketHandler(WebSocketHandler):
                                        client_id=self.client_id,
                                        role=self.role)
 
+        ongoing_interviews[self.interview_id].remove(self)
+        msg = utils.create_message(msg_type='client_disconnected',
+                                   client=self.client_id,
+                                   interview=self.interview_id)
+        for client in ongoing_interviews[self.interview_id]:
+            client.write_message(msg)
         log.info("Web socket connection closed.")

@@ -63,6 +63,13 @@ class VideoLogic {
           break;
       }
     });
+
+    EventBus.on("end_interview", (msg) => {
+      if (this.pc) {
+        this.closeConnection();
+      }
+    })
+
     this.getLocalStream();
   };
 
@@ -145,6 +152,10 @@ class VideoLogic {
         });
       }
     };
+  };
+
+  closeConnection() {
+    this.pc.close();
   };
 
   getLocalStream() {

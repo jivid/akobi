@@ -1,12 +1,21 @@
 /** @jsx React.DOM */
 
 var Collabedit = require('./Collabedit');
+var Container = require('./components/Container')
 var Interview = require('./Interview');
-var React = require('react');
 var Notes = require('./Notes');
+var React = require('react');
+var StatusBar = require('./StatusBar');
 var Video = require('./Video');
 
 var AppSpace = React.createClass({
+
+  getInitialState: function() {
+    return {
+      timeElapsed: 0,
+      onlineStatus: false
+    }
+  },
 
   readyToRender: function() {
     return (this.state.interview && this.state.interview.apps);
@@ -22,6 +31,7 @@ var AppSpace = React.createClass({
         clientID: this.state.interview.clientID,
         interviewID: this.state.interview.id,
       });
+
       this.forceUpdate()
     };
 
@@ -37,18 +47,34 @@ var AppSpace = React.createClass({
     if (!this.readyToRender()) {
       return <p>Loading</p>;
     }
+
+    var transparentStyle = {
+      'backgroundColor': 'rgba(0, 0, 0, 0.5)',
+      'paddingLeft': '50px',
+      'paddingRight': '50px',
+      'paddingTop': '25px',
+      'height': '800px'
+    }
+
     return (
       <div>
-        <div style={{float:"left", width:"49%", margin:"0.5%"}}>
-          <Video interview={this.state.interview}/>
+        <div>
+          <StatusBar timeElapsed={this.state.timeElapsed} onlineStatus={this.state.onlineStatus} interview={this.state.interview}/>
         </div>
-        <div style={{float:"right", width:"49%", height:"750px", margin:"0.5%"}}>
-          <Collabedit interview={this.state.interview}/>
-        </div>
-        <div style={{float:"left", width:"49%", height:"387px", margin:"0.5%"}}>
-          <Notes
-            interview={this.state.interview}
-            content="You can take private interview notes that will be emailed to you when the interview is finished."/>
+        <div style={{paddingTop:"55px", paddingLeft:"10%", paddingRight:"10%"}}>
+          <Container style={transparentStyle} rounded="medium">
+            <div style={{float:"left", width:"53%", margin:"0.5%"}}>
+              <Video interview={this.state.interview}/>
+            </div>
+            <div style={{float:"right", width:"45%", height:"750px", margin:"0.5%"}}>
+              <Collabedit interview={this.state.interview}/>
+            </div>
+            <div style={{float:"left", width:"53%", height:"387px", margin:"0.5%"}}>
+              <Notes
+                interview={this.state.interview}
+                content="You can take private interview notes that will be emailed to you when the interview is finished."/>
+            </div>
+          </Container>
         </div>
       </div>
     );
