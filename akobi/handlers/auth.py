@@ -35,9 +35,9 @@ class AuthHandler(RequestHandler):
             self._send_error("Invalid Email")
             return
 
-        # If you're an interviewer append '1' to the cookie
-        # If you're an interviewee append '0' to the cookie
-        is_interviewer = 0 if email == interviewee else 1
+        # If you're an interviewer append '0' to the cookie
+        # If you're an interviewee append '1' to the cookie
+        is_interviewer = 0 if email == interviewer else 1
 
         log.info("Email validation successful")
         session_id = make_random_string()
