@@ -50,11 +50,11 @@ var AppSpace = React.createClass({
 
     var transparentStyle = {
       'backgroundColor': 'rgba(0, 0, 0, 0.5)',
-      'paddingLeft': '50px',
-      'paddingRight': '50px',
+      'paddingLeft': '20px',
+      'paddingRight': '20px',
       'paddingTop': '25px',
       'height': '800px',
-      'width': '80%'
+      'width': '92%'
     }
 
     return (

@@ -183,8 +183,8 @@ var StatusBar = React.createClass({
 
     var endInterviewModalStyle = {
       'position': 'relative',
-      'height': '350px',
-      'width': '20%',
+      'height': '320px',
+      'width': '25%',
       'backgroundColor': '#FFF',
       'textAlign': 'center',
       'padding': '15px',

@@ -155,16 +155,14 @@ var AceEditor = React.createClass({
       'height': '33px',
       'display': 'flex',
       'alignItems': 'center',
-      'justifyContent': 'flex-start'
+      'justifyContent': 'flex-start',
+      'paddingLeft': '5px',
     }
 
     var editorControls =
-
       <Container background='#2C3029' style={topBarStyle}>
         {this.getLanguageSelector()}
       </Container>;
-
-
 
     return (
       <div style={{ 'width': this.props.editorWidth}}>
