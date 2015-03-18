@@ -23,7 +23,6 @@ class NotesApplication(BaseApplication):
         interview_key = "interview:%s" % interview_id
 
         role = kwargs['role']
-        log.info("Received on_close for role: %s" % role)
         client_id = kwargs['client_id']
 
         redis = redis_client.get_redis_instance()
@@ -32,11 +31,7 @@ class NotesApplication(BaseApplication):
         # If you're an interviewee role is '1'
         hkey = 'interviewer_email' if role == '0' else 'interviewee_email'
         email = redis.hget(interview_key, hkey)
-        log.info("Sending an email for %s" % email)
-        email1 = redis.hget(interview_key, 'interviewer_email')
-        email2 = redis.hget(interview_key, 'interviewee_email')
-        log.info("interviewer: %s" % email1)
-        log.info("interviewee: %s" % email2)
+        log.debug("Sending notes email for %s" % email)
 
         body = ("Thanks for interviewing with Akobi!\n\n"
                 "Here's your notes:\n\n%s" %
