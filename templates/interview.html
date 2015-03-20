@@ -1,32 +1,6 @@
-{% extends "base.html" %}
-
-{% block title %} Interview {% end %}
-
-{% block scripts%}
-  <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"/></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"/></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.10.0/react-with-addons.min.js"/></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"/></script>
-  <script
-          data-main="/static/js/build/main"
-          src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
-{% end %}
-
-{% block content %}
-    <div id="app-space">
-        <div id= "overlay"></div>
-        <div id="login_dialog" class="modals">
-            <div>
-                <label id="error_label"></label>
-                <br/>
-                <input id="email_text" type="text" autocomplete="on" placeholder="Email"/>
-                <br/>
-                <button id="login_button">Submit</button>
-            </div>
-        </div>
-        <div id="video-space"></div>
-        <div id="collabedit-space"></div>
-        <div id="notes-space"></div>
-    </div>
-{% end %}
+<link rel="stylesheet" href="/static/css/build/akobi.css">
+<title>Akobi Interview</title>
+<body>
+  <div id="app-space"></div>
+</body>
+<script src="/static/js/build/App.js"></script>

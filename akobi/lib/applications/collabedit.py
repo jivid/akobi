@@ -1,9 +1,9 @@
 import time
 
-from akobi.lib.applications.registry import registry
-from akobi.lib.applications.base import BaseApplication
-from akobi.lib import utils
 from akobi import log
+from akobi.lib import utils
+from akobi.lib.applications.base import BaseApplication
+from akobi.lib.applications.registry import registry
 
 
 class CollabEditHandler(BaseApplication):
@@ -25,26 +25,29 @@ class CollabEditHandler(BaseApplication):
     ASK_SHADOW = 5
     RECEIVED_SHADOW = 6
     APPLY_SHADOW = 7
+    LANGUAGE_CHANGE = 8
 
     def __init__(self):
         self.sockets = []
         self.state = CollabEditHandler.PRE_INTERVIEW
 
     def on_join(self, socket, *args, **kwargs):
-        if len(self.sockets) < 2:
-            self.sockets.append(socket)
-            if len(self.sockets) == 2:
-                log.debug(
-                    "Two people connected to interview starting collabEdit "
-                    "synchronization.")
-                self.state = CollabEditHandler.INITIAL
-                self._send_message(self.sockets[1],
-                                   CollabEditHandler.ASK_SHADOW)
-                self.state += 1
-        else:
-            log.error("More than two people tried to connect to collab edit.")
+        if len(self.sockets) == 2:
+            log.error("More than two people tried to connect to CollabEdit")
+            return
+
+        self.sockets.append(socket)
+        if len(self.sockets) == 2:
+            log.debug(
+                "Two people connected to interview starting collabEdit "
+                "synchronization.")
+            self.state = CollabEditHandler.INITIAL
+            self._send_message(self.sockets[1],
+                               CollabEditHandler.ASK_SHADOW)
+            self.state += 1
 
     def on_client_leave(self, socket, *args, **kwargs):
+        log.info("on_client_leave for collabedit")
         self.state = CollabEditHandler.PRE_INTERVIEW
         self.sockets.remove(socket)
 
@@ -66,7 +69,7 @@ class CollabEditHandler(BaseApplication):
                     CollabEditHandler.RECEIVED_SHADOW, message['type'])
 
             self._send_message(self.sockets[0], CollabEditHandler.APPLY_SHADOW,
-                                   msg_data=message['data'])
+                               msg_data=message['data'])
             self.state += 1
 
         elif self.state == CollabEditHandler.SHADOW_ACK_WAIT_CL2:
@@ -105,18 +108,28 @@ class CollabEditHandler(BaseApplication):
                                             message['type'])
             self.state = CollabEditHandler.INITIAL
             utils.register_timeout(
-                time.time() + .025, self._start_synchronization_loop)
+                time.time() + .25, self._start_synchronization_loop)
+
+        elif message['type'] == CollabEditHandler.LANGUAGE_CHANGE:
+            self._send_message(self.sockets[0],
+                CollabEditHandler.LANGUAGE_CHANGE, msg_data=message['data'])
+            self._send_message(self.sockets[1],
+                CollabEditHandler.LANGUAGE_CHANGE, msg_data=message['data'])
+            log.debug("server: sent %s LANGUAGE_CHANGE to both clients" % (message['data']))
 
         else:
             log.error(
-                "Collabedit Got message: %s while in invalid state:  %s" %
-                (str(message), str(self.state)))
+                "Collabedit Got message: %s while in invalid state: %d"
+                % (str(message), self.state)
+            )
 
     def _send_message(self, socket, msg_type, msg_data=None):
         data = {'type': msg_type, 'data': msg_data}
-        message = utils.create_message('collabedit', socket.client_id,
-                                       socket.interview_id, **data)
-        socket.write_message(message)
+        msg = utils.create_message(msg_type='collabedit',
+                                   client=socket.client_id,
+                                   interview=socket.interview_id,
+                                   **data)
+        socket.write_message(msg)
 
     def _start_synchronization_loop(self):
         self._send_message(self.sockets[0], CollabEditHandler.ASK_DIFF)

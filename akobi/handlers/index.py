@@ -1,50 +1,46 @@
 from tornado.web import RequestHandler
 
-from akobi import log
 from akobi.lib.applications.registry import registry
 from akobi.lib.redis_client import redis_client
-from akobi.lib.utils import make_random_string
+from akobi.lib.utils import function_as_callback, \
+    make_random_string, send_email
 
 
 applications = registry.available.keys()
 applications.remove("Heartbeat")
 
 
-class InterviewHandler(RequestHandler):
-    def get(self, *args, **kwargs):
-        self.render('interview.html', applications=self.request.arguments)
-
-
 class IndexHandler(RequestHandler):
-    def get(self, *args, **kwargs):
-        self.render('index.html', applications=applications)
 
-
-class SetupHandler(RequestHandler):
-    def get(self, *args, **kwargs):
-
-        # HTML checkboxes pass nothing if they are unchecked
-        application_state = {}
-        interviewer = self.get_query_argument('interviewer_email')
-        interviewee = self.get_query_argument('interviewee_email')
-
-        for application in applications:
-            if self.get_query_argument(application, None):
-                application_state[application] = self.get_query_argument(
-                    application)
-
-        # TODO: We should probably do this more like a product serial than
-        # just a random id.
-        interview_id = make_random_string(length=30)
-
+    def _get_and_store(self, interview_id, arg_key):
         redis = redis_client.get_redis_instance()
-        interview_key = "interview:%s" % (interview_id)
-        log.info("Setting interviewer email")
-        redis.hset(interview_key, "interviewer_email", interviewer)
-        log.info("Setting interviewee email")
-        redis.hset(interview_key, "interviewee_email", interviewee)
+        interview_key = "interview:%s" % interview_id
 
-        self.render(
-            'setup_complete.html',
-            interview_id=interview_id,
-            application_state=application_state)
+        arg_value = self.get_argument(arg_key)
+        redis.hset(interview_key, arg_key, arg_value)
+
+        return arg_value
+
+    def get(self, *args, **kwargs):
+        self.render('index.html')
+
+    def post(self, *args, **kwargs):
+        interview_id = make_random_string()
+
+        interviewer = self._get_and_store(interview_id, 'interviewer_email')
+        interviewee = self._get_and_store(interview_id, 'interviewee_email')
+
+        self._get_and_store(interview_id, 'interviewer_name')
+        self._get_and_store(interview_id, 'interviewee_name')
+
+        interview_link = "http://akobi.info/i/%s" % interview_id
+
+        body = ("You've created an Akobi Interview!\n\n"
+                "Here's the link: %s" % (interview_link))
+        function_as_callback(send_email, interviewer, body)
+
+        body = ("You've been invited to an Akobi Interview!\n\n"
+                "Here's the link: %s" % (interview_link))
+        function_as_callback(send_email, interviewee, body)
+
+        self.write({'interviewID': interview_id})

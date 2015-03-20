@@ -1,14 +1,52 @@
 import datetime
-import json
 import random
+import smtplib
 
 from tornado.ioloop import IOLoop
+from validate_email import validate_email
 
 from akobi.lib.applications.base import BaseApplication
 
+SMTP_SERVER = 'smtp.gmail.com:587'
+AKOBI_EMAIL_ADDRESS = 'AkobiInterview@gmail.com'
+AKOBI_EMAIL_PASSWORD = 'AppleOrange'
+AKOBI_EMAIL_SUBJECT = 'Akobi Interview'
 
-def message_type_to_application_name(message_type):
-    words = message_type.split('_')
+
+def start_smtp_server():
+    server = smtplib.SMTP(SMTP_SERVER)
+    server.ehlo()
+    server.starttls()
+    server.login(AKOBI_EMAIL_ADDRESS, AKOBI_EMAIL_PASSWORD)
+    return server
+
+
+def make_email_message(to_addr, msg):
+    return "\r\n".join([
+        "From: %s" % AKOBI_EMAIL_ADDRESS,
+        "To: %s" % to_addr,
+        "Subject: %s" % AKOBI_EMAIL_SUBJECT,
+        "",
+        msg
+    ])
+
+
+def send_email(email_addr, msg_body):
+    if not validate_email(email_addr):
+        return
+    smtp_server = start_smtp_server()
+    email = make_email_message(email_addr, msg_body)
+    smtp_server.sendmail(AKOBI_EMAIL_ADDRESS, email_addr, email)
+    smtp_server.quit()
+
+
+def app_name_from_msg(msg):
+    """ Uses the message type to determine the application it must be routed to
+    """
+    if 'type' not in msg:
+        return None
+
+    words = msg['type'].split('_')
     application_name = "".join([w.title() for w in words])
     return application_name
 
@@ -21,30 +59,37 @@ def register_timeout(timeout, method, *args, **kwargs):
     IOLoop.instance().add_timeout(timeout, method, *args, **kwargs)
 
 
-# Adds the application msg handler to the bottom of the event queue.
 def handle_message_as_callback(application, *args, **kwargs):
+    """ Calls the application's handle_message method as an IOLoop callback
+    """
+    app_name = application.__class__.__name__
     if not isinstance(application, BaseApplication):
-            raise RuntimeError(
-                "Application passed to async_handle must subclass "
-                + "BaseApplication")
+        raise RuntimeError("%s must subclass BaseApplication" % (app_name))
     if not hasattr(application, "handle_message"):
-        raise AttributeError("%s doesn't have a handle() method" %
-                             handler.__class__.__name__)
+        raise AttributeError("%s doesn't have a handle() method" % (app_name))
     function_as_callback(application.handle_message, *args, **kwargs)
 
 
-# Every arg after interview_id should be in the form <key>="<value>"
-# to be placed into data field of message
-def create_message(message_type, client_id, interview_id, *args, **kwargs):
-    message = {'datetime': str(datetime.datetime.now()),
-               'type': message_type,
-               'clientID': client_id,
-               'interviewID': interview_id,
-               'data': kwargs}
-    return json.dumps(message)
+def create_message(msg_type, client, interview, **kwargs):
+    """ Construct a message that complies to the protocol format. All keyword
+        agrs passed in get rolled into the data field as a dict intended to be
+        parsed as a JSON object. For details about the message format, check
+        the Client Server Message Format wiki page
+    """
+    return {
+        'datetime': str(datetime.datetime.now()),
+        'type': msg_type,
+        'clientID': client,
+        'interviewID': interview,
+        'data': kwargs
+    }
 
 
-def make_random_string(length=12,
+def make_random_string(length=30,
                        allowed_chars='abcdefghijklmnopqrstuvwxyz'
                                      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
-    return ''.join([random.choice(allowed_chars) for i in range(length)])
+    """ Generates a random alphanumeric string. Special characters are not
+        included in the allowed characters because they have special meaning in
+        other parts of the framework
+    """
+    return ''.join([random.choice(allowed_chars) for _ in range(length)])

@@ -5,8 +5,7 @@ __all__ = ('registry',)
 
 
 class ApplicationRegistry(object):
-    """
-    Application registry that keeps track of all available applications as
+    """ Application registry that keeps track of all available applications as
     well as applications registered to currently running interviews. Only one
     instance of this registry exists per instance of the Akobi application, so
     to maintain correct state, we use the Borg design pattern (bit.ly/1oxVQNI)
@@ -20,7 +19,6 @@ class ApplicationRegistry(object):
 
         3. Apps Instantiated - All apps registered to the interview are now
                                instantiated and can be freely used.
-
     """
 
     _non_essential_apps = []
@@ -34,8 +32,7 @@ class ApplicationRegistry(object):
         self.__dict__ = self.__shared_state
 
     def register(self, name, application):
-        """
-        Register the application in the 'available' dict. After this point,
+        """ Register the application in the 'available' dict. After this point,
         the application will be available for adding to specific interviews.
         We only allow an application name to be registered once. Re-using an
         already used name will result in a TypeError
@@ -63,10 +60,14 @@ class ApplicationRegistry(object):
         self.interviews[interview_id][app_name] = None
 
     def non_essential_apps(self):
+        """ Return a list of non essential applications in the registry. Used
+            to display all apps that can be added to an interview
+        """
+        # Populate the non essential apps if they don't already exist
         if not self._non_essential_apps:
-            for key in self.available:
-                if not self.available[key]._essential:
-                    self._non_essential_apps.append(self.available[key])
+            non_essential = lambda app: not app.essential
+            self._non_essential_apps = filter(non_essential, self.available)
+
         return self._non_essential_apps
 
     def apps_for_interview(self, interview_id):
@@ -93,8 +94,8 @@ class ApplicationRegistry(object):
             if self.interviews[interview_id][app_name] is not None:
                 continue
 
-            log.info("Instantiating %s for interview %s" % (app_name,
-                     interview_id))
+            log.info("Instantiating %s for interview %s"
+                     % (app_name, interview_id))
             self._create_app_instance(interview_id, app_name)
 
     def _create_app_instance(self, interview_id, app_name):

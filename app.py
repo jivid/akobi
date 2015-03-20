@@ -4,9 +4,9 @@ import sys
 
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-from tornado.web import Application, StaticFileHandler, RequestHandler
+from tornado.web import Application, StaticFileHandler
 
-from akobi.handlers import interview, index
+from akobi.handlers import interview, index, auth
 
 settings = {
     'auto_reload': True,
@@ -16,10 +16,10 @@ settings = {
 
 app = Application([
     (r'/', index.IndexHandler),
-    (r'/setup_complete', index.SetupHandler),
+    (r'/auth', auth.AuthHandler),
+    (r'/i/(\w+)', interview.InterviewHTTPHandler),
+    (r'/i/(\w+)/socket', interview.InterviewWebSocketHandler),
     (r'/static/(.*)', StaticFileHandler, {'path': './static/'}),
-    (r'/i/(\w+)', index.InterviewHandler),
-    (r'/i/(\w+)/socket', interview.InterviewHandler),
     ], **settings)
 
 
@@ -27,13 +27,17 @@ def build_assets():
     cmd = ['fab', 'local', 'build']
     subprocess.call(cmd)
 
-def main():
-    print "Building assets"
-    build_assets()
 
-    print "Running server"
+def main():
+    if len(sys.argv) < 2:
+        print "No port specified for server. Defaulting to 8888"
+        port = 8888
+    else:
+        port = int(sys.argv[1])
+
+    print "Running server on port %d" % port
     http_server = HTTPServer(app)
-    http_server.listen(8888)
+    http_server.listen(port)
     IOLoop.instance().start()
 
 
